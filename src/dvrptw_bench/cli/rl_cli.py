@@ -21,7 +21,7 @@ from dvrptw_bench.results.recorder import Recorder
 from dvrptw_bench.rl.ga_baseline import GAPolicy
 from dvrptw_bench.rl.policies import build_policy
 from dvrptw_bench.rl.qlearning_baseline import QLearningPolicy
-from dvrptw_bench.rl.rl4co_runner import RL4COPolicy
+from dvrptw_bench.rl.rl4co_policy import RL4COPolicy
 from dvrptw_bench.viz.convergence_plot import plot_convergence
 from dvrptw_bench.viz.route_plot import plot_routes
 

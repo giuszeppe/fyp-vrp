@@ -1,0 +1,2232 @@
+Resolved 234 packages in 16ms
+   Building pyarrow==19.0.1
+Downloading babel (9.7MiB)
+Downloading scipy (19.4MiB)
+Downloading matplotlib (7.8MiB)
+Downloading pandas (10.3MiB)
+Downloading jupyterlab (11.9MiB)
+Downloading notebook (13.9MiB)
+Downloading plotly (9.4MiB)
+Downloading ortools (20.9MiB)
+Downloading wandb (22.2MiB)
+Downloading mypy (11.6MiB)
+Downloading torch (75.8MiB)
+Downloading ruff (9.7MiB)
+  × Failed to build `pyarrow==19.0.1`
+  ├─▶ The build backend returned an error
+  ╰─▶ Call to `setuptools.build_meta.build_wheel` failed (exit status: 1)
+
+      [stdout]
+      running bdist_wheel
+      running build
+      running build_py
+      copying pyarrow/orc.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/conftest.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_generated_version.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/benchmark.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_compute_docstrings.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/ipc.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/util.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/flight.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/cffi.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/substrait.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/__init__.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/types.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/dataset.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/cuda.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/feather.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/pandas_compat.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/fs.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/acero.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/csv.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/jvm.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/json.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/compute.py -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      running egg_info
+      writing pyarrow.egg-info/PKG-INFO
+      writing dependency_links to pyarrow.egg-info/dependency_links.txt
+      writing requirements to pyarrow.egg-info/requires.txt
+      writing top-level names to pyarrow.egg-info/top_level.txt
+      reading manifest file 'pyarrow.egg-info/SOURCES.txt'
+      reading manifest template 'MANIFEST.in'
+      writing manifest file 'pyarrow.egg-info/SOURCES.txt'
+      copying pyarrow/__init__.pxd -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_acero.pxd -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_acero.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_azurefs.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_compute.pxd -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_compute.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_csv.pxd -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_csv.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_cuda.pxd -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_cuda.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_dataset.pxd -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_dataset.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_dataset_orc.pyx ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_dataset_parquet.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_dataset_parquet.pyx ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_dataset_parquet_encryption.pyx ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_dlpack.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_feather.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_flight.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_fs.pxd -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_fs.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_gcsfs.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_hdfs.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_json.pxd -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_json.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_orc.pxd -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_orc.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_parquet.pxd -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_parquet.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_parquet_encryption.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_parquet_encryption.pyx ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_pyarrow_cpp_tests.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_pyarrow_cpp_tests.pyx ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_s3fs.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/_substrait.pyx ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/array.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/benchmark.pxi ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/builder.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/compat.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/config.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/device.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/error.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/gandiva.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/io.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/ipc.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/lib.pxd -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/lib.pyx -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/memory.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/pandas-shim.pxi ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/public-api.pxi ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/scalar.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/table.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/tensor.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/types.pxi -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      copying pyarrow/includes/__init__.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/includes/common.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/includes/libarrow.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/includes/libarrow_acero.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/includes/libarrow_cuda.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/includes/libarrow_dataset.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/includes/libarrow_dataset_parquet.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/includes/libarrow_feather.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/includes/libarrow_flight.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/includes/libarrow_fs.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/includes/libarrow_python.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/includes/libarrow_substrait.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/includes/libgandiva.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/includes/libparquet_encryption.pxd ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/includes
+      copying pyarrow/interchange/__init__.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/interchange
+      copying pyarrow/interchange/buffer.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/interchange
+      copying pyarrow/interchange/column.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/interchange
+      copying pyarrow/interchange/dataframe.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/interchange
+      copying pyarrow/interchange/from_dataframe.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/interchange
+      copying pyarrow/parquet/__init__.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/parquet
+      copying pyarrow/parquet/core.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/parquet
+      copying pyarrow/parquet/encryption.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/parquet
+      copying pyarrow/src/arrow/python/CMakeLists.txt ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/api.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/arrow_to_pandas.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/arrow_to_pandas.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/arrow_to_python_internal.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/async.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/benchmark.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/benchmark.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/common.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/common.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/csv.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/csv.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/datetime.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/datetime.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/decimal.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/decimal.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/deserialize.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/deserialize.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/extension_type.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/extension_type.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/filesystem.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/filesystem.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/flight.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/flight.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/gdb.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/gdb.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/helpers.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/helpers.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/inference.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/inference.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/io.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/io.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/ipc.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/ipc.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/iterators.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/numpy_convert.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/numpy_convert.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/numpy_init.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/numpy_init.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/numpy_internal.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/numpy_interop.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/numpy_to_arrow.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/numpy_to_arrow.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/parquet_encryption.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/parquet_encryption.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/pch.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/platform.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/pyarrow.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/pyarrow.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/pyarrow_api.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/pyarrow_lib.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/python_test.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/python_test.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/python_to_arrow.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/python_to_arrow.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/serialize.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/serialize.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/type_traits.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/udf.cc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/udf.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/visibility.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python
+      copying pyarrow/src/arrow/python/vendored/CMakeLists.txt ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python/vendored
+      copying pyarrow/src/arrow/python/vendored/pythoncapi_compat.h ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/src/arrow/python/vendored
+      copying pyarrow/tests/__init__.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/arrow_16597.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/arrow_39313.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/arrow_7980.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/bound_function_visit_strings.pyx ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/conftest.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/extensions.pyx ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/pandas_examples.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/pandas_threaded_import.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/pyarrow_cython_example.pyx ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/read_record_batch.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/strategies.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_acero.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_adhoc_memory_leak.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_array.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_builder.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_cffi.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_compute.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_convert_builtin.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_cpp_internals.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_csv.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_cuda.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_cuda_numba_interop.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_cython.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_dataset.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_dataset_encryption.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_deprecations.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_device.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_dlpack.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_exec_plan.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_extension_type.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_feather.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_flight.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_flight_async.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_fs.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_gandiva.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_gdb.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_io.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_ipc.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_json.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_jvm.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_memory.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_misc.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_orc.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_pandas.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_scalars.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_schema.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_sparse_tensor.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_strategies.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_substrait.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_table.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_tensor.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_types.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_udf.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_util.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/test_without_numpy.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/util.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/wsgi_examples.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests
+      copying pyarrow/tests/data/feather/v0.17.0.version.2-compression.lz4.feather
+      -> build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/feather
+      copying pyarrow/tests/data/orc/README.md ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/orc
+      copying pyarrow/tests/data/orc/TestOrcFile.emptyFile.jsn.gz ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/orc
+      copying pyarrow/tests/data/orc/TestOrcFile.emptyFile.orc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/orc
+      copying pyarrow/tests/data/orc/TestOrcFile.test1.jsn.gz ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/orc
+      copying pyarrow/tests/data/orc/TestOrcFile.test1.orc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/orc
+      copying pyarrow/tests/data/orc/TestOrcFile.testDate1900.jsn.gz ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/orc
+      copying pyarrow/tests/data/orc/TestOrcFile.testDate1900.orc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/orc
+      copying pyarrow/tests/data/orc/decimal.jsn.gz ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/orc
+      copying pyarrow/tests/data/orc/decimal.orc ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/orc
+      copying pyarrow/tests/data/parquet/v0.7.1.all-named-index.parquet ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/parquet
+      copying pyarrow/tests/data/parquet/v0.7.1.column-metadata-handling.parquet ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/parquet
+      copying pyarrow/tests/data/parquet/v0.7.1.parquet ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/parquet
+      copying pyarrow/tests/data/parquet/v0.7.1.some-named-index.parquet ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/data/parquet
+      copying pyarrow/tests/interchange/__init__.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/interchange
+      copying pyarrow/tests/interchange/test_conversion.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/interchange
+      copying pyarrow/tests/interchange/test_interchange_spec.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/interchange
+      copying pyarrow/tests/parquet/__init__.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/tests/parquet/common.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/tests/parquet/conftest.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/tests/parquet/encryption.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/tests/parquet/test_basic.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/tests/parquet/test_compliant_nested_type.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/tests/parquet/test_data_types.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/tests/parquet/test_dataset.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/tests/parquet/test_datetime.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/tests/parquet/test_encryption.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/tests/parquet/test_metadata.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/tests/parquet/test_pandas.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/tests/parquet/test_parquet_file.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/tests/parquet/test_parquet_writer.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/tests/parquet
+      copying pyarrow/vendored/__init__.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/vendored
+      copying pyarrow/vendored/docscrape.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/vendored
+      copying pyarrow/vendored/version.py ->
+      build/lib.macosx-26.0-arm64-cpython-314/pyarrow/vendored
+      running build_ext
+      -- Running cmake for PyArrow
+      cmake
+      -DCMAKE_INSTALL_PREFIX=/Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/build/lib.macosx-26.0-arm64-cpython-314/pyarrow
+      -DPYTHON_EXECUTABLE=/Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/bin/python
+      -DPython3_EXECUTABLE=/Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/bin/python
+      -DPYARROW_CXXFLAGS= -DPYARROW_BUNDLE_ARROW_CPP=off
+      -DPYARROW_BUNDLE_CYTHON_CPP=off
+      -DPYARROW_GENERATE_COVERAGE=off -DCMAKE_BUILD_TYPE=release
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src
+      -- System processor: arm64
+      -- Arrow build warning level: PRODUCTION
+      -- Build Type: RELEASE
+      -- CMAKE_C_FLAGS:  -Wall -Wno-unknown-warning-option -Wno-pass-failed
+      -march=armv8-a  -Qunused-arguments -fcolor-diagnostics
+      -fno-omit-frame-pointer -Wno-unused-variable -Wno-maybe-uninitialized
+      -Wno-parentheses-equality -Wno-constant-logical-operand
+      -Wno-missing-declarations -Wno-sometimes-uninitialized
+      -Wno-return-type-c-linkage
+      -- CMAKE_CXX_FLAGS:  -fno-aligned-new  -Wall -Wno-unknown-warning-option
+      -Wno-pass-failed -march=armv8-a  -Qunused-arguments -fcolor-diagnostics
+      -fno-omit-frame-pointer -Wno-unused-variable -Wno-maybe-uninitialized
+      -Wno-parentheses-equality -Wno-constant-logical-operand
+      -Wno-missing-declarations -Wno-sometimes-uninitialized
+      -Wno-return-type-c-linkage
+      -- Generator: Unix Makefiles
+      -- Build output directory:
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/build/temp.macosx-26.0-arm64-cpython-314/release
+      -- Found Python3: /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/bin/python
+      (found version "3.14.3") found components: Interpreter Development.Module
+      NumPy
+      -- Found Python3Alt: /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/bin/python
+      -- Found NumPy version: 2.4.2
+      -- NumPy include dir:
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/numpy/_core/include
+      -- Found Cython version: 3.2.4
+      -- Found AWS SDK for C++, Version: 1.11.750, Install Root:/opt/homebrew,
+      Platform Prefix:, Platform Dependent Libraries: pthread;curl
+      -- Components specified for AWSSDK: config;s3;transfer;identity-management;sts,
+      application will be depending on libs:
+      aws-cpp-sdk-config;aws-cpp-sdk-transfer;aws-cpp-sdk-identity-management;aws-cpp-sdk-cognito-identity;aws-cpp-sdk-sts;aws-cpp-sdk-s3;aws-cpp-sdk-core
+      -- Try finding aws-cpp-sdk-core
+      -- Found aws-cpp-sdk-core
+      -- Try finding aws-cpp-sdk-s3
+      -- Found aws-cpp-sdk-s3
+      -- Try finding aws-cpp-sdk-sts
+      -- Found aws-cpp-sdk-sts
+      -- Try finding aws-cpp-sdk-cognito-identity
+      -- Found aws-cpp-sdk-cognito-identity
+      -- Try finding aws-cpp-sdk-identity-management
+      -- Found aws-cpp-sdk-identity-management
+      -- Try finding aws-cpp-sdk-transfer
+      -- Found aws-cpp-sdk-transfer
+      -- Try finding aws-cpp-sdk-config
+      -- Found aws-cpp-sdk-config
+      -- Arrow version: 23.0.1
+      -- Found the Arrow shared library:
+      /opt/homebrew/opt/apache-arrow/lib/libarrow.2300.1.0.dylib
+      -- Found the Arrow import library: ARROW_IMPORT_LIB-NOTFOUND
+      -- Found the Arrow static library:
+      /opt/homebrew/opt/apache-arrow/lib/libarrow.a
+      -- Building PyArrow with Dataset
+      -- ArrowCompute version: 23.0.1
+      -- Found the ArrowCompute shared library:
+      /opt/homebrew/opt/apache-arrow/lib/libarrow_compute.2300.1.0.dylib
+      -- Found the ArrowCompute import library: ARROW_COMPUTE_IMPORT_LIB-NOTFOUND
+      -- Found the ArrowCompute static library:
+      /opt/homebrew/opt/apache-arrow/lib/libarrow_compute.a
+      -- ArrowAcero version: 23.0.1
+      -- Found the ArrowAcero shared library:
+      /opt/homebrew/opt/apache-arrow/lib/libarrow_acero.2300.1.0.dylib
+      -- Found the ArrowAcero import library: ARROW_ACERO_IMPORT_LIB-NOTFOUND
+      -- Found the ArrowAcero static library:
+      /opt/homebrew/opt/apache-arrow/lib/libarrow_acero.a
+      -- Parquet version: 23.0.1
+      -- Found the Parquet shared library:
+      /opt/homebrew/opt/apache-arrow/lib/libparquet.2300.1.0.dylib
+      -- Found the Parquet import library: PARQUET_IMPORT_LIB-NOTFOUND
+      -- Found the Parquet static library:
+      /opt/homebrew/opt/apache-arrow/lib/libparquet.a
+      -- ArrowDataset version: 23.0.1
+      -- Found the ArrowDataset shared library:
+      /opt/homebrew/opt/apache-arrow/lib/libarrow_dataset.2300.1.0.dylib
+      -- Found the ArrowDataset import library: ARROW_DATASET_IMPORT_LIB-NOTFOUND
+      -- Found the ArrowDataset static library:
+      /opt/homebrew/opt/apache-arrow/lib/libarrow_dataset.a
+      -- Building PyArrow with Acero
+      -- Building PyArrow with Parquet
+      -- Parquet Encryption is NOT Enabled
+      -- Building PyArrow with Flight
+      -- ArrowFlight version: 23.0.1
+      -- Found the ArrowFlight shared library:
+      /opt/homebrew/opt/apache-arrow/lib/libarrow_flight.2300.1.0.dylib
+      -- Found the ArrowFlight import library: ARROW_FLIGHT_IMPORT_LIB-NOTFOUND
+      -- Found the ArrowFlight static library:
+      /opt/homebrew/opt/apache-arrow/lib/libarrow_flight.a
+      -- Building PyArrow with S3
+      -- Building PyArrow with HDFS
+      -- Building PyArrow with Gandiva
+      -- Using LLVMConfig.cmake in: /opt/homebrew/opt/llvm@21/lib/cmake/llvm
+      -- Found llvm-link /opt/homebrew/Cellar/llvm@21/21.1.8/bin/llvm-link
+      -- Found clang /opt/homebrew/Cellar/llvm@21/21.1.8/bin/clang-21
+      -- Gandiva version: 23.0.1
+      -- Found the Gandiva shared library:
+      /opt/homebrew/opt/apache-arrow/lib/libgandiva.2300.1.0.dylib
+      -- Found the Gandiva import library: GANDIVA_IMPORT_LIB-NOTFOUND
+      -- Found the Gandiva static library:
+      /opt/homebrew/opt/apache-arrow/lib/libgandiva.a
+      -- Configuring done (1.9s)
+      -- Generating done (0.1s)
+      -- Build files have been written to:
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/build/temp.macosx-26.0-arm64-cpython-314
+      -- Finished cmake for PyArrow
+      -- Running cmake --build for PyArrow
+      cmake --build . --config release --
+      [  1%] Compiling Cython CXX source for lib...
+      [  1%] Built target lib_pyx
+      [  2%] Built target cython_api_headers
+      [  4%] Building CXX object
+      CMakeFiles/arrow_python.dir/pyarrow/src/arrow/python/arrow_to_pandas.cc.o
+
+      [stderr]
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/config/_apply_pyprojecttoml.py:82:
+      SetuptoolsDeprecationWarning: `project.license` as a TOML table is deprecated
+      !!
+
+      
+      ********************************************************************************
+              Please use a simple string containing a SPDX expression for
+      `project.license`. You can also use `project.license-files`. (Both options
+      available on setuptools>=77.0.0).
+
+              By 2027-Feb-18, you need to update your project and remove deprecated
+      calls
+              or your builds will no longer be supported.
+
+              See
+      https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license
+      for details.
+      
+      ********************************************************************************
+
+      !!
+        corresp(dist, value, root_dir)
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/config/_apply_pyprojecttoml.py:61:
+      SetuptoolsDeprecationWarning: License classifiers are deprecated.
+      !!
+
+      
+      ********************************************************************************
+              Please consider removing the following classifiers in favor of a SPDX
+      license expression:
+
+              License :: OSI Approved :: Apache Software License
+
+              See
+      https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license
+      for details.
+      
+      ********************************************************************************
+
+      !!
+        dist._finalize_license_expression()
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/dist.py:483:
+      SetuptoolsDeprecationWarning: Pattern '../LICENSE.txt' cannot contain '..'
+      !!
+
+      
+      ********************************************************************************
+              Please ensure the files specified are contained by the root
+              of the Python package (normally marked by `pyproject.toml`).
+
+              By 2027-Feb-18, you need to update your project and remove deprecated
+      calls
+              or your builds will no longer be supported.
+
+              See https://packaging.python.org/en/latest/specifications/glob-patterns/
+      for details.
+      
+      ********************************************************************************
+
+      !!
+        for path in sorted(cls._find_pattern(pattern, enforce_match))
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/dist.py:483:
+      SetuptoolsDeprecationWarning: Cannot find any files for the given pattern.
+      !!
+
+      
+      ********************************************************************************
+              Pattern '../LICENSE.txt' did not match any files.
+
+              By 2027-Feb-18, you need to update your project and remove deprecated
+      calls
+              or your builds will no longer be supported.
+      
+      ********************************************************************************
+
+      !!
+        for path in sorted(cls._find_pattern(pattern, enforce_match))
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/dist.py:483:
+      SetuptoolsDeprecationWarning: Pattern '../NOTICE.txt' cannot contain '..'
+      !!
+
+      
+      ********************************************************************************
+              Please ensure the files specified are contained by the root
+              of the Python package (normally marked by `pyproject.toml`).
+
+              By 2027-Feb-18, you need to update your project and remove deprecated
+      calls
+              or your builds will no longer be supported.
+
+              See https://packaging.python.org/en/latest/specifications/glob-patterns/
+      for details.
+      
+      ********************************************************************************
+
+      !!
+        for path in sorted(cls._find_pattern(pattern, enforce_match))
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/dist.py:483:
+      SetuptoolsDeprecationWarning: Cannot find any files for the given pattern.
+      !!
+
+      
+      ********************************************************************************
+              Pattern '../NOTICE.txt' did not match any files.
+
+              By 2027-Feb-18, you need to update your project and remove deprecated
+      calls
+              or your builds will no longer be supported.
+      
+      ********************************************************************************
+
+      !!
+        for path in sorted(cls._find_pattern(pattern, enforce_match))
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/dist.py:765:
+      SetuptoolsDeprecationWarning: License classifiers are deprecated.
+      !!
+
+      
+      ********************************************************************************
+              Please consider removing the following classifiers in favor of a SPDX
+      license expression:
+
+              License :: OSI Approved :: Apache Software License
+
+              See
+      https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license
+      for details.
+      
+      ********************************************************************************
+
+      !!
+        self._finalize_license_expression()
+      listing git files failed - pretending there aren't any
+      warning: no files found matching '../LICENSE.txt'
+      warning: no files found matching '../NOTICE.txt'
+      warning: no previously-included files matching '*.so' found anywhere in
+      distribution
+      warning: no previously-included files matching '*.pyc' found anywhere in
+      distribution
+      warning: no previously-included files matching '*~' found anywhere in
+      distribution
+      warning: no previously-included files matching '#*' found anywhere in
+      distribution
+      warning: no previously-included files matching '.git*' found anywhere in
+      distribution
+      warning: no previously-included files matching '.DS_Store' found anywhere
+      in distribution
+      no previously-included directories found matching '.asv'
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/command/build_py.py:215:
+      _Warning: Package 'pyarrow.includes' is absent from the `packages`
+      configuration.
+      !!
+
+      
+      ********************************************************************************
+              ############################
+              # Package would be ignored #
+              ############################
+              Python recognizes 'pyarrow.includes' as an importable package[^1],
+              but it is absent from setuptools' `packages` configuration.
+
+              This leads to an ambiguous overall configuration. If you want to
+      distribute this
+              package, please make sure that 'pyarrow.includes' is explicitly added
+              to the `packages` configuration field.
+
+              Alternatively, you can also rely on setuptools' discovery methods
+              (for example by using `find_namespace_packages(...)`/`find_namespace:`
+              instead of `find_packages(...)`/`find:`).
+
+              You can read more about "package discovery" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+              If you don't want 'pyarrow.includes' to be distributed and are
+              already explicitly excluding 'pyarrow.includes' via
+              `find_namespace_packages(...)/find_namespace` or
+      `find_packages(...)/find`,
+              you can try to use `exclude_package_data`, or
+      `include-package-data=False` in
+              combination with a more fine grained `package-data` configuration.
+
+              You can read more about "package data files" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+              [^1]: For Python, any directory (with suitable naming) can be
+      imported,
+                    even if it does not contain any `.py` files.
+                    On the other hand, currently there is no concept of package data
+                    directory, all directories are treated like packages.
+      
+      ********************************************************************************
+
+      !!
+        check.warn(importable)
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/command/build_py.py:215:
+      _Warning: Package 'pyarrow.interchange' is absent from the `packages`
+      configuration.
+      !!
+
+      
+      ********************************************************************************
+              ############################
+              # Package would be ignored #
+              ############################
+              Python recognizes 'pyarrow.interchange' as an importable package[^1],
+              but it is absent from setuptools' `packages` configuration.
+
+              This leads to an ambiguous overall configuration. If you want to
+      distribute this
+              package, please make sure that 'pyarrow.interchange' is explicitly
+      added
+              to the `packages` configuration field.
+
+              Alternatively, you can also rely on setuptools' discovery methods
+              (for example by using `find_namespace_packages(...)`/`find_namespace:`
+              instead of `find_packages(...)`/`find:`).
+
+              You can read more about "package discovery" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+              If you don't want 'pyarrow.interchange' to be distributed and are
+              already explicitly excluding 'pyarrow.interchange' via
+              `find_namespace_packages(...)/find_namespace` or
+      `find_packages(...)/find`,
+              you can try to use `exclude_package_data`, or
+      `include-package-data=False` in
+              combination with a more fine grained `package-data` configuration.
+
+              You can read more about "package data files" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+              [^1]: For Python, any directory (with suitable naming) can be
+      imported,
+                    even if it does not contain any `.py` files.
+                    On the other hand, currently there is no concept of package data
+                    directory, all directories are treated like packages.
+      
+      ********************************************************************************
+
+      !!
+        check.warn(importable)
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/command/build_py.py:215:
+      _Warning: Package 'pyarrow.parquet' is absent from the `packages`
+      configuration.
+      !!
+
+      
+      ********************************************************************************
+              ############################
+              # Package would be ignored #
+              ############################
+              Python recognizes 'pyarrow.parquet' as an importable package[^1],
+              but it is absent from setuptools' `packages` configuration.
+
+              This leads to an ambiguous overall configuration. If you want to
+      distribute this
+              package, please make sure that 'pyarrow.parquet' is explicitly added
+              to the `packages` configuration field.
+
+              Alternatively, you can also rely on setuptools' discovery methods
+              (for example by using `find_namespace_packages(...)`/`find_namespace:`
+              instead of `find_packages(...)`/`find:`).
+
+              You can read more about "package discovery" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+              If you don't want 'pyarrow.parquet' to be distributed and are
+              already explicitly excluding 'pyarrow.parquet' via
+              `find_namespace_packages(...)/find_namespace` or
+      `find_packages(...)/find`,
+              you can try to use `exclude_package_data`, or
+      `include-package-data=False` in
+              combination with a more fine grained `package-data` configuration.
+
+              You can read more about "package data files" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+              [^1]: For Python, any directory (with suitable naming) can be
+      imported,
+                    even if it does not contain any `.py` files.
+                    On the other hand, currently there is no concept of package data
+                    directory, all directories are treated like packages.
+      
+      ********************************************************************************
+
+      !!
+        check.warn(importable)
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/command/build_py.py:215:
+      _Warning: Package 'pyarrow.src.arrow.python' is absent from the `packages`
+      configuration.
+      !!
+
+      
+      ********************************************************************************
+              ############################
+              # Package would be ignored #
+              ############################
+              Python recognizes 'pyarrow.src.arrow.python' as an importable
+      package[^1],
+              but it is absent from setuptools' `packages` configuration.
+
+              This leads to an ambiguous overall configuration. If you want to
+      distribute this
+              package, please make sure that 'pyarrow.src.arrow.python' is
+      explicitly added
+              to the `packages` configuration field.
+
+              Alternatively, you can also rely on setuptools' discovery methods
+              (for example by using `find_namespace_packages(...)`/`find_namespace:`
+              instead of `find_packages(...)`/`find:`).
+
+              You can read more about "package discovery" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+              If you don't want 'pyarrow.src.arrow.python' to be distributed and are
+              already explicitly excluding 'pyarrow.src.arrow.python' via
+              `find_namespace_packages(...)/find_namespace` or
+      `find_packages(...)/find`,
+              you can try to use `exclude_package_data`, or
+      `include-package-data=False` in
+              combination with a more fine grained `package-data` configuration.
+
+              You can read more about "package data files" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+              [^1]: For Python, any directory (with suitable naming) can be
+      imported,
+                    even if it does not contain any `.py` files.
+                    On the other hand, currently there is no concept of package data
+                    directory, all directories are treated like packages.
+      
+      ********************************************************************************
+
+      !!
+        check.warn(importable)
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/command/build_py.py:215:
+      _Warning: Package 'pyarrow.src.arrow.python.vendored' is absent from the
+      `packages` configuration.
+      !!
+
+      
+      ********************************************************************************
+              ############################
+              # Package would be ignored #
+              ############################
+              Python recognizes 'pyarrow.src.arrow.python.vendored' as an importable
+      package[^1],
+              but it is absent from setuptools' `packages` configuration.
+
+              This leads to an ambiguous overall configuration. If you want to
+      distribute this
+              package, please make sure that 'pyarrow.src.arrow.python.vendored' is
+      explicitly added
+              to the `packages` configuration field.
+
+              Alternatively, you can also rely on setuptools' discovery methods
+              (for example by using `find_namespace_packages(...)`/`find_namespace:`
+              instead of `find_packages(...)`/`find:`).
+
+              You can read more about "package discovery" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+              If you don't want 'pyarrow.src.arrow.python.vendored' to be
+      distributed and are
+              already explicitly excluding 'pyarrow.src.arrow.python.vendored' via
+              `find_namespace_packages(...)/find_namespace` or
+      `find_packages(...)/find`,
+              you can try to use `exclude_package_data`, or
+      `include-package-data=False` in
+              combination with a more fine grained `package-data` configuration.
+
+              You can read more about "package data files" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+              [^1]: For Python, any directory (with suitable naming) can be
+      imported,
+                    even if it does not contain any `.py` files.
+                    On the other hand, currently there is no concept of package data
+                    directory, all directories are treated like packages.
+      
+      ********************************************************************************
+
+      !!
+        check.warn(importable)
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/command/build_py.py:215:
+      _Warning: Package 'pyarrow.tests' is absent from the `packages` configuration.
+      !!
+
+      
+      ********************************************************************************
+              ############################
+              # Package would be ignored #
+              ############################
+              Python recognizes 'pyarrow.tests' as an importable package[^1],
+              but it is absent from setuptools' `packages` configuration.
+
+              This leads to an ambiguous overall configuration. If you want to
+      distribute this
+              package, please make sure that 'pyarrow.tests' is explicitly added
+              to the `packages` configuration field.
+
+              Alternatively, you can also rely on setuptools' discovery methods
+              (for example by using `find_namespace_packages(...)`/`find_namespace:`
+              instead of `find_packages(...)`/`find:`).
+
+              You can read more about "package discovery" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+              If you don't want 'pyarrow.tests' to be distributed and are
+              already explicitly excluding 'pyarrow.tests' via
+              `find_namespace_packages(...)/find_namespace` or
+      `find_packages(...)/find`,
+              you can try to use `exclude_package_data`, or
+      `include-package-data=False` in
+              combination with a more fine grained `package-data` configuration.
+
+              You can read more about "package data files" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+              [^1]: For Python, any directory (with suitable naming) can be
+      imported,
+                    even if it does not contain any `.py` files.
+                    On the other hand, currently there is no concept of package data
+                    directory, all directories are treated like packages.
+      
+      ********************************************************************************
+
+      !!
+        check.warn(importable)
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/command/build_py.py:215:
+      _Warning: Package 'pyarrow.tests.data.feather' is absent from the `packages`
+      configuration.
+      !!
+
+      
+      ********************************************************************************
+              ############################
+              # Package would be ignored #
+              ############################
+              Python recognizes 'pyarrow.tests.data.feather' as an importable
+      package[^1],
+              but it is absent from setuptools' `packages` configuration.
+
+              This leads to an ambiguous overall configuration. If you want to
+      distribute this
+              package, please make sure that 'pyarrow.tests.data.feather' is
+      explicitly added
+              to the `packages` configuration field.
+
+              Alternatively, you can also rely on setuptools' discovery methods
+              (for example by using `find_namespace_packages(...)`/`find_namespace:`
+              instead of `find_packages(...)`/`find:`).
+
+              You can read more about "package discovery" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+              If you don't want 'pyarrow.tests.data.feather' to be distributed and
+      are
+              already explicitly excluding 'pyarrow.tests.data.feather' via
+              `find_namespace_packages(...)/find_namespace` or
+      `find_packages(...)/find`,
+              you can try to use `exclude_package_data`, or
+      `include-package-data=False` in
+              combination with a more fine grained `package-data` configuration.
+
+              You can read more about "package data files" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+              [^1]: For Python, any directory (with suitable naming) can be
+      imported,
+                    even if it does not contain any `.py` files.
+                    On the other hand, currently there is no concept of package data
+                    directory, all directories are treated like packages.
+      
+      ********************************************************************************
+
+      !!
+        check.warn(importable)
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/command/build_py.py:215:
+      _Warning: Package 'pyarrow.tests.data.orc' is absent from the `packages`
+      configuration.
+      !!
+
+      
+      ********************************************************************************
+              ############################
+              # Package would be ignored #
+              ############################
+              Python recognizes 'pyarrow.tests.data.orc' as an importable
+      package[^1],
+              but it is absent from setuptools' `packages` configuration.
+
+              This leads to an ambiguous overall configuration. If you want to
+      distribute this
+              package, please make sure that 'pyarrow.tests.data.orc' is explicitly
+      added
+              to the `packages` configuration field.
+
+              Alternatively, you can also rely on setuptools' discovery methods
+              (for example by using `find_namespace_packages(...)`/`find_namespace:`
+              instead of `find_packages(...)`/`find:`).
+
+              You can read more about "package discovery" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+              If you don't want 'pyarrow.tests.data.orc' to be distributed and are
+              already explicitly excluding 'pyarrow.tests.data.orc' via
+              `find_namespace_packages(...)/find_namespace` or
+      `find_packages(...)/find`,
+              you can try to use `exclude_package_data`, or
+      `include-package-data=False` in
+              combination with a more fine grained `package-data` configuration.
+
+              You can read more about "package data files" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+              [^1]: For Python, any directory (with suitable naming) can be
+      imported,
+                    even if it does not contain any `.py` files.
+                    On the other hand, currently there is no concept of package data
+                    directory, all directories are treated like packages.
+      
+      ********************************************************************************
+
+      !!
+        check.warn(importable)
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/command/build_py.py:215:
+      _Warning: Package 'pyarrow.tests.data.parquet' is absent from the `packages`
+      configuration.
+      !!
+
+      
+      ********************************************************************************
+              ############################
+              # Package would be ignored #
+              ############################
+              Python recognizes 'pyarrow.tests.data.parquet' as an importable
+      package[^1],
+              but it is absent from setuptools' `packages` configuration.
+
+              This leads to an ambiguous overall configuration. If you want to
+      distribute this
+              package, please make sure that 'pyarrow.tests.data.parquet' is
+      explicitly added
+              to the `packages` configuration field.
+
+              Alternatively, you can also rely on setuptools' discovery methods
+              (for example by using `find_namespace_packages(...)`/`find_namespace:`
+              instead of `find_packages(...)`/`find:`).
+
+              You can read more about "package discovery" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+              If you don't want 'pyarrow.tests.data.parquet' to be distributed and
+      are
+              already explicitly excluding 'pyarrow.tests.data.parquet' via
+              `find_namespace_packages(...)/find_namespace` or
+      `find_packages(...)/find`,
+              you can try to use `exclude_package_data`, or
+      `include-package-data=False` in
+              combination with a more fine grained `package-data` configuration.
+
+              You can read more about "package data files" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+              [^1]: For Python, any directory (with suitable naming) can be
+      imported,
+                    even if it does not contain any `.py` files.
+                    On the other hand, currently there is no concept of package data
+                    directory, all directories are treated like packages.
+      
+      ********************************************************************************
+
+      !!
+        check.warn(importable)
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/command/build_py.py:215:
+      _Warning: Package 'pyarrow.tests.interchange' is absent from the `packages`
+      configuration.
+      !!
+
+      
+      ********************************************************************************
+              ############################
+              # Package would be ignored #
+              ############################
+              Python recognizes 'pyarrow.tests.interchange' as an importable
+      package[^1],
+              but it is absent from setuptools' `packages` configuration.
+
+              This leads to an ambiguous overall configuration. If you want to
+      distribute this
+              package, please make sure that 'pyarrow.tests.interchange' is
+      explicitly added
+              to the `packages` configuration field.
+
+              Alternatively, you can also rely on setuptools' discovery methods
+              (for example by using `find_namespace_packages(...)`/`find_namespace:`
+              instead of `find_packages(...)`/`find:`).
+
+              You can read more about "package discovery" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+              If you don't want 'pyarrow.tests.interchange' to be distributed and
+      are
+              already explicitly excluding 'pyarrow.tests.interchange' via
+              `find_namespace_packages(...)/find_namespace` or
+      `find_packages(...)/find`,
+              you can try to use `exclude_package_data`, or
+      `include-package-data=False` in
+              combination with a more fine grained `package-data` configuration.
+
+              You can read more about "package data files" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+              [^1]: For Python, any directory (with suitable naming) can be
+      imported,
+                    even if it does not contain any `.py` files.
+                    On the other hand, currently there is no concept of package data
+                    directory, all directories are treated like packages.
+      
+      ********************************************************************************
+
+      !!
+        check.warn(importable)
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/command/build_py.py:215:
+      _Warning: Package 'pyarrow.tests.parquet' is absent from the `packages`
+      configuration.
+      !!
+
+      
+      ********************************************************************************
+              ############################
+              # Package would be ignored #
+              ############################
+              Python recognizes 'pyarrow.tests.parquet' as an importable
+      package[^1],
+              but it is absent from setuptools' `packages` configuration.
+
+              This leads to an ambiguous overall configuration. If you want to
+      distribute this
+              package, please make sure that 'pyarrow.tests.parquet' is explicitly
+      added
+              to the `packages` configuration field.
+
+              Alternatively, you can also rely on setuptools' discovery methods
+              (for example by using `find_namespace_packages(...)`/`find_namespace:`
+              instead of `find_packages(...)`/`find:`).
+
+              You can read more about "package discovery" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+              If you don't want 'pyarrow.tests.parquet' to be distributed and are
+              already explicitly excluding 'pyarrow.tests.parquet' via
+              `find_namespace_packages(...)/find_namespace` or
+      `find_packages(...)/find`,
+              you can try to use `exclude_package_data`, or
+      `include-package-data=False` in
+              combination with a more fine grained `package-data` configuration.
+
+              You can read more about "package data files" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+              [^1]: For Python, any directory (with suitable naming) can be
+      imported,
+                    even if it does not contain any `.py` files.
+                    On the other hand, currently there is no concept of package data
+                    directory, all directories are treated like packages.
+      
+      ********************************************************************************
+
+      !!
+        check.warn(importable)
+      /Users/giuseppe/.cache/uv/builds-v0/.tmpJzPsuA/lib/python3.14/site-packages/setuptools/command/build_py.py:215:
+      _Warning: Package 'pyarrow.vendored' is absent from the `packages`
+      configuration.
+      !!
+
+      
+      ********************************************************************************
+              ############################
+              # Package would be ignored #
+              ############################
+              Python recognizes 'pyarrow.vendored' as an importable package[^1],
+              but it is absent from setuptools' `packages` configuration.
+
+              This leads to an ambiguous overall configuration. If you want to
+      distribute this
+              package, please make sure that 'pyarrow.vendored' is explicitly added
+              to the `packages` configuration field.
+
+              Alternatively, you can also rely on setuptools' discovery methods
+              (for example by using `find_namespace_packages(...)`/`find_namespace:`
+              instead of `find_packages(...)`/`find:`).
+
+              You can read more about "package discovery" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+              If you don't want 'pyarrow.vendored' to be distributed and are
+              already explicitly excluding 'pyarrow.vendored' via
+              `find_namespace_packages(...)/find_namespace` or
+      `find_packages(...)/find`,
+              you can try to use `exclude_package_data`, or
+      `include-package-data=False` in
+              combination with a more fine grained `package-data` configuration.
+
+              You can read more about "package data files" on setuptools
+      documentation page:
+
+              - https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+
+
+              [^1]: For Python, any directory (with suitable naming) can be
+      imported,
+                    even if it does not contain any `.py` files.
+                    On the other hand, currently there is no concept of package data
+                    directory, all directories are treated like packages.
+      
+      ********************************************************************************
+
+      !!
+        check.warn(importable)
+      CMake Warning at
+      /opt/homebrew/opt/apache-arrow/lib/cmake/Arrow/Findlz4Alt.cmake:29
+      (find_package):
+        By not providing "Findlz4.cmake" in CMAKE_MODULE_PATH this project has
+        asked CMake to find a package configuration file provided by "lz4", but
+        CMake did not find one.
+
+        Could not find a package configuration file provided by "lz4" with any of
+        the following names:
+
+          lz4Config.cmake
+          lz4-config.cmake
+
+        Add the installation prefix of "lz4" to CMAKE_PREFIX_PATH or set "lz4_DIR"
+        to a directory containing one of the above files.  If "lz4" provides a
+        separate development package or SDK, be sure it has been installed.
+      Call Stack (most recent call first):
+        /opt/homebrew/share/cmake/Modules/CMakeFindDependencyMacro.cmake:93
+      (find_package)
+        /opt/homebrew/share/cmake/Modules/CMakeFindDependencyMacro.cmake:125
+      (__find_dependency_common)
+        /opt/homebrew/opt/apache-arrow/lib/cmake/Arrow/ArrowConfig.cmake:101
+      (find_dependency)
+        /opt/homebrew/opt/apache-arrow/lib/cmake/Arrow/ArrowConfig.cmake:124
+      (arrow_find_dependencies)
+        CMakeLists.txt:293 (find_package)
+
+
+      CMake Warning at
+      /opt/homebrew/opt/apache-arrow/lib/cmake/Parquet/FindThriftAlt.cmake:42
+      (find_package):
+        By not providing "FindThrift.cmake" in CMAKE_MODULE_PATH this project has
+        asked CMake to find a package configuration file provided by "Thrift", but
+        CMake did not find one.
+
+        Could not find a package configuration file provided by "Thrift" with any
+        of the following names:
+
+          ThriftConfig.cmake
+          thrift-config.cmake
+
+        Add the installation prefix of "Thrift" to CMAKE_PREFIX_PATH or set
+        "Thrift_DIR" to a directory containing one of the above files.  If "Thrift"
+        provides a separate development package or SDK, be sure it has been
+        installed.
+      Call Stack (most recent call first):
+        /opt/homebrew/share/cmake/Modules/CMakeFindDependencyMacro.cmake:93
+      (find_package)
+        /opt/homebrew/share/cmake/Modules/CMakeFindDependencyMacro.cmake:125
+      (__find_dependency_common)
+        /opt/homebrew/opt/apache-arrow/lib/cmake/Arrow/ArrowConfig.cmake:101
+      (find_dependency)
+        /opt/homebrew/opt/apache-arrow/lib/cmake/Parquet/ParquetConfig.cmake:62
+      (arrow_find_dependencies)
+        /opt/homebrew/share/cmake/Modules/CMakeFindDependencyMacro.cmake:93
+      (find_package)
+        /opt/homebrew/share/cmake/Modules/CMakeFindDependencyMacro.cmake:125
+      (__find_dependency_common)
+        /opt/homebrew/opt/apache-arrow/lib/cmake/ArrowDataset/ArrowDatasetConfig.cmake:62
+      (find_dependency)
+        CMakeLists.txt:415 (find_package)
+
+
+      performance hint: pyarrow/types.pxi:466:35: Exception check after calling
+      'GetResultValue[shared_ptr[CDataType]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CDataType]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/types.pxi:2703:57: Exception check after calling
+      'unwrap' will always require the GIL to be acquired. Declare 'unwrap' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/types.pxi:2887:35: Exception check after calling
+      'GetResultValue[shared_ptr[CField]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CField]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/types.pxi:2926:36: Exception check after calling
+      'GetResultValue[shared_ptr[CField]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CField]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/types.pxi:3459:39: Exception check after calling
+      'GetResultValue[shared_ptr[CSchema]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CSchema]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/types.pxi:3490:39: Exception check after calling
+      'GetResultValue[shared_ptr[CSchema]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CSchema]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/types.pxi:3527:39: Exception check after calling
+      'GetResultValue[shared_ptr[CSchema]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CSchema]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/types.pxi:3576:59: Exception check after calling
+      'unwrap' will always require the GIL to be acquired. Declare 'unwrap' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/types.pxi:3610:35: Exception check after calling
+      'GetResultValue[shared_ptr[CBuffer]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CBuffer]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/types.pxi:3705:35: Exception check after calling
+      'GetResultValue[shared_ptr[CSchema]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CSchema]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/types.pxi:3749:35: Exception check after calling
+      'GetResultValue[shared_ptr[CSchema]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CSchema]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/types.pxi:5718:42: Exception check after calling
+      'GetResultValue[shared_ptr[CDataType]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CDataType]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/scalar.pxi:1140:36: Exception check after calling
+      'GetResultValue[shared_ptr[CTensor]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTensor]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/scalar.pxi:1293:32: Exception check after calling
+      'GetResultValue[shared_ptr[CChunkedArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CChunkedArray]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/array.pxi:42:32: Exception check after calling
+      'GetResultValue[shared_ptr[CChunkedArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CChunkedArray]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/array.pxi:450:28: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:536:32: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:1026:35: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:1229:33: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/array.pxi:1751:36: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:1807:40: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:1811:40: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:1875:34: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:1935:40: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:1940:40: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:2024:34: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:2564:36: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:2569:36: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:2717:36: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:2722:36: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:2912:36: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:2917:36: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:3134:36: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:3139:36: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:3380:36: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:3386:36: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:3640:32: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:3683:32: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:3934:41: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/array.pxi:4032:35: Exception check after calling
+      'GetResultValue[vector[shared_ptr[CArray]]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[vector[shared_ptr[CArray]]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/array.pxi:4182:42: Exception check after calling
+      'GetResultValue[shared_ptr[CRunEndEncodedArray]]' will always require the GIL
+      to be acquired. Declare 'GetResultValue[shared_ptr[CRunEndEncodedArray]]' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/array.pxi:4188:42: Exception check after calling
+      'GetResultValue[shared_ptr[CRunEndEncodedArray]]' will always require the GIL
+      to be acquired. Declare 'GetResultValue[shared_ptr[CRunEndEncodedArray]]' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/array.pxi:4822:39: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:258:33: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/table.pxi:726:38: Exception check
+      after calling 'GetResultValue[vector[shared_ptr[CChunkedArray]]]'
+      will always require the GIL to be acquired. Declare
+      'GetResultValue[vector[shared_ptr[CChunkedArray]]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:1244:37: Exception check after calling
+      'GetResultValue[shared_ptr[CChunkedArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CChunkedArray]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:1436:44: Exception check after calling
+      'GetResultValue[shared_ptr[CChunkedArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CChunkedArray]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:1537:33: Exception check after calling
+      'GetResultValue[shared_ptr[CChunkedArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CChunkedArray]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:2759:33: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/table.pxi:2869:36: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:2904:36: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:2969:36: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:3045:36: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:3094:35: Exception check after calling
+      'GetResultValue[shared_ptr[CBuffer]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CBuffer]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:3254:36: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:3551:43: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:3566:36: Exception check after calling
+      'GetResultValue[shared_ptr[CArray]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CArray]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:3646:37: Exception check after calling
+      'GetResultValue[shared_ptr[CTensor]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTensor]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:3683:36: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:3739:40: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:3743:40: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:3840:36: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:3901:40: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:3905:40: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:4002:34: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/table.pxi:4335:36: Exception check after calling
+      'GetResultValue[shared_ptr[CTable]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTable]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:4464:38: Exception check after calling
+      'GetResultValue[shared_ptr[CTable]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTable]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:4512:37: Exception check after calling
+      'GetResultValue[shared_ptr[CTable]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTable]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:4570:37: Exception check after calling
+      'GetResultValue[shared_ptr[CTable]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTable]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:4994:36: Exception check after calling
+      'GetResultValue[shared_ptr[CTable]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTable]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:5258:33: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/table.pxi:5361:36: Exception check after calling
+      'GetResultValue[shared_ptr[CTable]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTable]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:5396:36: Exception check after calling
+      'GetResultValue[shared_ptr[CTable]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTable]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:5454:36: Exception check after calling
+      'GetResultValue[shared_ptr[CTable]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTable]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:5529:36: Exception check after calling
+      'GetResultValue[shared_ptr[CTable]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTable]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:6256:39: Exception check after calling
+      'GetResultValue[shared_ptr[CTable]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTable]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/table.pxi:6307:45: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/tensor.pxi:539:36: Exception check after calling
+      'GetResultValue[shared_ptr[CTensor]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTensor]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/tensor.pxi:790:36: Exception check after calling
+      'GetResultValue[shared_ptr[CTensor]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTensor]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/tensor.pxi:1032:36: Exception check after calling
+      'GetResultValue[shared_ptr[CTensor]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTensor]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/tensor.pxi:1251:36: Exception check after calling
+      'GetResultValue[shared_ptr[CTensor]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTensor]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/io.pxi:263:33: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/io.pxi:276:39: Exception check after calling
+      'GetResultValue[shared_ptr[const CKeyValueMetadata]]' will always
+      require the GIL to be acquired. Declare 'GetResultValue[shared_ptr[const
+      CKeyValueMetadata]]' as 'noexcept' if you control the definition and you're
+      sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/io.pxi:294:41: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/io.pxi:298:41: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/io.pxi:332:39: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/io.pxi:335:39: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/io.pxi:422:39: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/io.pxi:495:39: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/io.pxi:557:39: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/io.pxi:620:35: Exception check after calling
+      'GetResultValue[shared_ptr[CBuffer]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CBuffer]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/io.pxi:717:47: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/io.pxi:783:47: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/io.pxi:1060:35: Exception check after calling
+      'GetResultValue[shared_ptr[CMemoryMappedFile]]' will always require the GIL
+      to be acquired. Declare 'GetResultValue[shared_ptr[CMemoryMappedFile]]' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/io.pxi:1094:35: Exception check after calling
+      'GetResultValue[shared_ptr[CMemoryMappedFile]]' will always require the GIL
+      to be acquired. Declare 'GetResultValue[shared_ptr[CMemoryMappedFile]]' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/io.pxi:1257:35: Exception check after calling
+      'GetResultValue[shared_ptr[ReadableFile]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[ReadableFile]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/io.pxi:1264:47: Exception check after calling
+      'GetResultValue[shared_ptr[COutputStream]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[COutputStream]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/io.pxi:1617:39: Exception check after calling
+      'GetResultValue[unique_ptr[CResizableBuffer]]' will always require the GIL
+      to be acquired. Declare 'GetResultValue[unique_ptr[CResizableBuffer]]' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/io.pxi:1646:50: Exception check after calling
+      'GetResultValue[unique_ptr[CResizableBuffer]]' will always require the GIL
+      to be acquired. Declare 'GetResultValue[unique_ptr[CResizableBuffer]]' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/io.pxi:1651:47: Exception check after calling
+      'GetResultValue[unique_ptr[CBuffer]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[unique_ptr[CBuffer]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/io.pxi:1899:34: Exception check after calling
+      'GetResultValue[shared_ptr[CInputStream]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CInputStream]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/io.pxi:1963:34: Exception check after calling
+      'GetResultValue[shared_ptr[COutputStream]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[COutputStream]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/io.pxi:2617:27: Exception check after calling
+      'unwrap' will always require the GIL to be acquired. Declare 'unwrap' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/io.pxi:2616:42: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/io.pxi:2677:27: Exception check after calling
+      'unwrap' will always require the GIL to be acquired. Declare 'unwrap' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/io.pxi:2676:26: Exception check after calling
+      'GetResultValue[int64_t]' will always require the GIL to be acquired. Declare
+      'GetResultValue[int64_t]' as 'noexcept' if you control the definition and
+      you're sure you don't want the function to raise exceptions.
+      performance hint: pyarrow/ipc.pxi:458:48: Exception check after calling
+      'GetResultValue[unique_ptr[CMessage]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[unique_ptr[CMessage]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/ipc.pxi:584:40: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatchWriter]]' will always require the GIL
+      to be acquired. Declare 'GetResultValue[shared_ptr[CRecordBatchWriter]]' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/ipc.pxi:730:48: Exception check after calling
+      'GetResultValue[CRecordBatchWithMetadata]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[CRecordBatchWithMetadata]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/ipc.pxi:850:37: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatchReader]]' will always require the GIL
+      to be acquired. Declare 'GetResultValue[shared_ptr[CRecordBatchReader]]' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/ipc.pxi:912:37: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatchReader]]' will always require the GIL
+      to be acquired. Declare 'GetResultValue[shared_ptr[CRecordBatchReader]]' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/ipc.pxi:1006:40: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatchReader]]' will always require the GIL
+      to be acquired. Declare 'GetResultValue[shared_ptr[CRecordBatchReader]]' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/ipc.pxi:1030:40: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatchWriter]]' will always require the GIL
+      to be acquired. Declare 'GetResultValue[shared_ptr[CRecordBatchWriter]]' as
+      'noexcept' if you control the definition and you're sure you don't want the
+      function to raise exceptions.
+      performance hint: pyarrow/ipc.pxi:1085:44: Exception check after
+      calling 'GetResultValue[shared_ptr[CRecordBatchFileReader]]'
+      will always require the GIL to be acquired. Declare
+      'GetResultValue[shared_ptr[CRecordBatchFileReader]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/ipc.pxi:1090:44: Exception check after
+      calling 'GetResultValue[shared_ptr[CRecordBatchFileReader]]'
+      will always require the GIL to be acquired. Declare
+      'GetResultValue[shared_ptr[CRecordBatchFileReader]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/ipc.pxi:1122:34: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/ipc.pxi:1152:48: Exception check after calling
+      'GetResultValue[CRecordBatchWithMetadata]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[CRecordBatchWithMetadata]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/ipc.pxi:1171:43: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      performance hint: pyarrow/ipc.pxi:1173:34: Exception check after calling
+      'GetResultValue[shared_ptr[CTable]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTable]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/ipc.pxi:1289:34: Exception check after calling
+      'GetResultValue[shared_ptr[CTensor]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CTensor]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/ipc.pxi:1314:26: Exception check after calling
+      'GetResultValue[unique_ptr[CMessage]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[unique_ptr[CMessage]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/ipc.pxi:1352:35: Exception check after calling
+      'GetResultValue[shared_ptr[CSchema]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CSchema]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/ipc.pxi:1357:35: Exception check after calling
+      'GetResultValue[shared_ptr[CSchema]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CSchema]]' as 'noexcept' if you
+      control the definition and you're sure you don't want the function to raise
+      exceptions.
+      performance hint: pyarrow/ipc.pxi:1397:31: Exception check after calling
+      'GetResultValue[shared_ptr[CRecordBatch]]' will always require the GIL to be
+      acquired. Declare 'GetResultValue[shared_ptr[CRecordBatch]]' as 'noexcept'
+      if you control the definition and you're sure you don't want the function to
+      raise exceptions.
+      In file included from
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:52:
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/common.h:161:37:
+      error: no member named 'GenericToStatus' in namespace 'arrow::internal'
+        161 |   if (!IsPyError(::arrow::internal::GenericToStatus(maybe_status)) &&
+            |                  ~~~~~~~~~~~~~~~~~~~^
+      In file included from
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:57:
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/numpy_internal.h:46:5:
+      error: use of undeclared identifier 'DCHECK_EQ'
+         46 |     DCHECK_EQ(1, PyArray_NDIM(arr)) << "Only works with 1-dimensional
+      arrays";
+            |     ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:267:7:
+      error: use of undeclared identifier 'DCHECK'
+        267 |       DCHECK(false) << "NPY_DATETIME views only supported for Arrow
+      TIMESTAMP types";
+            |       ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:270:5:
+      error: use of undeclared identifier 'DCHECK_EQ'
+        270 |     DCHECK_EQ(datatype->id(), Type::DURATION);
+            |     ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:469:5:
+      error: use of undeclared identifier 'DCHECK_EQ'
+        469 |     DCHECK_EQ(1, num_columns_);
+            |     ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:694:7:
+      error: use of undeclared identifier 'DCHECK'
+        694 |       DCHECK(PyArray_Check(fields_data[i +
+      fields_data_offset].obj()));
+            |       ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:726:11:
+      error: use of undeclared identifier 'DCHECK_EQ'
+        726 |           DCHECK_EQ(setitem_result, 0);
+            |           ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:795:3:
+      error: use of undeclared identifier 'DCHECK'
+        795 |   DCHECK(PyArray_Check(numpy_array));
+            |   ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:1292:7:
+      error: use of undeclared identifier 'DCHECK'
+       1292 |       DCHECK(internal::BorrowPandasDataOffsetType() != nullptr);
+            |       ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:1591:5:
+      error: use of undeclared identifier 'DCHECK_EQ'
+       1591 |     DCHECK_EQ(UNIT, ts_type.unit()) << "Should only call instances of
+      this writer "
+            |     ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:1622:7:
+      error: use of undeclared identifier 'DCHECK_EQ'
+       1622 |       DCHECK_EQ(TimeUnit::MILLI, ts_type.unit())
+            |       ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:1729:5:
+      error: use of undeclared identifier 'DCHECK_EQ'
+       1729 |     DCHECK_EQ(UNIT, type.unit()) << "Should only call instances of
+      this writer "
+            |     ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:1923:5:
+      error: use of undeclared identifier 'DCHECK_GT'
+       1923 |     DCHECK_GT(data.num_chunks(), 0);
+            |     ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:2034:11:
+      error: use of undeclared identifier 'DCHECK'
+       2034 |           DCHECK(false);
+            |           ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:2312:3:
+      error: use of undeclared identifier 'DCHECK'
+       2312 |   DCHECK(decoded.is_chunked_array());
+            |   ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:2553:5:
+      error: use of undeclared identifier 'DCHECK_NE'
+       2553 |     DCHECK_NE(arr->type()->id(), Type::DICTIONARY);
+            |     ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:2602:5:
+      error: use of undeclared identifier 'DCHECK_NE'
+       2602 |     DCHECK_NE(output_type, PandasWriter::CATEGORICAL);
+            |     ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:1820:7:
+      error: use of undeclared identifier 'DCHECK_EQ'
+       1820 |       DCHECK_EQ(IndexType::type_id, dict_type.index_type()->id());
+            |       ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:1803:12:
+      note: in instantiation of member function 'arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int8Type>::TransferSingle' requested here
+       1803 |   explicit CategoricalWriter(const PandasOptions& options, int64_t
+      num_rows)
+            |            ^
+      /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/construct_at.h:40:49:
+      note: in instantiation of member function 'arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int8Type>::CategoricalWriter' requested
+      here
+         40 |   return ::new (static_cast<void*>(__location))
+      _Tp(std::forward<_Args>(__args)...);
+            |                                                 ^
+      /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/shared_ptr.h:733:51:
+      note: in instantiation of function template specialization
+      'std::__shared_ptr_emplace<arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int8Type>,
+      std::allocator<arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int8Type>>>::__shared_ptr_emplace<const
+      arrow::py::PandasOptions &, long long &, std::allocator<arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int8Type>>, 0>' requested here
+        733 |   ::new ((void*)std::addressof(*__guard.__get())) _ControlBlock(__a,
+      std::forward<_Args>(__args)...);
+            |                                                   ^
+      /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/shared_ptr.h:741:15:
+      note: in instantiation of function template
+      specialization 'std::allocate_shared<arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int8Type>,
+      std::allocator<arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int8Type>>, const
+      arrow::py::PandasOptions &, long long &, 0>' requested here
+        741 |   return std::allocate_shared<_Tp>(allocator<__remove_cv_t<_Tp> >(),
+      std::forward<_Args>(__args)...);
+            |               ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:2021:9:
+      note: in instantiation of function template
+      specialization 'std::make_shared<arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int8Type>, const arrow::py::PandasOptions
+      &, long long &, 0>' requested here
+       2021 |         CATEGORICAL_CASE(Int8Type);
+            |         ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:2008:20:
+      note: expanded from macro 'CATEGORICAL_CASE'
+       2008 |     *writer = std::make_shared<CategoricalWriter<TYPE>>(options,
+      num_rows); \
+            |                    ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:1820:7:
+      error: use of undeclared identifier 'DCHECK_EQ'
+       1820 |       DCHECK_EQ(IndexType::type_id, dict_type.index_type()->id());
+            |       ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:1803:12:
+      note: in instantiation of member function 'arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int16Type>::TransferSingle' requested
+      here
+       1803 |   explicit CategoricalWriter(const PandasOptions& options, int64_t
+      num_rows)
+            |            ^
+      /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/construct_at.h:40:49:
+      note: in instantiation of member function 'arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int16Type>::CategoricalWriter' requested
+      here
+         40 |   return ::new (static_cast<void*>(__location))
+      _Tp(std::forward<_Args>(__args)...);
+            |                                                 ^
+      /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/shared_ptr.h:733:51:
+      note: in instantiation of function template specialization
+      'std::__shared_ptr_emplace<arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int16Type>,
+      std::allocator<arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int16Type>>>::__shared_ptr_emplace<const
+      arrow::py::PandasOptions &, long long &, std::allocator<arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int16Type>>, 0>' requested here
+        733 |   ::new ((void*)std::addressof(*__guard.__get())) _ControlBlock(__a,
+      std::forward<_Args>(__args)...);
+            |                                                   ^
+      /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/shared_ptr.h:741:15:
+      note: in instantiation of function template
+      specialization 'std::allocate_shared<arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int16Type>,
+      std::allocator<arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int16Type>>, const
+      arrow::py::PandasOptions &, long long &, 0>' requested here
+        741 |   return std::allocate_shared<_Tp>(allocator<__remove_cv_t<_Tp> >(),
+      std::forward<_Args>(__args)...);
+            |               ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:2022:9:
+      note: in instantiation of function template
+      specialization 'std::make_shared<arrow::py::(anonymous
+      namespace)::CategoricalWriter<arrow::Int16Type>, const
+      arrow::py::PandasOptions &, long long &, 0>' requested here
+       2022 |         CATEGORICAL_CASE(Int16Type);
+            |         ^
+      /Users/giuseppe/.cache/uv/sdists-v9/pypi/pyarrow/19.0.1/BCcvDpsxOR7zHfXcTSXro/src/pyarrow/src/arrow/python/arrow_to_pandas.cc:2008:20:
+      note: expanded from macro 'CATEGORICAL_CASE'
+       2008 |     *writer = std::make_shared<CategoricalWriter<TYPE>>(options,
+      num_rows); \
+            |                    ^
+      fatal error: too many errors emitted, stopping now [-ferror-limit=]
+      20 errors generated.
+      make[2]: ***
+      [CMakeFiles/arrow_python.dir/pyarrow/src/arrow/python/arrow_to_pandas.cc.o]
+      Error 1
+      make[1]: *** [CMakeFiles/arrow_python.dir/all] Error 2
+      make: *** [all] Error 2
+      error: command '/opt/homebrew/bin/cmake' failed with exit code 2
+
+      hint: This usually indicates a problem with the package or the build
+      environment.
+  help: `pyarrow` (v19.0.1) was included because `dvrptw-benchmark` (v0.1.0) depends
+        on `pyarrow`

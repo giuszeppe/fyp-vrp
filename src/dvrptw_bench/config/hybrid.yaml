@@ -1,0 +1,4 @@
+policy: ga
+feasibility_mode: repair
+gls_time_share: 0.9
+fallback_heuristic: pmca

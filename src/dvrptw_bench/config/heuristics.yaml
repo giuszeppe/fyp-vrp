@@ -1,0 +1,3 @@
+solvers: [pmca, ortools, pyvrp, gls]
+default_solver: pmca
+time_limit_s: 10

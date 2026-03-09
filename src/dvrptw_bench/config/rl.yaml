@@ -1,0 +1,7 @@
+train:
+  epochs: 10
+  train_size: 512
+  val_size: 128
+infer:
+  policy: ga
+  time_limit_s: 10

@@ -1,0 +1,2 @@
+cutoff_ratio: 0.8
+discard_infeasible_scenarios: true

@@ -79,6 +79,9 @@ python -m dvrptw_bench.cli.run_all_cli run --dataset-root ./dataset --output-roo
 - LKH-3 binary missing: install from official release and set `--lkh3-binary /path/to/LKH`.
 - OR-Tools install quirks: use Python 3.12 wheel-compatible environment.
 - RL/CUDA mismatch: force `--device cpu` if CUDA not available.
+- Autocomplete or unresolved `dvrptw_bench` imports in the editor:
+  use the workspace interpreter at `./.venv/bin/python` and install the package with `pip install -e .`.
+  This repo also ships `pyrightconfig.json` and `.vscode/settings.json` so `src/` is added to the language server path automatically.
 
 ## Official documentation links
 - NumPy: https://numpy.org/doc/

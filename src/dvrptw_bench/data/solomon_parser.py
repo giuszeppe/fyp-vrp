@@ -53,29 +53,29 @@ def parse_solomon(path: Path, distance_scale: float = 1.0, max_customers: int | 
     depot_row, *customer_rows = rows
     depot = Node(
         id=int(depot_row[0]),
-        x=depot_row[1],
-        y=depot_row[2],
+        x=depot_row[1] * distance_scale,
+        y=depot_row[2] * distance_scale,
         demand=depot_row[3],
-        ready_time=depot_row[4],
-        due_time=depot_row[5],
-        service_time=depot_row[6],
+        ready_time=depot_row[4] * distance_scale,
+        due_time=depot_row[5] * distance_scale,
+        service_time=depot_row[6] * distance_scale,
     )
     customers = [
         Node(
             id=int(r[0]),
-            x=r[1],
-            y=r[2],
+            x=r[1] * distance_scale,
+            y=r[2] * distance_scale,
             demand=r[3],
-            ready_time=r[4],
-            due_time=r[5],
-            service_time=r[6],
+            ready_time=r[4] * distance_scale,
+            due_time=r[5] * distance_scale,
+            service_time=r[6] * distance_scale,
         )
         for r in customer_rows
     ]
     if max_customers is not None:
         customers = customers[:max_customers]
 
-    dmat = distance_matrix([depot, *customers], scale=distance_scale)
+    dmat = distance_matrix([depot, *customers])
     return VRPTWInstance(
         instance_id=path.name,
         depot=depot,

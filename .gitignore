@@ -13,3 +13,6 @@ outputs/
 *.egg-info/
 build/
 dist/
+
+**/lightning_logs/
+*.ckpt

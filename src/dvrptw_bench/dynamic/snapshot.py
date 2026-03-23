@@ -9,19 +9,19 @@ from dvrptw_bench.common.typing import Node, VRPTWInstance
 
 class VehicleState(BaseModel):
     vehicle_id: int
-    x: float
-    y: float
+    x: int 
+    y:int  
     remaining_capacity: float
-    elapsed_time: float
+    elapsed_time: int  
     planned_route: list[int] = Field(default_factory=list)
-    traveled_distance: float = 0.0
+    traveled_distance: int = 0
     served_sequence: list[int] = Field(default_factory=list)
     current_service_customer_id: int | None = None
-    remaining_service_time: float = 0.0
+    remaining_service_time: int = 0
 
 
 class SnapshotState(BaseModel):
-    time: float
+    time: int
     remaining_customers: list[Node]
     active_customer_ids: set[int]
     served_customer_ids: set[int]

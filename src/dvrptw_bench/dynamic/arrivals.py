@@ -47,7 +47,6 @@ def build_dynamic_scenario(
         reveal_time = float(rng.uniform(0.0, upper_bound))
         reveal_times[c.id] = reveal_time
         ready = max(c.ready_time, reveal_time)
-        print(f"Customer {c.id} is dynamic. Reveal time: {reveal_time:.2f}s, ready time: {ready:.2f}s, due time: {c.due_time:.2f}s")
         due = min(c.due_time, horizon)
         if ready > due:
             feasible = False

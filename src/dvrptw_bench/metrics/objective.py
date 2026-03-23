@@ -23,6 +23,8 @@ def route_distance(instance: VRPTWInstance, node_ids: list[int]) -> float:
 
 
 def total_distance(instance: VRPTWInstance, solution: Solution) -> float:
+    if hasattr(instance, "route_distance"):
+        return sum(instance.route_distance(r.vehicle_id, r.node_ids) for r in solution.routes)
     return sum(route_distance(instance, r.node_ids) for r in solution.routes)
 
 

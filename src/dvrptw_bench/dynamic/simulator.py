@@ -6,9 +6,12 @@ import math
 import time
 from collections.abc import Callable
 
+from ortools import service
+
 from dvrptw_bench.common.typing import EventLog, Node, Route, Solution, VRPTWInstance
 from dvrptw_bench.data.normalization import distance_matrix
 from dvrptw_bench.dynamic.arrivals import build_dynamic_scenario
+from dvrptw_bench.dynamic.dynamic_instance import DynamicInstance
 from dvrptw_bench.dynamic.snapshot import SnapshotState, VehicleState
 
 
@@ -23,15 +26,15 @@ class DynamicSimulator:
         return math.hypot(x1 - x2, y1 - y2)
 
     @staticmethod
-    def _matrix_travel(instance: VRPTWInstance, from_id: int, to_id: int) -> float:
+    def _matrix_travel(instance: DynamicInstance, from_id: int, to_id: int) -> float:
         if 0 <= from_id < len(instance.distance_matrix) and 0 <= to_id < len(instance.distance_matrix):
             return float(instance.distance_matrix[from_id][to_id])
         return 0.0
 
-    def _lookup(self, instance: VRPTWInstance) -> dict[int, Node]:
+    def _lookup(self, instance: DynamicInstance) -> dict[int, Node]:
         return {n.id: n for n in instance.all_nodes}
 
-    def _travel_to_customer(self, instance: VRPTWInstance, vehicle: VehicleState, customer: Node) -> float:
+    def _travel_to_customer(self, instance: DynamicInstance, vehicle: VehicleState, customer: Node) -> float:
         """Prefer instance matrix when vehicle is at a known node, else Euclidean."""
         nodes = self._lookup(instance)
         from_id: int | None = None
@@ -43,6 +46,7 @@ class DynamicSimulator:
             m = self._matrix_travel(instance, from_id, customer.id)
             if m > 0.0:
                 return m
+        # print(f"Vehicle {vehicle.vehicle_id}is at an unknown position ({vehicle.x:.2f}, {vehicle.y:.2f}), cannot use distance matrix for travel time estimation to customer {customer.id}.")
         return self._euclid_xy(vehicle.x, vehicle.y, customer.x, customer.y)
 
     def _complete_ongoing_service(
@@ -82,7 +86,7 @@ class DynamicSimulator:
         self,
         vehicle: VehicleState,
         target_time: float,
-        instance: VRPTWInstance,
+        instance: DynamicInstance,
         served: set[int],
         violations: dict[str, float],
     ) -> None:
@@ -125,12 +129,13 @@ class DynamicSimulator:
             completion_time = service_start + c.service_time
 
             # Time-window enforcement at execution time.
-            if service_start > c.due_time or completion_time > c.due_time:
-                lateness = max(0.0, service_start - c.due_time, completion_time - c.due_time)
+            # lateness = max(0.0, service_start - c.due_time, completion_time - c.due_time)
+            lateness = max(0.0, service_start - c.due_time)
+            if lateness > 0:
+                print(f"service_start: {service_start}, c.due_time: {c.due_time}, completion_time: {completion_time}, lateness: {lateness}")
+                print(f"Customer {c.id} is late.")
                 violations["late_count"] += 1.0
                 violations["late_sum"] += lateness
-                vehicle.planned_route.pop(0)
-                continue
 
             # Wait if early.
             if service_start > target_time:
@@ -159,13 +164,14 @@ class DynamicSimulator:
             vehicle.planned_route.pop(0)
 
         if vehicle.elapsed_time < target_time:
+            # print(f"Vehicle {vehicle.vehicle_id} is idle, delta {target_time - vehicle.elapsed_time}")
             vehicle.elapsed_time = target_time
 
     def _advance_all_to_time(
         self,
         vehicles: list[VehicleState],
         target_time: float,
-        instance: VRPTWInstance,
+        instance: DynamicInstance,
         served: set[int],
         violations: dict[str, float],
     ) -> None:
@@ -269,33 +275,47 @@ class DynamicSimulator:
         )
         return sub, local_to_global
 
+    def _build_reopt_instance(self, snapshot: SnapshotState, base_instance: VRPTWInstance) -> DynamicInstance:
+        """Build a joint multi-vehicle residual instance for snapshot reoptimization."""
+        inst = DynamicInstance(snapshot, base_instance)
+        return inst
+
     def _reoptimize_snapshot(
         self,
         solver_fn,
         snapshot: SnapshotState,
         base_instance: VRPTWInstance,
         budget_s: float,
-    ) -> Solution:
+    ) -> tuple[Solution | None, DynamicInstance]:
+
+        """ At each snapshot, build one joint residual instance containing:
+
+        - one artificial start node per vehicle, located at that vehicle's current position,
+        - all remaining customers,
+        - one common physical depot as the end, or one copied end node per vehicle,
+        - a full distance matrix over these nodes,
+        - per-vehicle remaining capacities,
+        - time windows for customers,
+        - per-vehicle start-time constraints encoded on the time dimension.
+
+        That gives you the “multi-depot-like” joint reoptimization you want, even though it is really a multi-start residual VRPTW rather than a classical benchmark multi-depot VRPTW.
+        """
         """Solve the residual snapshot using per-vehicle subproblems."""
-        assigned = self._assign_customers_to_vehicles(snapshot)
         routes: list[Route] = []
-        strategy = "dynamic/subproblem"
+        strategy = "dynamic/reopt"
 
-        n_active = max(1, len(snapshot.remaining_customers))
-        for v in snapshot.vehicles:
-            customers = assigned.get(v.vehicle_id, [])
-            if not customers:
-                routes.append(Route(vehicle_id=v.vehicle_id, node_ids=[]))
-                continue
-            subinst, local_to_global = self._build_vehicle_subinstance(base_instance, v, customers)
-            sub_budget = max(0.1, budget_s * (len(customers) / n_active))
-            sub_sol = solver_fn(subinst, sub_budget)
-            local_route = sub_sol.routes[0].node_ids if sub_sol.routes else []
-            mapped = [local_to_global[n] for n in local_route if n in local_to_global]
-            routes.append(Route(vehicle_id=v.vehicle_id, node_ids=mapped))
-            strategy = sub_sol.strategy
+        reopt_instance = self._build_reopt_instance(snapshot, base_instance)
 
-        return Solution(strategy=strategy, routes=routes)
+        sol = solver_fn(
+            instance=reopt_instance,
+            time_limit_s=budget_s,
+            warm_start=None,
+        )
+        if sol is None:
+            return None 
+        routes = sol.routes
+
+        return (Solution(strategy=strategy, routes=routes),reopt_instance)
 
     def _apply_plan_to_vehicles(self, vehicles: list[VehicleState], solution: Solution) -> None:
         route_by_vehicle = {r.vehicle_id: r.node_ids[:] for r in solution.routes}
@@ -306,7 +326,7 @@ class DynamicSimulator:
             planned = [nid for nid in planned if nid not in locked]
             v.planned_route = [*locked, *planned]
 
-    def _predicted_remaining_distance(self, vehicles: list[VehicleState], instance: VRPTWInstance) -> float:
+    def _predicted_remaining_distance(self, vehicles: list[VehicleState], instance: DynamicInstance) -> float:
         nodes = self._lookup(instance)
         total = 0.0
         for v in vehicles:
@@ -362,6 +382,8 @@ class DynamicSimulator:
     ):
         """Run stateful dynamic simulation and return executed-result solution."""
         scenario = build_dynamic_scenario(self.base, epsilon=epsilon, seed=seed, cutoff_ratio=cutoff_ratio)
+        # Print dynamic customers and reveal times for debugging/inspection.
+        # print("\n".join([f"Customer {cid}: {scenario.instance.customers[cid]}. Reveal time: {scenario.reveal_times[cid]:.2f}s" for cid in scenario.dynamic_customer_ids]))
         if not scenario.feasible:
             return None, [], scenario
 
@@ -388,7 +410,9 @@ class DynamicSimulator:
         ]
 
         snap0 = self._build_snapshot(0.0, active_ids, served, vehicles, scenario.instance)
-        current_plan = self._reoptimize_snapshot(solver_fn, snap0, scenario.instance, budget_s)
+        current_plan, reopt_instance = self._reoptimize_snapshot(solver_fn, snap0, scenario.instance, budget_s)
+        if current_plan is None:
+            return None, [], scenario
         self._apply_plan_to_vehicles(vehicles, current_plan)
         self._emit_snapshot(
             on_snapshot,
@@ -404,7 +428,7 @@ class DynamicSimulator:
 
         event_logs: list[EventLog] = []
         for i, (cid, evt_t) in enumerate(reveal_events):
-            self._advance_all_to_time(vehicles, float(evt_t), scenario.instance, served, violations)
+            self._advance_all_to_time(vehicles, float(evt_t), reopt_instance, served, violations)
             active_ids.add(cid)
 
             snapshot = self._build_snapshot(float(evt_t), active_ids, served, vehicles, scenario.instance)
@@ -420,9 +444,17 @@ class DynamicSimulator:
                 "before_reopt",
             )
             t0 = time.perf_counter()
-            current_plan = self._reoptimize_snapshot(solver_fn, snapshot, scenario.instance, budget_s)
+            new_plan, new_reopt_instance = self._reoptimize_snapshot(solver_fn, snapshot, scenario.instance, budget_s)
             reopt_elapsed = time.perf_counter() - t0
-            self._apply_plan_to_vehicles(vehicles, current_plan)
+            if new_plan is None:
+                # print(f"Warning: reoptimization failed at event {i} (time {evt_t:.2f}s), thus, no feasible solution found for the current snapshot. Rejecting new customer {cid} and keeping previous plan.")
+                violations["rejected"] = violations.get("rejected", 0.0) + 1.0
+                active_ids.remove(cid)
+            else:
+                self._apply_plan_to_vehicles(vehicles, new_plan)
+                current_plan = new_plan
+                reopt_instance = new_reopt_instance
+                # print(f"Reoptimization succeeded at event {i} (time {evt_t:.2f}s).")
             self._emit_snapshot(
                 on_snapshot,
                 snapshot,
@@ -436,7 +468,7 @@ class DynamicSimulator:
             )
 
             objective_after = sum(v.traveled_distance for v in vehicles) + self._predicted_remaining_distance(
-                vehicles, scenario.instance
+                vehicles, reopt_instance
             )
             event_logs.append(
                 EventLog(

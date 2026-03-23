@@ -38,13 +38,16 @@ def build_dynamic_scenario(
     feasible = True
     reason = None
 
+    print(f"CUstomers length: {len(instance.customers)}, n_dyn: {n_dyn}, dynamic_ids: {sorted(dynamic_ids)}")
     for c in instance.customers:
         if c.id not in dynamic_ids:
             adjusted.append(c)
             continue
-        reveal_time = float(rng.uniform(0.0, cutoff))
+        upper_bound = min(c.due_time, cutoff)
+        reveal_time = float(rng.uniform(0.0, upper_bound))
         reveal_times[c.id] = reveal_time
         ready = max(c.ready_time, reveal_time)
+        print(f"Customer {c.id} is dynamic. Reveal time: {reveal_time:.2f}s, ready time: {ready:.2f}s, due time: {c.due_time:.2f}s")
         due = min(c.due_time, horizon)
         if ready > due:
             feasible = False
@@ -53,8 +56,8 @@ def build_dynamic_scenario(
                 break
         adjusted.append(c.model_copy(update={"ready_time": ready, "due_time": due}))
 
-    print(f"Dynamic scenario with {n_dyn} dynamic customers (epsilon={epsilon:.2f}), cutoff at {cutoff:.1f}s ({cutoff_ratio:.2%} of horizon)")
-    print(f"Dynamic customer IDs: {sorted(dynamic_ids)}")
+    # print(f"Dynamic scenario with {n_dyn} dynamic customers (epsilon={epsilon:.2f}), cutoff at {cutoff:.1f}s ({cutoff_ratio:.2%} of horizon)")
+    # print(f"Dynamic customer IDs: {sorted(dynamic_ids)}")
     new_instance = instance.model_copy(update={"customers": adjusted})
     if not feasible and discard_infeasible:
         return DynamicScenario(instance=instance, reveal_times={}, dynamic_customer_ids=dynamic_ids, feasible=False, dropped_reason=reason)

@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from dvrptw_bench.common.typing import Solution, VRPTWInstance
-from dvrptw_bench.rl.rl_model import build_attention_model
+from dvrptw_bench.rl.rl_model import RLModel, build_attention_model
 
 
 class RL4COPolicy:
     name = "rl4co"
 
-    def __init__(self, model=None):
+    def __init__(self, model: RLModel | None = None):
         self.model = model
 
     def train(
@@ -24,6 +24,7 @@ class RL4COPolicy:
         der_templates: dict | None = None,
         family_specs=None,
         der_seed: int = 123,
+        vehicle_penalty: float = 50,
     ) -> dict:
         am = build_attention_model(
             device=device,
@@ -36,6 +37,7 @@ class RL4COPolicy:
             der_templates=der_templates,
             family_specs=family_specs,
             der_seed=der_seed,
+            vehicle_penalty=vehicle_penalty,
         )
         if am is None:
             return {"status": "rl4co_unavailable"}
@@ -44,6 +46,6 @@ class RL4COPolicy:
         self.model.train()
         return {"status": "ok"}
 
-    def infer_instance(self, instance: VRPTWInstance) -> Solution:
-        solution = self.model.solve(instance)
+    def infer_instance(self, instance: VRPTWInstance, decode_type: str = "sampling", num_samples: int = 2048, select_best: bool = True) -> Solution:
+        solution = self.model.solve(instance, decode_type=decode_type, num_samples=num_samples, select_best=select_best)
         return solution

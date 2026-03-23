@@ -27,12 +27,13 @@ class PenalizedCVRPTWEnv(CVRPTWEnv):
             batch_routes.append(routes)
         return torch.tensor(batch_routes, device=actions.device, dtype=torch.float32)
 
+    # Negative output 
     def _get_reward(self, td, actions):
         # Start from the parent env cost/reward logic
         base_reward = super()._get_reward(td, actions)
 
         # RL4CO routing rewards are typically negative cost, so add penalty as extra cost
         num_routes = self.count_routes_from_actions(actions)
-        penalized_reward = base_reward + self.vehicle_penalty * num_routes
+        penalized_reward = base_reward - self.vehicle_penalty * num_routes
 
         return penalized_reward

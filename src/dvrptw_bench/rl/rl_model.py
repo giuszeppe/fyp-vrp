@@ -7,8 +7,7 @@ from pathlib import Path
 from dvrptw_bench.rl.penalized_cvrptw_env import PenalizedCVRPTWEnv
 import torch
 from rl4co.envs import CVRPTWEnv
-from rl4co.models.rl import REINFORCE
-from rl4co.models.zoo.am import AttentionModelPolicy
+from rl4co.models.zoo.am import AttentionModel, AttentionModelPolicy
 from rl4co.utils.trainer import RL4COTrainer
 from dvrptw_bench.data.rl4co_der_generator import DERSolomonCVRPTWGenerator, FamilySpec
 from dvrptw_bench.data.der_solomon_generator import DERTimeWindowGenerator
@@ -38,6 +37,11 @@ class RLModel:
         self.env = env
         self.max_epochs = max_epochs
         self.normalize_coords = normalize_coords
+        self.batch_size = batch_size
+        self.train_data_size = train_data_size
+        self.val_data_size = val_data_size
+        self.lr = lr
+        self.num_loc = num_loc
 
         if self.device is None:
             if torch.cuda.is_available():
@@ -51,17 +55,19 @@ class RLModel:
             self.env = CVRPTWEnv(generator_params={"num_loc": num_loc})
 
         if self.policy is None:
-            self.policy = AttentionModelPolicy(env_name=self.env.name).to(self.device)
+            self.policy = AttentionModelPolicy(env_name=self.env.name,embed_dim=128,num_encoder_layers=3, num_heads=8, ).to(self.device)
 
         if self.model is None:
-            self.model = REINFORCE(
+            self.model = AttentionModel(
                 self.env,
                 self.policy,
                 baseline="rollout",
-                batch_size=batch_size,
-                train_data_size=train_data_size,
-                val_data_size=val_data_size,
-                optimizer_kwargs={"lr": lr},
+                batch_size=self.batch_size,
+                train_data_size=self.train_data_size,
+                val_data_size=self.val_data_size,
+                val_batch_size = 64, 
+                test_batch_size = 64, 
+                optimizer_kwargs={"lr": self.lr},
             )
 
         accelerator = "cpu"
@@ -74,7 +80,7 @@ class RLModel:
             devices = 1
 
         self.trainer = RL4COTrainer(
-            max_epochs=max_epochs,
+            max_epochs=self.max_epochs,
             accelerator=accelerator,
             devices=devices,
             logger=None,
@@ -88,12 +94,16 @@ class RLModel:
 
     def load(self, path: str | Path) -> None:
         # IMPORTANT: load_from_checkpoint returns a model; assign it back.
-        self.model = REINFORCE.load_from_checkpoint(
+        self.model = AttentionModel.load_from_checkpoint(
             str(path),
             env=self.env,
             policy=self.policy,
             weights_only=False,
             load_baseline=False,
+            batch_size=self.batch_size,
+            train_data_size=self.train_data_size,
+            val_data_size=self.val_data_size,
+            optimizer_kwargs={"lr": self.lr},
         )
         self.model.to(self.device)
         self.model.eval()
@@ -221,7 +231,7 @@ class RLModel:
             # Evaluate on the same representation used for inference
             cost = -env.get_reward(td_reset, out["actions"], False).float().item()
             # Compute total distance from reward if using PenalizedCVRPTWEnv, otherwise use cost directly
-            total_distance = cost if not isinstance(env, PenalizedCVRPTWEnv) else cost - env.vehicle_penalty * PenalizedCVRPTWEnv.count_routes_from_actions(out["actions"]).float().item()
+            total_distance = cost if not isinstance(env, PenalizedCVRPTWEnv) else (cost) - (env.vehicle_penalty * PenalizedCVRPTWEnv.count_routes_from_actions(out["actions"]).float().item())
 
         routes = self._decode_actions(out["actions"], instance)
         return Solution(strategy="rl4co", routes=routes, total_distance=total_distance)
@@ -239,10 +249,11 @@ def build_attention_model(
     der_templates: dict | None = None,
     family_specs=None,
     der_seed: int = 123,
-    vehicle_pentalty: float = 50,
+    vehicle_penalty: float = 50,
+    env = None,
+    num_loc: int = 100,
 ):
     env = None
-    num_loc = 100
 
     if der_templates is not None:
         if not der_templates:
@@ -276,7 +287,7 @@ def build_attention_model(
             max_time=max_time,
             normalize_coords=normalize_coords,
         )
-        env = PenalizedCVRPTWEnv(generator=generator, vehicle_penalty=vehicle_pentalty)
+        env = env if env is not None else PenalizedCVRPTWEnv(generator=generator, vehicle_penalty=vehicle_penalty)
 
     return RLModel(
         device=device,

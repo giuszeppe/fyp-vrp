@@ -1,0 +1,21 @@
+\contentsline {chapter}{Abstract}{i}{chapter*.1}%
+\contentsline {chapter}{Acknowledgements}{ii}{chapter*.2}%
+\contentsline {chapter}{Contents}{iii}{chapter*.2}%
+\contentsline {chapter}{List of Figures}{iv}{chapter*.2}%
+\contentsline {chapter}{List of Tables}{v}{chapter*.2}%
+\contentsline {chapter}{List of Abbreviations}{vi}{chapter*.4}%
+\contentsline {chapter}{Glossary of Symbols}{vii}{chapter*.6}%
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Background}{2}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Literature Review}{2}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Instructions}{3}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Inserting references}{3}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Inserting acronyms}{3}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Using glossary terms}{4}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Inserting a table}{4}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Inserting code snippet}{4}{section.2.7}%
+\contentsline {section}{\numberline {2.8}Inserting theorems, corollaries and lemmas}{5}{section.2.8}%
+\contentsline {section}{\numberline {2.9}Inserting an algorithm}{5}{section.2.9}%
+\contentsline {chapter}{\numberline {3}Literature Review}{7}{chapter.3}%
+\contentsline {chapter}{\numberline {A}Sample A}{10}{appendix.A}%
+\contentsline {chapter}{\numberline {B}Sample B}{11}{appendix.B}%

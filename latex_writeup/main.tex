@@ -1,0 +1,61 @@
+\documentclass{fict}
+
+\addbibresource{references.bib}
+
+\input{content/glossary}
+\input{content/acronyms}
+
+\title{Dynamic Constrained Vehicle Routing Problem with Time Windows: Heuristics VS AI VS Hybridddd}
+\author{Giuseppe Di Marco}
+\supervisor{Prof.\ John Abela}
+\degreename{Software Development}
+\titledate{June 2026}
+
+\begin{document}
+
+\frontmatter{}
+\pagestyle{pageNumbersOnly}
+
+\input{content/title.tex}
+\input{content/abstract.tex}
+\input{content/acknowledgements.tex}
+\clearpage{}
+
+\tableofcontents{}
+\addcontentsline{toc}{chapter}{Contents}
+\clearpage{}
+
+\listoffigures{}
+\addcontentsline{toc}{chapter}{List of Figures}
+\clearpage{}
+
+\listoftables{}
+\addcontentsline{toc}{chapter}{List of Tables}
+\clearpage{}
+
+\printglossary[type=\acronymtype,nonumberlist,title=List of Abbreviations]
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\clearpage{}
+
+\printglossary[nonumberlist,title=Glossary of Symbols]
+\addcontentsline{toc}{chapter}{Glossary of Symbols}
+\clearpage{}
+
+\mainmatter{}
+\pagestyle{MainMatter}
+
+\input{content/chapters/1_introduction/introduction.tex}
+\input{content/chapters/2_background/background.tex}
+\input{content/chapters/3_literature_review/literature_review.tex}
+\input{content/chapters/4_methodology/methodology.tex}
+\input{content/chapters/5_results/results.tex}
+\input{content/chapters/6_conclusion/conclusion.tex}
+
+\printbibliography[title=References]
+
+\appendix{}
+
+\input{content/appendices/appendix_a.tex}
+\input{content/appendices/appendix_b.tex}
+
+\end{document}

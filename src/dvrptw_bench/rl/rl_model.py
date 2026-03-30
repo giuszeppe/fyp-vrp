@@ -104,6 +104,7 @@ class RLModel:
             train_data_size=self.train_data_size,
             val_data_size=self.val_data_size,
             optimizer_kwargs={"lr": self.lr},
+            strict=False
         )
         self.model.to(self.device)
         self.model.eval()

@@ -21,6 +21,7 @@ from dvrptw_bench.results.recorder import Recorder
 from dvrptw_bench.rl.ga_baseline import GAPolicy
 from dvrptw_bench.rl.policies import build_policy
 from dvrptw_bench.rl.qlearning_baseline import QLearningPolicy
+from dvrptw_bench.rl.routefinder_policy import RouteFinderAdapterPolicy
 from dvrptw_bench.rl.rl4co_policy import RL4COPolicy
 from dvrptw_bench.viz.convergence_plot import plot_convergence
 from dvrptw_bench.viz.route_plot import plot_routes
@@ -36,9 +37,34 @@ def _instance(dataset_root: Path, name: str):
     raise typer.BadParameter(f"Instance not found: {name}")
 
 
+def _infer_with_policy(pol, instance):
+    if hasattr(pol, "infer_solution"):
+        return pol.infer_solution(instance)
+    if hasattr(pol, "infer_instance"):
+        return pol.infer_instance(instance)
+
+    from dvrptw_bench.dynamic.snapshot import SnapshotState
+
+    snap = SnapshotState(
+        time=0.0,
+        remaining_customers=instance.customers,
+        active_customer_ids={c.id for c in instance.customers},
+        served_customer_ids=set(),
+        vehicles=[],
+    )
+    return pol.infer(snap)
+
+
 @app.command("train-rl4co")
 def train_rl4co(epochs: int = 1, train_size: int = 128, val_size: int = 32, device: str = "cpu"):
     policy = RL4COPolicy()
+    out = policy.train(epochs=epochs, train_size=train_size, val_size=val_size, device=device)
+    console.print(out)
+
+
+@app.command("train-routefinder")
+def train_routefinder(epochs: int = 1, train_size: int = 128, val_size: int = 32, device: str = "cpu"):
+    policy = RouteFinderAdapterPolicy()
     out = policy.train(epochs=epochs, train_size=train_size, val_size=val_size, device=device)
     console.print(out)
 
@@ -69,15 +95,7 @@ def eval_static(
     set_seed(seed)
     inst = _instance(dataset_root, instance)
     pol = build_policy(policy)
-    if hasattr(pol, "infer_solution"):
-        sol = pol.infer_solution(inst)
-    elif hasattr(pol, "infer_instance"):
-        sol = pol.infer_instance(inst)
-    else:
-        from dvrptw_bench.dynamic.snapshot import SnapshotState
-
-        snap = SnapshotState(time=0.0, remaining_customers=inst.customers, active_customer_ids={c.id for c in inst.customers}, served_customer_ids=set(), vehicles=[])
-        sol = pol.infer(snap)
+    sol = _infer_with_policy(pol, inst)
     sol.total_distance = total_distance(inst, sol)
 
     run_id = now_run_id("rl_static")
@@ -127,11 +145,8 @@ def eval_dynamic(
     inst = _instance(dataset_root, instance)
     pol = build_policy(policy)
 
-    from dvrptw_bench.dynamic.snapshot import SnapshotState
-
     def solve_fn(snap_inst, _budget):
-        snap = SnapshotState(time=0.0, remaining_customers=snap_inst.customers, active_customer_ids={c.id for c in snap_inst.customers}, served_customer_ids=set(), vehicles=[])
-        out = pol.infer(snap)
+        out = _infer_with_policy(pol, snap_inst)
         out.total_distance = total_distance(snap_inst, out)
         return out
 

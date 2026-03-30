@@ -26,12 +26,14 @@ class InspectorFrame:
     served_ids: set[int]
     vehicles: list[VehicleState]
     current_plan: Solution
-    metrics: dict[str, float] = field(default_factory=dict)
+    metrics: dict[str, Any] = field(default_factory=dict)
     event_idx: int | None = None
     event_time: float | None = None
     revealed_customer_id: int | None = None
     reopt_time_s: float | None = None
     objective_after: float | None = None
+    late_customer_ids: set[int] = field(default_factory=set)
+    rejected_customer_ids: set[int] = field(default_factory=set)
 
 
 def _node_map(instance: VRPTWInstance) -> dict[int, Node]:
@@ -179,6 +181,7 @@ def build_dynamic_frames(
     budget_s: float,
     seed: int,
     cutoff_ratio: float = 0.8,
+    end_time_closeness: float|None = None,
 ) -> tuple[list[InspectorFrame], Solution | None, list[EventLog]]:
     """Run dynamic simulation and collect snapshot frames through callback hook."""
     frames: list[InspectorFrame] = []
@@ -188,22 +191,25 @@ def build_dynamic_frames(
         current_plan: Solution | None,
         vehicles: list[VehicleState],
         served: set[int],
-        metrics: dict[str, float] | None,
+        metrics: dict[str, Any] | None,
         event_idx: int | None,
     ) -> None:
+        metric_map = dict(metrics or {})
         plan = current_plan if current_plan is not None else Solution(strategy="snapshot", routes=[])
         frames.append(
             InspectorFrame(
                 mode="dynamic",
                 time=float(snapshot.time),
-                step_type=str((metrics or {}).get("phase", "snapshot")),
+                step_type=str(metric_map.get("phase", "snapshot")),
                 active_ids=set(snapshot.active_customer_ids),
                 served_ids=set(served),
                 vehicles=[v.model_copy(deep=True) for v in vehicles],
                 current_plan=plan.model_copy(deep=True),
-                metrics=dict(metrics or {}),
+                metrics=metric_map,
                 event_idx=event_idx,
                 event_time=float(snapshot.time),
+                late_customer_ids=set(metric_map.get("late_customer_ids", [])),
+                rejected_customer_ids=set(metric_map.get("rejected_customer_ids", [])),
             )
         )
 
@@ -213,6 +219,7 @@ def build_dynamic_frames(
         budget_s=budget_s,
         seed=seed,
         cutoff_ratio=cutoff_ratio,
+        end_time_closeness=end_time_closeness,
         on_snapshot=_on_snapshot,
     )
 
@@ -337,12 +344,12 @@ class _MatplotlibInspector:
 
     def _draw_paths(self, frame: InspectorFrame, nodes: dict[int, Node]) -> None:
         colors = plt.cm.tab20.colors
-        for i, route in enumerate(frame.current_plan.routes):
-            v = next((vv for vv in frame.vehicles if vv.vehicle_id == route.vehicle_id), None)
-            if v is None:
+        for i, v in enumerate(sorted(frame.vehicles, key=lambda vv: vv.vehicle_id)):
+            remaining_route = v.planned_route[:]
+            if not remaining_route:
                 continue
             path_xy = [(v.x, v.y)]
-            for nid in route.node_ids:
+            for nid in remaining_route:
                 if nid in nodes:
                     n = nodes[nid]
                     path_xy.append((n.x, n.y))
@@ -351,11 +358,14 @@ class _MatplotlibInspector:
                 xs, ys = zip(*path_xy, strict=False)
                 self.ax.plot(xs, ys, color=colors[i % len(colors)], linestyle="--", linewidth=1.4, alpha=0.8)
 
-        for i, v in enumerate(frame.vehicles):
+        for i, v in enumerate(sorted(frame.vehicles, key=lambda vv: vv.vehicle_id)):
             seq = [nid for nid in v.served_sequence if nid in nodes]
-            if not seq:
+            if not seq and (v.x, v.y) == (self.instance.depot.x, self.instance.depot.y):
                 continue
             pts = [(self.instance.depot.x, self.instance.depot.y)] + [(nodes[n].x, nodes[n].y) for n in seq]
+            current_xy = (v.x, v.y)
+            if pts[-1] != current_xy:
+                pts.append(current_xy)
             xs, ys = zip(*pts, strict=False)
             self.ax.plot(xs, ys, color=colors[i % len(colors)], linewidth=2.2, alpha=0.9)
 
@@ -370,8 +380,11 @@ class _MatplotlibInspector:
         all_ids = {c.id for c in self.instance.customers}
         active = set(frame.active_ids)
         served = set(frame.served_ids)
-        unrevealed = all_ids - active
-        active_unserved = active - served
+        late_ids = set(frame.late_customer_ids)
+        rejected_ids = set(frame.rejected_customer_ids)
+        unrevealed = all_ids - active - served - rejected_ids
+        active_unserved = active - served - late_ids
+        served_on_time = served - late_ids
 
         self.ax.scatter([self.instance.depot.x], [self.instance.depot.y], c="red", marker="s", s=120, label="Depot")
         if unrevealed:
@@ -382,10 +395,20 @@ class _MatplotlibInspector:
             xs = [nodes[i].x for i in sorted(active_unserved)]
             ys = [nodes[i].y for i in sorted(active_unserved)]
             self.ax.scatter(xs, ys, c="tab:blue", s=28, alpha=0.85, label="Active unserved")
-        if served:
-            xs = [nodes[i].x for i in sorted(served)]
-            ys = [nodes[i].y for i in sorted(served)]
+        if served_on_time:
+            xs = [nodes[i].x for i in sorted(served_on_time)]
+            ys = [nodes[i].y for i in sorted(served_on_time)]
             self.ax.scatter(xs, ys, c="tab:green", marker="x", s=30, alpha=0.9, label="Served")
+        if late_ids:
+            xs = [nodes[i].x for i in sorted(late_ids) if i in nodes]
+            ys = [nodes[i].y for i in sorted(late_ids) if i in nodes]
+            if xs and ys:
+                self.ax.scatter(xs, ys, c="tab:orange", marker="X", s=70, alpha=0.95, label="Late")
+        if rejected_ids:
+            xs = [nodes[i].x for i in sorted(rejected_ids) if i in nodes]
+            ys = [nodes[i].y for i in sorted(rejected_ids) if i in nodes]
+            if xs and ys:
+                self.ax.scatter(xs, ys, facecolors="none", edgecolors="crimson", marker="o", s=110, linewidths=1.8, label="Rejected")
 
         self._draw_paths(frame, nodes)
 
@@ -419,6 +442,8 @@ class _MatplotlibInspector:
             f"objective_after: {frame.objective_after}",
             f"traveled_distance: {traveled:.3f}",
             f"pred_remaining_distance: {rem:.3f}",
+            f"late_customers: {sorted(frame.late_customer_ids)}",
+            f"rejected_customers: {sorted(frame.rejected_customer_ids)}",
             "",
             "Vehicles:",
         ]
@@ -455,6 +480,7 @@ def inspect_dynamic(
     seed: int,
     cutoff_ratio: float = 0.8,
     title: str | None = None,
+    end_time_closeness: float|None = None,
 ) -> None:
     """Open interactive dynamic inspector built from simulator snapshot frames."""
     frames, final_solution, _events = build_dynamic_frames(
@@ -465,6 +491,7 @@ def inspect_dynamic(
         budget_s=budget_s,
         seed=seed,
         cutoff_ratio=cutoff_ratio,
+        end_time_closeness=end_time_closeness,
     )
     if not frames:
         return
@@ -473,4 +500,3 @@ def inspect_dynamic(
         t = f"{t} | executed={final_solution.total_distance:.2f}"
     _MatplotlibInspector(instance, frames, t)
     plt.show()
-

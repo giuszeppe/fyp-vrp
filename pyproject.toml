@@ -31,6 +31,7 @@ dependencies = [
   "rl4co>=0.5,<1.0",
   "jupyter>=1.0,<2.0",
   "ipykernel>=6.29,<7.0",
+  "routefinder",
 ]
 
 [project.optional-dependencies]
@@ -54,6 +55,9 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.uv.sources]
+routefinder = { path = "../routefinder", editable = true }
 
 [dependency-groups]
 dev = [

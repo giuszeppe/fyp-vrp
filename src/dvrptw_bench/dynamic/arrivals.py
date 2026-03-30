@@ -24,6 +24,7 @@ def build_dynamic_scenario(
     seed: int,
     cutoff_ratio: float = 0.8,
     discard_infeasible: bool = True,
+    end_time_closeness: float|None = None,
 ) -> DynamicScenario:
     rng = np.random.default_rng(seed)
     horizon = instance.depot.due_time
@@ -44,7 +45,11 @@ def build_dynamic_scenario(
             adjusted.append(c)
             continue
         upper_bound = min(c.due_time, cutoff)
-        reveal_time = float(rng.uniform(0.0, upper_bound))
+        if end_time_closeness is not None and end_time_closeness > 0:
+            closeness = rng.uniform(upper_bound * end_time_closeness, upper_bound)
+            reveal_time = float(rng.uniform(closeness, upper_bound))
+        else:
+            reveal_time = float(rng.uniform(0.0, upper_bound))
         reveal_times[c.id] = reveal_time
         ready = max(c.ready_time, reveal_time)
         due = min(c.due_time, horizon)

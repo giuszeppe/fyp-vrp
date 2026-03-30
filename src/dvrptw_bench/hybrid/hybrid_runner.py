@@ -33,7 +33,12 @@ def run_hybrid(
     )
 
     t0 = time.perf_counter()
-    proposal = policy.infer_solution(snapshot)
+    if hasattr(policy, "infer_instance"):
+        proposal = policy.infer_instance(instance)
+    elif hasattr(policy, "infer_solution"):
+        proposal = policy.infer_solution(instance)
+    else:
+        proposal = policy.infer(snapshot)
     t1 = time.perf_counter()
 
     layer = FeasibilityLayer(mode=feasibility_mode)

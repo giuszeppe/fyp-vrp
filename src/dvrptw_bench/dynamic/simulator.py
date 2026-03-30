@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 import time
 from collections.abc import Callable
+from typing import Any
 
 from dvrptw_bench.common.typing import EventLog, Node, Route, Solution, VRPTWInstance
 from dvrptw_bench.dynamic.arrivals import build_dynamic_scenario
@@ -79,7 +80,7 @@ class DynamicSimulator:
         target_time: int,
         instance: DynamicInstance,
         served: set[int],
-        violations: dict[str, float],
+        violations: dict[str, Any],
     ) -> None:
         """Advance one vehicle from its current state up to target_time."""
         nodes = self._lookup(instance)
@@ -127,6 +128,7 @@ class DynamicSimulator:
                 print(f"Customer {c.id} is late.")
                 violations["late_count"] += 1.0
                 violations["late_sum"] += lateness
+                violations["late_customer_ids"].add(c.id)
 
             # Wait if early.
             if service_start > target_time:
@@ -164,7 +166,7 @@ class DynamicSimulator:
         target_time: int,
         instance: DynamicInstance,
         served: set[int],
-        violations: dict[str, float],
+        violations: dict[str, Any],
     ) -> None:
         for v in vehicles:
             self._advance_vehicle_to_time(v, target_time, instance, served, violations)
@@ -174,7 +176,7 @@ class DynamicSimulator:
         vehicles: list[VehicleState],
         instance: DynamicInstance,
         served: set[int],
-        violations: dict[str, float],
+        violations: dict[str, Any],
     ) -> None:
         """Execute all remaining planned routes and return to depot."""
         for v in vehicles:
@@ -297,12 +299,12 @@ class DynamicSimulator:
 
     def _emit_snapshot(
         self,
-        on_snapshot: Callable[[SnapshotState, Solution | None, list[VehicleState], set[int], dict[str, float] | None, int | None], None] | None,
+        on_snapshot: Callable[[SnapshotState, Solution | None, list[VehicleState], set[int], dict[str, Any] | None, int | None], None] | None,
         snapshot: SnapshotState,
         current_plan: Solution | None,
         vehicles: list[VehicleState],
         served: set[int],
-        violations: dict[str, float] | None,
+        violations: dict[str, Any] | None,
         event_idx: int | None,
         instance: DynamicInstance,
         phase: str,
@@ -310,6 +312,10 @@ class DynamicSimulator:
         if on_snapshot is None:
             return
         metrics = dict(violations or {})
+        if "late_customer_ids" in metrics:
+            metrics["late_customer_ids"] = sorted(metrics["late_customer_ids"])
+        if "rejected_customer_ids" in metrics:
+            metrics["rejected_customer_ids"] = sorted(metrics["rejected_customer_ids"])
         metrics["traveled_distance_total"] = float(sum(v.traveled_distance for v in vehicles))
         metrics["predicted_remaining_distance"] = float(self._predicted_remaining_distance(vehicles, instance))
         metrics["phase"] = phase
@@ -330,13 +336,14 @@ class DynamicSimulator:
         seed: int,
         cutoff_ratio: float = 0.8,
         on_snapshot: Callable[
-            [SnapshotState, Solution | None, list[VehicleState], set[int], dict[str, float] | None, int | None],
+            [SnapshotState, Solution | None, list[VehicleState], set[int], dict[str, Any] | None, int | None],
             None,
         ]
         | None = None,
+        end_time_closeness: float|None = None,
     ):
         """Run stateful dynamic simulation and return executed-result solution."""
-        scenario = build_dynamic_scenario(self.base, epsilon=epsilon, seed=seed, cutoff_ratio=cutoff_ratio)
+        scenario = build_dynamic_scenario(self.base, epsilon=epsilon, seed=seed, cutoff_ratio=cutoff_ratio, end_time_closeness=end_time_closeness)
         # Print dynamic customers and reveal times for debugging/inspection.
         # print("\n".join([f"Customer {cid}: {scenario.instance.customers[cid]}. Reveal time: {scenario.reveal_times[cid]:.2f}s" for cid in scenario.dynamic_customer_ids]))
         if not scenario.feasible:
@@ -347,7 +354,13 @@ class DynamicSimulator:
 
         active_ids = set(static_ids)
         served: set[int] = set()
-        violations: dict[str, float] = {"late_count": 0.0, "late_sum": 0.0, "capacity": 0.0}
+        violations: dict[str, Any] = {
+            "late_count": 0.0,
+            "late_sum": 0.0,
+            "capacity": 0.0,
+            "late_customer_ids": set(),
+            "rejected_customer_ids": set(),
+        }
         vehicles = [
             VehicleState(
                 vehicle_id=v,
@@ -404,6 +417,7 @@ class DynamicSimulator:
             if new_plan is None:
                 print(f"Warning: reoptimization failed at event {i} (time {evt_t:.2f}s), thus, no feasible solution found for the current snapshot. Rejecting new customer {cid} and keeping previous plan.")
                 violations["rejected"] = violations.get("rejected", 0.0) + 1.0
+                violations["rejected_customer_ids"].add(cid)
                 active_ids.remove(cid)
             else:
                 self._apply_plan_to_vehicles(vehicles, new_plan)

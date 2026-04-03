@@ -1,13 +1,21 @@
 import sys
 import time
 from pathlib import Path
+import re
+import shutil
 
 import matplotlib.pyplot as plt
 from tensordict import TensorDict
 import pandas as pd
 import torch
+from torchrl.data.tensor_specs import BoundedContinuous, Composite, UnboundedContinuous
 from IPython.display import display
 from rl4co.utils.trainer import RL4COTrainer
+
+try:
+    from lightning.pytorch.callbacks import ModelCheckpoint
+except ImportError:
+    from pytorch_lightning.callbacks import ModelCheckpoint
 
 sys.path.append(str(Path('..').resolve() / 'src'))
 
@@ -29,11 +37,15 @@ DATASET_ROOT = PROJECT_ROOT / Path('dataset/solomon_rc100')
 RC_DATASET_ROOT = PROJECT_ROOT / Path('dataset/solomon_rc100')
 C_DATASET_ROOT = PROJECT_ROOT / Path('dataset/solomon_c100')
 OUTPUT_ROOT = PROJECT_ROOT / Path('outputs/notebook_routefinder')
+CHECKPOINT_DIR = OUTPUT_ROOT / 'checkpoints'
+INTERRUPTED_CHECKPOINT_PATH = CHECKPOINT_DIR / 'interrupted.ckpt'
+CHECKPOINT_EVERY_N_EPOCHS = 2
 
 OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
+CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
 
 NUM_CUSTOMERS = 50
-NUM_EPOCHS = 200
+TARGET_EPOCHS = 200
 BATCH_SIZE = 256
 TRAIN_DATA_SIZE = 100_000
 VAL_DATA_SIZE = 10_000
@@ -45,6 +57,7 @@ num_procs = 4
 ORTOOLS_TIME_LIMIT_S = 3
 MAX_EVAL_INSTANCES = 5  # set to None to evaluate all RC instances
 NORMALIZE_COORDS = True # whether to normalize coordinates to [0, 1] when creating RouteFinder training data
+FINAL_CHECKPOINT_PATH = OUTPUT_ROOT / f'50_customers_routefinder_{TARGET_EPOCHS}_epochs.ckpt'
 
 if torch.cuda.is_available():
     device = torch.device('cuda')
@@ -59,6 +72,55 @@ else:
 print('Device:', device)
 print('Dataset root:', DATASET_ROOT.resolve())
 print('Output root:', OUTPUT_ROOT.resolve())
+
+def _extract_epoch_from_checkpoint_name(path: Path) -> int:
+    matches = re.findall(r'epoch[-_](\d+)', path.stem)
+    if not matches:
+        return -1
+    return int(matches[-1])
+
+
+def find_resume_checkpoint(checkpoint_dir: Path) -> Path | None:
+    candidates = []
+
+    interrupted_checkpoint = checkpoint_dir / 'interrupted.ckpt'
+    if interrupted_checkpoint.exists():
+        candidates.append(interrupted_checkpoint)
+
+    last_checkpoint = checkpoint_dir / 'last.ckpt'
+    if last_checkpoint.exists():
+        candidates.append(last_checkpoint)
+
+    candidates.extend(
+        path
+        for path in checkpoint_dir.glob('epoch-*.ckpt')
+        if path.is_file()
+    )
+
+    if not candidates:
+        return None
+
+    return max(
+        candidates,
+        key=lambda path: (
+            path.name == 'interrupted.ckpt',
+            path.name == 'last.ckpt',
+            _extract_epoch_from_checkpoint_name(path),
+            path.stat().st_mtime,
+        ),
+    )
+
+
+def get_completed_epochs(checkpoint_path: Path | None) -> int:
+    if checkpoint_path is None:
+        return 0
+
+    try:
+        checkpoint = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
+    except TypeError:
+        checkpoint = torch.load(checkpoint_path, map_location='cpu')
+
+    return max(int(checkpoint.get('epoch', -1)) + 1, 0)
 
 
 
@@ -117,14 +179,52 @@ model = RouteFinderBase(
     optimizer_kwargs={'lr': LEARNING_RATE, 'weight_decay': WEIGHT_DECAY},
 )
 
+checkpoint_callback = ModelCheckpoint(
+    dirpath=CHECKPOINT_DIR,
+    filename='epoch-{epoch:03d}',
+    save_top_k=-1,
+    save_last=True,
+    every_n_epochs=CHECKPOINT_EVERY_N_EPOCHS,
+    save_on_train_epoch_end=True,
+    auto_insert_metric_name=False,
+)
+
 trainer = RL4COTrainer(
-    max_epochs=NUM_EPOCHS,
+    max_epochs=TARGET_EPOCHS,
     accelerator=accelerator,
     devices=1,
     logger=None,
     precision='32-true',
+    callbacks=[checkpoint_callback],
 )
 
-trainer.fit(model) 
-trainer.save_checkpoint(OUTPUT_ROOT / '50_customers_routefinder_200_epochs.pt')
-# model = model.load_from_checkpoint('end_of_training.pt', weights_only=False)
+resume_checkpoint = find_resume_checkpoint(CHECKPOINT_DIR)
+completed_epochs = get_completed_epochs(resume_checkpoint)
+remaining_epochs = max(TARGET_EPOCHS - completed_epochs, 0)
+
+if resume_checkpoint is not None:
+    print(f'Resuming training from checkpoint: {resume_checkpoint}')
+    print(f'Completed epochs: {completed_epochs}/{TARGET_EPOCHS}. Remaining epochs: {remaining_epochs}')
+
+if remaining_epochs == 0:
+    if resume_checkpoint is not None and resume_checkpoint.resolve() != FINAL_CHECKPOINT_PATH.resolve():
+        shutil.copy2(resume_checkpoint, FINAL_CHECKPOINT_PATH)
+    print(f'Training already complete. Final checkpoint available at {FINAL_CHECKPOINT_PATH}')
+    sys.exit(0)
+
+try:
+    super(RL4COTrainer, trainer).fit(
+        model,
+        ckpt_path=str(resume_checkpoint) if resume_checkpoint is not None else None,
+        weights_only=False,
+    )
+except KeyboardInterrupt:
+    trainer.save_checkpoint(INTERRUPTED_CHECKPOINT_PATH)
+    print(f'Training interrupted. Saved resume checkpoint to {INTERRUPTED_CHECKPOINT_PATH}')
+    raise
+
+trainer.save_checkpoint(FINAL_CHECKPOINT_PATH)
+if INTERRUPTED_CHECKPOINT_PATH.exists():
+    INTERRUPTED_CHECKPOINT_PATH.unlink()
+
+print(f'Final checkpoint saved to {FINAL_CHECKPOINT_PATH}')

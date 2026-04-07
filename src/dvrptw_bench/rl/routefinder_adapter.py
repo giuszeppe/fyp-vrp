@@ -28,17 +28,78 @@ def _normalize_coord(coord: torch.Tensor) -> torch.Tensor:
 
     return torch.stack([x_scaled, y_scaled], dim=1)
 
+def scale_times_to_normalized_coords(
+    coord_raw: torch.Tensor,         # [N+1, 2], original Solomon coords
+    coord_norm: torch.Tensor,        # [N+1, 2], after _normalize_coord
+    time_windows_raw: torch.Tensor,  # [N+1, 2]
+    service_time_raw: torch.Tensor,  # [N+1]
+    max_time_raw: float | torch.Tensor,
+    eps: float = 1e-8,
+):
+    depot_raw = coord_raw[0:1]
+    depot_norm = coord_norm[0:1]
+
+    d0_raw = torch.norm(coord_raw[1:] - depot_raw, dim=-1)
+    d0_norm = torch.norm(coord_norm[1:] - depot_norm, dim=-1)
+
+    # robust instance-level scale
+    gamma = d0_norm.median() / (d0_raw.median() + eps)
+
+    time_windows_norm = time_windows_raw * gamma
+    service_time_norm = service_time_raw * gamma
+    max_time_norm = max_time_raw * gamma
+
+    return time_windows_norm, service_time_norm, max_time_norm, gamma
+
+def pairwise_depot_dist(coords):
+    # coords: [B, N+1, 2]
+    return torch.norm(coords[:, 1:] - coords[:, 0:1], dim=-1)
+
+def scale_times_batch(coord_raw, coord_norm, time_windows_raw, service_time_raw, max_time_raw, eps=1e-8):
+    d0_raw = pairwise_depot_dist(coord_raw)    # [B, N]
+    d0_norm = pairwise_depot_dist(coord_norm)  # [B, N]
+
+    gamma = d0_norm.median(dim=1).values / (d0_raw.median(dim=1).values + eps)  # [B]
+
+    time_windows_norm = time_windows_raw * gamma[:, None, None]
+    service_time_norm = service_time_raw * gamma[:, None]
+
+    if torch.is_tensor(max_time_raw):
+        max_time_norm = max_time_raw * gamma
+    else:
+        max_time_norm = gamma * max_time_raw
+
+    return time_windows_norm, service_time_norm, max_time_norm, gamma
+
+def scale_times_to_max_time(
+    time_windows: torch.Tensor,   # [N+1, 2]
+    service_time: torch.Tensor,   # [N+1]
+    target_max_time: float = 4.6,
+    eps: float = 1e-8,
+):
+    depot_due = time_windows[0, 1].item()
+    alpha = target_max_time / max(depot_due, eps)
+    print(f"Scaling times to target max time {target_max_time} with depot due time {depot_due} and epsilon {eps}")
+
+    time_windows_scaled = time_windows * alpha
+    service_time_scaled = service_time * alpha
+
+    # Make depot exactly [0, target_max_time]
+    time_windows_scaled[0, 0] = 0.0
+    time_windows_scaled[0, 1] = target_max_time
+
+    return time_windows_scaled, service_time_scaled, alpha
 
 def instance_to_routefinder_td(
     instance: VRPTWInstance,
     normalize_coords: bool = True,
 ) -> TensorDict:
-    coords = torch.tensor(
+    coords_raw = torch.tensor(
         [[instance.depot.x, instance.depot.y], *[[c.x, c.y] for c in instance.customers]],
         dtype=torch.float32,
     )
-    if normalize_coords:
-        coords = _normalize_coord(coords)
+    coords = coords_raw if not normalize_coords else _normalize_coord(coords_raw)
+
 
     demand_linehaul = torch.tensor(
         [c.demand for c in instance.customers],
@@ -50,13 +111,46 @@ def instance_to_routefinder_td(
         [0.0, *[c.service_time for c in instance.customers]],
         dtype=torch.float32,
     )
-    time_windows = torch.tensor(
-        [
-            [instance.depot.ready_time, instance.depot.due_time],
-            *[[c.ready_time, c.due_time] for c in instance.customers],
-        ],
-        dtype=torch.float32,
-    )
+    if normalize_coords:
+        time_windows, service_time, max_time, gamma = scale_times_to_normalized_coords(
+            coord_raw=coords_raw,
+            coord_norm=coords,
+            time_windows_raw=torch.tensor(
+                [
+                    [instance.depot.ready_time, instance.depot.due_time],
+                    *[[c.ready_time, c.due_time] for c in instance.customers],
+                ],
+                dtype=torch.float32,
+            ),
+            service_time_raw=service_time,
+            max_time_raw=float(instance.depot.due_time),
+        )
+        time_windows, service_time, alpha = scale_times_to_max_time(time_windows, service_time, target_max_time=4.6)
+        # time_windows, service_time, max_time, gamma = scale_times_batch(
+        #     coord_raw=torch.tensor(
+        #         [[instance.depot.x, instance.depot.y], *[[c.x, c.y] for c in instance.customers]],
+        #         dtype=torch.float32,
+        #     ),
+        #     coord_norm=coords,
+        #     time_windows_raw=torch.tensor(
+        #         [
+        #             [instance.depot.ready_time, instance.depot.due_time],
+        #             *[[c.ready_time, c.due_time] for c in instance.customers],
+        #         ],
+        #         dtype=torch.float32,
+        #     ),
+        #     service_time_raw=service_time,
+        #     max_time_raw=float(instance.depot.due_time),
+        # )
+
+    else: 
+        time_windows = torch.tensor(
+            [
+                [instance.depot.ready_time, instance.depot.due_time],
+                *[[c.ready_time, c.due_time] for c in instance.customers],
+            ],
+            dtype=torch.float32,
+        )
 
     td = TensorDict(
         {

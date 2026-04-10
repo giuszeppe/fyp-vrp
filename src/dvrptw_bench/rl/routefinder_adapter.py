@@ -8,25 +8,35 @@ from tensordict import TensorDict
 from dvrptw_bench.common.typing import Route, Solution, VRPTWInstance
 
 
-def _normalize_coord(coord: torch.Tensor) -> torch.Tensor:
+def _normalize_coord_and_get_scale(coord: torch.Tensor) -> tuple[torch.Tensor, float]:
+    """Normalize coordinates to [0,1] range and return the scale factor.
+    
+    Returns:
+        normalized_coords: Coordinates scaled to [0,1] range
+        scale_factor: The scale factor used (max of x_range and y_range)
+    """
     x, y = coord[:, 0], coord[:, 1]
     x_min, x_max = x.min(), x.max()
     y_min, y_max = y.min(), y.max()
 
     x_range = x_max - x_min
     y_range = y_max - y_min
-
-    if torch.isclose(x_range, torch.tensor(0.0, device=coord.device)):
+    
+    # Use the maximum range to maintain aspect ratio
+    max_range = torch.maximum(x_range, y_range)
+    
+    if torch.isclose(max_range, torch.tensor(0.0, device=coord.device)):
+        # All points are at the same location
+        scale_factor = 1.0
         x_scaled = torch.zeros_like(x)
-    else:
-        x_scaled = (x - x_min) / x_range
-
-    if torch.isclose(y_range, torch.tensor(0.0, device=coord.device)):
         y_scaled = torch.zeros_like(y)
     else:
-        y_scaled = (y - y_min) / y_range
+        scale_factor = max_range.item()
+        # Center and scale both dimensions by the same factor
+        x_scaled = (x - x_min) / max_range
+        y_scaled = (y - y_min) / max_range
 
-    return torch.stack([x_scaled, y_scaled], dim=1)
+    return torch.stack([x_scaled, y_scaled], dim=1), scale_factor
 
 def scale_times_to_normalized_coords(
     coord_raw: torch.Tensor,         # [N+1, 2], original Solomon coords
@@ -98,8 +108,13 @@ def instance_to_routefinder_td(
         [[instance.depot.x, instance.depot.y], *[[c.x, c.y] for c in instance.customers]],
         dtype=torch.float32,
     )
-    coords = coords_raw if not normalize_coords else _normalize_coord(coords_raw)
-
+    
+    # Get normalized coordinates and the scale factor
+    if normalize_coords:
+        coords, coord_scale_factor = _normalize_coord_and_get_scale(coords_raw)
+    else:
+        coords = coords_raw
+        coord_scale_factor = 1.0
 
     demand_linehaul = torch.tensor(
         [c.demand for c in instance.customers],
@@ -107,50 +122,32 @@ def instance_to_routefinder_td(
     )
     capacity = float(instance.vehicle_capacity)
 
-    service_time = torch.tensor(
+    service_time_raw = torch.tensor(
         [0.0, *[c.service_time for c in instance.customers]],
         dtype=torch.float32,
     )
+    
+    time_windows_raw = torch.tensor(
+        [
+            [instance.depot.ready_time, instance.depot.due_time],
+            *[[c.ready_time, c.due_time] for c in instance.customers],
+        ],
+        dtype=torch.float32,
+    )
+    
     if normalize_coords:
-        time_windows, service_time, max_time, gamma = scale_times_to_normalized_coords(
-            coord_raw=coords_raw,
-            coord_norm=coords,
-            time_windows_raw=torch.tensor(
-                [
-                    [instance.depot.ready_time, instance.depot.due_time],
-                    *[[c.ready_time, c.due_time] for c in instance.customers],
-                ],
-                dtype=torch.float32,
-            ),
-            service_time_raw=service_time,
-            max_time_raw=float(instance.depot.due_time),
-        )
-        time_windows, service_time, alpha = scale_times_to_max_time(time_windows, service_time, target_max_time=4.6)
-        # time_windows, service_time, max_time, gamma = scale_times_batch(
-        #     coord_raw=torch.tensor(
-        #         [[instance.depot.x, instance.depot.y], *[[c.x, c.y] for c in instance.customers]],
-        #         dtype=torch.float32,
-        #     ),
-        #     coord_norm=coords,
-        #     time_windows_raw=torch.tensor(
-        #         [
-        #             [instance.depot.ready_time, instance.depot.due_time],
-        #             *[[c.ready_time, c.due_time] for c in instance.customers],
-        #         ],
-        #         dtype=torch.float32,
-        #     ),
-        #     service_time_raw=service_time,
-        #     max_time_raw=float(instance.depot.due_time),
-        # )
-
-    else: 
-        time_windows = torch.tensor(
-            [
-                [instance.depot.ready_time, instance.depot.due_time],
-                *[[c.ready_time, c.due_time] for c in instance.customers],
-            ],
-            dtype=torch.float32,
-        )
+        # Apply the same scale factor to time-related values
+        # Since distance is scaled by coord_scale_factor, and we assume unit speed (distance = time),
+        # we need to scale time windows and service time by the same factor
+        time_windows = time_windows_raw / coord_scale_factor
+        service_time = service_time_raw / coord_scale_factor
+        
+        # The speed remains 1.0 because in normalized space, unit distance = unit time
+        speed = torch.tensor([1.0], dtype=torch.float32)
+    else:
+        time_windows = time_windows_raw
+        service_time = service_time_raw
+        speed = torch.tensor([1.0], dtype=torch.float32)
 
     td = TensorDict(
         {
@@ -163,7 +160,8 @@ def instance_to_routefinder_td(
             "time_windows": time_windows,
             "vehicle_capacity": torch.tensor([1.0], dtype=torch.float32),
             "capacity_original": torch.tensor([capacity], dtype=torch.float32),
-            "speed": torch.tensor([1.0], dtype=torch.float32),
+            "speed": speed,
+            "coord_scale_factor": torch.tensor([coord_scale_factor], dtype=torch.float32),  # Store for potential reverse transformation
         },
         batch_size=[],
     )

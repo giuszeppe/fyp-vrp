@@ -23,7 +23,7 @@ from dvrptw_bench.data.solomon_parser import parse_solomon
 from dvrptw_bench.heuristics.ortools_solver import ORToolsVRPTWSolver
 from dvrptw_bench.metrics.objective import total_distance
 from dvrptw_bench.rl.routefinder_adapter import (
-    _normalize_coord,
+    _normalize_coord_and_get_scale,
     instance_to_routefinder_td,
     routefinder_actions_to_solution,
 )
@@ -46,8 +46,8 @@ INTERRUPTED_CHECKPOINT_PATH = CHECKPOINT_DIR / "interrupted.ckpt"
 OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
 CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
 
-NUM_CUSTOMERS = 10
-TARGET_EPOCHS = 3
+NUM_CUSTOMERS = 50
+TARGET_EPOCHS = 200
 CHECKPOINT_EVERY_N_EPOCHS = 3
 
 BATCH_SIZE = 256
@@ -59,7 +59,7 @@ WEIGHT_DECAY = 1e-6
 NUM_AUGMENT = 8
 ORTOOLS_TIME_LIMIT_S = 0.1
 MAX_EVAL_INSTANCES = 5  # set to None to evaluate all RC instances
-NORMALIZE_COORDS = False
+NORMALIZE_COORDS = True  # Enable coordinate normalization for consistency with notebook
 FINAL_CHECKPOINT_PATH = OUTPUT_ROOT / f"routefinder_{NUM_CUSTOMERS}cust_{TARGET_EPOCHS}epochs.ckpt"
 
 if torch.cuda.is_available():
@@ -75,10 +75,6 @@ else:
 print("Device:", device)
 print("Dataset root:", DATASET_ROOT.resolve())
 print("Output root:", OUTPUT_ROOT.resolve())
-
-
-def normalize_coord(coord: torch.Tensor) -> torch.Tensor:
-    return _normalize_coord(coord)
 
 
 def _extract_epoch_from_checkpoint_name(path: Path) -> int:
@@ -134,15 +130,18 @@ def build_solomon_training_item(
     instance,
     num_customers,
     normalize_coords=True,
-    target_max_time=4.6,
 ):
     customers = instance.customers[:num_customers]
 
     coords = [(instance.depot.x, instance.depot.y)] + [(c.x, c.y) for c in customers]
-    locs = torch.tensor(coords, dtype=torch.float32)
-
+    locs_raw = torch.tensor(coords, dtype=torch.float32)
+    
+    # Get normalized coordinates and scale factor
     if normalize_coords:
-        locs = normalize_coord(locs)
+        locs, coord_scale_factor = _normalize_coord_and_get_scale(locs_raw)
+    else:
+        locs = locs_raw
+        coord_scale_factor = 1.0
 
     ready = torch.tensor(
         [instance.depot.ready_time] + [c.ready_time for c in customers],
@@ -152,7 +151,7 @@ def build_solomon_training_item(
         [instance.depot.due_time] + [c.due_time for c in customers],
         dtype=torch.float32,
     )
-    service = torch.tensor(
+    service_raw = torch.tensor(
         [0.0] + [c.service_time for c in customers],
         dtype=torch.float32,
     )
@@ -160,28 +159,26 @@ def build_solomon_training_item(
         [c.demand for c in customers],
         dtype=torch.float32,
     )
-
-    alpha = 1.0
-    time_windows = torch.stack([ready, due], dim=-1)
-
-    # Optional time scaling block left disabled intentionally
-    # depot_due = time_windows[0, 1].item()
-    # alpha = target_max_time / max(depot_due, 1e-8)
-    # time_windows = time_windows * alpha
-    # service = service * alpha
-    # time_windows[0, 0] = 0.0
-    # time_windows[0, 1] = target_max_time
-
-    service[0] = 0.0
+    
+    time_windows_raw = torch.stack([ready, due], dim=-1)
+    
+    # Apply the same scale factor to time-related values
+    if normalize_coords:
+        # Scale time windows and service time by the same factor as coordinates
+        time_windows = time_windows_raw / coord_scale_factor
+        service = service_raw / coord_scale_factor
+    else:
+        time_windows = time_windows_raw
+        service = service_raw
 
     return {
-        "locs": locs,                         # [N+1, 2]
-        "time_windows": time_windows,         # [N+1, 2]
-        "service_time": service,              # [N+1]
-        "demand_linehaul": demand,            # [N]
+        "locs": locs,                          # [N+1, 2]
+        "time_windows": time_windows,          # [N+1, 2]
+        "service_time": service,               # [N+1]
+        "demand_linehaul": demand,             # [N]
         "vehicle_capacity": float(instance.vehicle_capacity),
         "instance_id": instance.instance_id,
-        "alpha": alpha,
+        "coord_scale_factor": coord_scale_factor,
     }
 
 
@@ -201,7 +198,6 @@ generator_solomon_instances = (
             instance,
             num_customers=NUM_CUSTOMERS,
             normalize_coords=NORMALIZE_COORDS,
-            target_max_time=4.6,
         )
         for instance in rc_instances
     ]
@@ -210,7 +206,6 @@ generator_solomon_instances = (
             instance,
             num_customers=NUM_CUSTOMERS,
             normalize_coords=NORMALIZE_COORDS,
-            target_max_time=4.6,
         )
         for instance in c_instances
     ]

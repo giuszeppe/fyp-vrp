@@ -1,21 +1,32 @@
 \contentsline {chapter}{Abstract}{i}{chapter*.1}%
 \contentsline {chapter}{Acknowledgements}{ii}{chapter*.2}%
-\contentsline {chapter}{Contents}{iii}{chapter*.2}%
-\contentsline {chapter}{List of Figures}{iv}{chapter*.2}%
-\contentsline {chapter}{List of Tables}{v}{chapter*.2}%
-\contentsline {chapter}{List of Abbreviations}{vi}{chapter*.4}%
-\contentsline {chapter}{Glossary of Symbols}{vii}{chapter*.6}%
-\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
-\contentsline {chapter}{\numberline {2}Background}{2}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Literature Review}{2}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Instructions}{3}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Inserting references}{3}{section.2.3}%
-\contentsline {section}{\numberline {2.4}Inserting acronyms}{3}{section.2.4}%
-\contentsline {section}{\numberline {2.5}Using glossary terms}{4}{section.2.5}%
-\contentsline {section}{\numberline {2.6}Inserting a table}{4}{section.2.6}%
-\contentsline {section}{\numberline {2.7}Inserting code snippet}{4}{section.2.7}%
-\contentsline {section}{\numberline {2.8}Inserting theorems, corollaries and lemmas}{5}{section.2.8}%
-\contentsline {section}{\numberline {2.9}Inserting an algorithm}{5}{section.2.9}%
-\contentsline {chapter}{\numberline {3}Literature Review}{7}{chapter.3}%
-\contentsline {chapter}{\numberline {A}Sample A}{10}{appendix.A}%
-\contentsline {chapter}{\numberline {B}Sample B}{11}{appendix.B}%
+\contentsline {chapter}{Contents}{iv}{chapter*.2}%
+\contentsline {chapter}{List of Figures}{v}{chapter*.2}%
+\contentsline {chapter}{List of Tables}{vi}{chapter*.2}%
+\contentsline {chapter}{List of Abbreviations}{1}{chapter*.2}%
+\contentsline {chapter}{Glossary of Symbols}{1}{chapter*.2}%
+\contentsline {chapter}{\numberline {1}Introduction and Objectives (10 marks)}{1}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Background (15 marks)}{2}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Vehicle Routing Problem (VRP)}{2}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Variants}{3}{section.2.2}%
+\contentsline {paragraph}{CVRP}{3}{section.2.2}%
+\contentsline {paragraph}{VRPTW}{3}{section.2.2}%
+\contentsline {paragraph}{DVRPTW}{3}{section.2.2}%
+\contentsline {paragraph}{Importance of DVRPTW}{4}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Solomon}{4}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Geographical Distributions}{4}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Temporal and Capacity Constraints (Type 1 vs. Type 2)}{4}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Adaptation for Dynamic VRP (DVRPTW)}{4}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}Common Preprocessing Steps}{5}{subsection.2.3.4}%
+\contentsline {section}{\numberline {2.4}Evaluation Metrics}{5}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Service Quality Metrics}{5}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Operational Efficiency Metrics}{6}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}Computational Efficiency Metrics}{6}{subsection.2.4.3}%
+\contentsline {subsection}{\numberline {2.4.4}Benchmarking and Comparative Analysis}{6}{subsection.2.4.4}%
+\contentsline {section}{\numberline {2.5}Heuristics and Metaheuristics for VRP}{6}{section.2.5}%
+\contentsline {section}{\numberline {2.6}AI Methods}{6}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Classical Vehicle Routing Problem (VRP)}{6}{section.2.7}%
+\contentsline {section}{\numberline {2.8}Exact Methods for VRP}{6}{section.2.8}%
+\contentsline {section}{\numberline {2.9}Heuristic and Metaheuristic Methods for VRP}{7}{section.2.9}%
+\contentsline {section}{\numberline {2.10}Reinforcement Learning for VRP}{7}{section.2.10}%
+\contentsline {section}{\numberline {2.11}Dynamic VRP and Re-optimization Strategies}{7}{section.2.11}%

@@ -19,42 +19,60 @@
 
 \refsection{0}
   \datalist[entry]{none/global//global/global/global}
-    \entry{sample_key}{inproceedings}{}{}
-      \name{author}{3}{}{%
-        {{hash=9a1938029234a799c4980c8236d01f71}{%
-           family={Cockrum},
+    \entry{chen2026}{article}{}{}
+      \name{author}{4}{}{%
+        {{hash=9e4320caa7f007983fa7e62398f8d82a}{%
+           family={Chen},
            familyi={C\bibinitperiod},
-           given={R.},
-           giveni={R\bibinitperiod}}}%
-        {{hash=13279b34aeb747aeedf893eed9358d59}{%
-           family={Clark},
-           familyi={C\bibinitperiod},
-           given={D.},
+           given={Dawei},
            giveni={D\bibinitperiod}}}%
-        {{hash=671474d0a7645f48e200325a797e84ec}{%
-           family={Mylona},
-           familyi={M\bibinitperiod},
-           given={Z.},
-           giveni={Z\bibinitperiod}}}%
+        {{hash=381c9e04881c9849566b3fd3486ebd45}{%
+           family={Imdahl},
+           familyi={I\bibinitperiod},
+           given={Christina},
+           giveni={C\bibinitperiod}}}%
+        {{hash=142dc805fc7fa6422b84249f8aaa0600}{%
+           family={Lai},
+           familyi={L\bibinitperiod},
+           given={David},
+           giveni={D\bibinitperiod}}}%
+        {{hash=b63aeb723d16eafda6952b3b6992d5b3}{%
+           family={Van\bibnamedelima Woensel},
+           familyi={V\bibinitperiod\bibinitdelim W\bibinitperiod},
+           given={Tom},
+           giveni={T\bibinitperiod}}}%
       }
-      \strng{namehash}{ef1cf015a1466b16e1a63a6eda81e759}
-      \strng{fullhash}{d99dfbe484b9d804f5d37ea3b14fec48}
-      \strng{fullhashraw}{d99dfbe484b9d804f5d37ea3b14fec48}
-      \strng{bibnamehash}{d99dfbe484b9d804f5d37ea3b14fec48}
-      \strng{authorbibnamehash}{d99dfbe484b9d804f5d37ea3b14fec48}
-      \strng{authornamehash}{ef1cf015a1466b16e1a63a6eda81e759}
-      \strng{authorfullhash}{d99dfbe484b9d804f5d37ea3b14fec48}
-      \strng{authorfullhashraw}{d99dfbe484b9d804f5d37ea3b14fec48}
+      \strng{namehash}{9efc7d3b60258615e12e969da4d93d1a}
+      \strng{fullhash}{b0bef11df15ac8e62e1e1c5c78189c09}
+      \strng{fullhashraw}{b0bef11df15ac8e62e1e1c5c78189c09}
+      \strng{bibnamehash}{b0bef11df15ac8e62e1e1c5c78189c09}
+      \strng{authorbibnamehash}{b0bef11df15ac8e62e1e1c5c78189c09}
+      \strng{authornamehash}{9efc7d3b60258615e12e969da4d93d1a}
+      \strng{authorfullhash}{b0bef11df15ac8e62e1e1c5c78189c09}
+      \strng{authorfullhashraw}{b0bef11df15ac8e62e1e1c5c78189c09}
       \field{sortinit}{1}
       \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{booktitle}{FIE'99 Frontiers in Education. 29th Annual Frontiers in Education Conference. Designing the Future of Science and Engineering Education. Conference Proceedings (IEEE Cat. No.99CH37011}
-      \field{title}{Motivating engineering students to write technical papers}
-      \field{volume}{3}
-      \field{year}{1999}
+      \field{abstract}{The dynamic vehicle routing and scheduling problem with stochastic request times and timedependent stochastic travel times poses significant challenges for vehicle fleets that must adapt dynamically to uncertain and fluctuating customer demands and traffic conditions. To effectively address these challenges, we propose an end-to-end approach that integrates routing and scheduling decisions to optimize overall performance. Specifically, our approach combines reinforcement learning with a hybrid attention mechanism comprising a Reverse LSTM and a multi-pointer decoder to optimize vehicle routes and departure times simultaneously. The numerical study highlights the considerable efficiency improvements of the proposed approach compared to existing dynamic approaches, especially the practical experiments on a road network in Vienna. Furthermore, our generalized training strategy significantly improves model adaptability. It reduces computational overhead, underscoring the promising potential of the approach for practical deployment in dynamic and complex real-world logistics operations.}
+      \field{issn}{0968090X}
+      \field{journaltitle}{Transportation Research Part C: Emerging Technologies}
+      \field{langid}{english}
+      \field{month}{1}
+      \field{title}{A Reinforcement Learning Approach for the Dynamic Vehicle Routing and Scheduling Problem with Stochastic Request Times and Time-Dependent, Stochastic Travel Times}
+      \field{urlday}{10}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{volume}{182}
+      \field{year}{2026}
+      \field{urldateera}{ce}
+      \field{pages}{105387}
+      \range{pages}{1}
       \verb{doi}
-      \verb 10.1109/FIE.1999.840386
+      \verb 10.1016/j.trc.2025.105387
+      \endverb
+      \verb{file}
+      \verb /Users/giuseppe/Zotero/storage/4X8GWSJQ/Chen et al. - 2026 - A reinforcement learning approach for the dynamic vehicle routing and scheduling problem with stocha.pdf
       \endverb
     \endentry
   \enddatalist

@@ -1,238 +1,290 @@
 \graphicspath{{content/chapters/2_background/figures/}}
 
-\chapter{Background}%
+\chapter{Background (15 marks)}%
 \label{chp:background}
 
-Figure~\ref{fig:sample} shows a sample figure and how to cross-reference
-figures.
-%
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\textwidth,keepaspectratio]{sample}
-    \caption[Short sample caption.]{Longer caption that  and shows below the figure.\label{fig:sample}}
-\end{figure}
-%
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Mauris sed ipsum risus.
-Nulla aliquet quis quam sed eleifend.
-Donec rutrum, dolor id vulputate pharetra, nulla tortor laoreet nisl,
-pellentesque dapibus velit dolor suscipit purus.
-Phasellus vitae eleifend sem.
-Integer ultricies ex in neque pellentesque, vitae facilisis orci aliquam.
-In pellentesque mollis turpis, eu tristique lacus eleifend nec.
-Vestibulum orci neque, rhoncus vitae convallis eu, suscipit quis dui.
-Nulla libero elit, porta sit amet sagittis vel, placerat sit amet tortor.
-Aliquam hendrerit dolor sit amet sollicitudin ornare.
-Aliquam placerat sodales est, in vestibulum nisl efficitur in.
-Nulla venenatis aliquam sem, at volutpat nisl pellentesque eleifend.
-Praesent vitae euismod nulla, eget vehicula turpis.
-Duis quis tellus vitae nisi tempus tincidunt.
+% | Section                     | What Goes Here                             |
+% | --------------------------- | ------------------------------------------ |
+% | 2.1 Vehicle Routing Problem | Formal VRP definition                      |
+% | 2.2 Dynamic VRP             | Dynamic arrivals / online routing          |
+% | 2.3 Time Windows            | Constraints definition                     |
+% | 2.4 DVRPTW Formulation      | Mathematical framing / objective           |
+% | 2.5 Solomon Benchmark       | Dataset structure, benchmark conventions   |
+% | 2.6 Evaluation Metrics      | Distance, vehicles used, runtime, lateness |
 
-\section{Literature Review}%
-\label{sec:literature_review}
 
-Vivamus sit amet orci erat.
-Morbi eleifend velit purus, sed gravida metus ullamcorper sed.
-Aliquam sit amet interdum nulla, in aliquam diam.
-Aliquam non libero tortor.
-Nulla imperdiet dolor vel justo semper, ut efficitur enim varius.
-Donec ultrices odio id orci fringilla tristique.
-Ut fringilla nec felis a finibus.
-Sed a felis sed odio elementum porta a ac nisl.
-Curabitur suscipit, sem et facilisis tempus, nisl elit vestibulum eros, in
-varius dolor enim vitae ante.
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
-curae; Nullam condimentum tempor consectetur.
-Aliquam non porta nisi.
-Proin molestie tincidunt tellus, id varius nibh finibus eget.
 
-Vestibulum et neque erat.
-Curabitur metus velit, dictum non vehicula vitae, sodales sed purus.
-In mattis a mauris nec imperdiet.
-Duis volutpat mi eget egestas placerat.
-Vivamus non purus erat.
-Cras quis egestas libero.
-Sed id diam at enim vehicula porttitor.
+% How well and clearly did you:
+% - Demonstrate reasoning and judgment for inclusion of relevant topics in the background;
+% - Demonstrate clear narrative flow leading to the identification of the problem or focus area;
+% - Define domain-specific concepts, methods and techniques used in the domain;
+% - Manage to evidently and smoothly move from generic concepts and notions to include more
+% specific detail and therefore focus
 
-Mauris tincidunt elementum porttitor.
-Curabitur eu elit et metus luctus ultrices.
-Aenean varius orci in turpis consectetur efficitur.
-Quisque lacinia sagittis pharetra.
-Aliquam efficitur aliquam arcu, vel ullamcorper tortor volutpat nec.
-Curabitur sit amet semper tortor.
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
-curae; Cras at leo aliquet, porta mauris nec, pharetra augue.
-Nam volutpat eu urna in ullamcorper.
-Aliquam ultrices condimentum odio id eleifend.
-Mauris tellus felis, mattis et pellentesque ac, laoreet vitae eros.
-Aliquam at nisl lorem.
-Quisque consequat ligula nec tellus ornare eleifend.
 
-\section{Instructions}%
-\label{sec:instructions}
 
-This sentence refers to Section~\ref{sec:literature_review}, as an example of
-how to do cross-referencing.
-Equation~\eqref{eq:emc} shows one of the most famous equations.
-%
-\begin{equation}
-    \label{eq:emc}
-    e = mc^2
-\end{equation}
-%
-An example of how to create multiple equations, where they all align is given
-below.
-%
-\begin{align}
-    e & = mc^2          \\
-    m & = \frac{e}{c^2}
-\end{align}
+% Target Audience -> Academical and technical readers with some background in comupter science
+% Research Question -> DCVRPTW: Heuristics vs Hybrid vs AI on Solomon C-RC-100 benchmark
 
-\section{Inserting references}%
-\label{sec:inserting_references}
 
-To insert a reference, the entry must be inserted in the \texttt{references.bib}
-file.
-The key or unique ID of the entry is then used to refer to it.
-\LaTeX{} will automatically number the entry and generate the list of
-references.
-The paper in~\cite{sample_key} is used as a referencing example.
 
-\section{Inserting acronyms}%
-\label{sec:inserting_acronyms_and_glossary_entries}
+% When writing the background for a study, start by providing a brief overview of the research topic 
+% and its significance in the field.
+% Then, highlight the gaps in existing knowledge or unresolved issues that the study aims to address. 
+% Finally, summarize the key findings from relevant literature to establish the context and rationale 
+% for conducting the research, emphasizing the need and importance of the study within the broader academic 
+% landscape.
 
-The \gls{tcp} and \gls{udp} protocols are two layer 4 protocols, used for
-demonstrating how to use acronyms.
-On the second use of an acronym, only its initials are shown as demonstrated in
-the following sentence.
-The \gls{tcp} and \gls{udp} protocols are two layer 4 protocols, used for
-demonstrating how to use acronyms.
+% Intro
+Logistics optimisation concerns the systematic allocation and coordination of 
+transportation, inventory, and distribution resources to minimise operational 
+costs whilst maximising service efficiency within supply chain networks.
+The importance of logistics optimisation has grown significantly in recent years, 
+driven by the expansion of e-commerce platforms and increasing consumer expectations for rapid, on-demand delivery fulfilment.
+Many logistical decision-making problems can be mathematically formulated as combinatorial optimisation tasks, 
+wherein the objective is to determine the best solution from a finite but often exponentially large set of possible alternatives.
+A prominent example is the Vehicle Routing Problem (VRP), an NP-hard combinatorial optimisation problem concerned with determining 
+cost-efficient routes for a fleet of vehicles to service customers whilst satisfying practical constraints.
 
-\section{Using glossary terms}%
-\label{sec:using_glossary_terms}
+% VRP
+\section{Vehicle Routing Problem (VRP)} % Adapted from RouteFinder paper, I don't know if I have to cite it here or not
+The vehicle routing problem (VRP) can be defined on a graph $G$ as follows:
+$G=(N,E)$, where $N = N_d \cup N_c$ is the set of nodes,
+$N_d=\{0,\dots,m-1\}$ is the set of depots, and
+$N_c=\{m,\dots,m+n-1\}$ is the set of customers.
+Each edge $(i,j)\in E$ is associated with a travel cost $c_{ij}$.
+A fleet of vehicles departs from the depot(s), serves each customer exactly once,
+and minimizes the total travel cost.
+Let $x_{ijk}\in\{0,1\}$ indicate whether vehicle $k$ traverses edge $(i,j)$.
+The objective is to minimize the total travel cost:
+\[
+\min \sum_{k\in K}\sum_{i\in N}\sum_{j\in N\setminus\{i\}} c_{ij}x_{ijk}.
+\]
+The routing decisions satisfy
+\begin{itemize}
+	\item Assignment Constraint: Each customer is served by exactly one vehicle.
+\[
+\sum_{k\in K}\sum_{j\in N\setminus\{i\}} x_{ijk}=1,
+\qquad \forall i\in N_c,
+\]
+	\item Flow Conservation: Each vehicle that arrives at a customer must also depart from it.
+\[
+\sum_{j\in N\setminus\{i\}} x_{ijk}
+=
+\sum_{j\in N\setminus\{i\}} x_{jik},
+\qquad \forall i\in N_c,\; \forall k\in K.
+\]
+	\item Vehicle Returns to Depot: Each vehicle must start and end at the depot.
+\[
+\sum_{j\in N\setminus\{0\}} x_{0jk} = 1,
+\qquad \forall k\in K,
+\]
+\[
+\sum_{i\in N\setminus\{0\}} x_{i0k} = 1,
+\qquad \forall k\in K.
+\]
+\end{itemize}
 
-Let \gls{G} represent a loop-free directed graph, where \gls{V} and \gls{E}
-represent the set of nodes and edges, respectively.
 
-\section{Inserting a table}%
-\label{sec:inserting_a_table}
+% Variants
+\section{Variants}
+To model more realistic delivery environments, several extensions of the traditional VRP have been proposed to incorporate additional operational constraints.
+\paragraph{CVRP}
+The Capacitated Vehicle Routing Problem (CVRP) extends the classical VRP by introducing vehicle capacity constraints,
+in the form of a maximum load that each vehicle can carry, $Q$,  and a demand $q\in[0,Q]$ associated with each customer 
+such that the demand for each customer the demand doesn't exceed the vehicle capacity, i.e., $q_i \leq Q$ for all $i\in N_c$.
+Formally, Capacity Constraint can be expressed as follows:
+The total demand assigned to a vehicle must not exceed its capacity:
+\[
+\sum_{i\in N_c} q_i y_{ik} \leq Q,
+\qquad \forall k\in K
+\]
+\paragraph{VRPTW}
+In addition to the constraints of CVRP, VRPTW introduces time window constraints for each customer $i\in N_c$,
+defined by a time interval $[a_i, b_i]$ within which the service must start, often representing business operating
+hours or delivery appointment slots.
+Moreover, each customer now has a service time $s_i$ that represents the time required to complete the service at customer $i$.
+Formally, the VRPTW additional constraints can be expressed as follows:
+\begin{itemize}
+	\item Time Window Constraint: Each customer must be served within their specified time window.
+	\[
+	a_i \leq t_i \leq b_i,
+	\qquad \forall i\in N_c.
+	\]
+	\item Service Time Constraint: The service time at each customer must be accounted for in the scheduling of routes.
+	Let $\tau_{ij}$ denote the travel time from node $i$ to node $j$.
+	\[
+t_j \geq t_i + s_i + \tau_{ij} - M(1 - x_{ijk}),
+\qquad \forall i,j\in N_c,\; \forall k\in K,
+\]
+where $M$ is a sufficiently large constant to ensure the constraint is only active when vehicle $k$ travels from customer $i$ to customer $j$.
+	
+\end{itemize}
 
-A simple table is shown in Table~\ref{tab:simple}, with a more complex example
-given in Table~\ref{tab:complex}.
+\paragraph{DVRPTW}
+A more advanced extension is the Dynamic Capacitated Vehicle Routing Problem with Time Windows (DCVRPTW), 
+which incorporates all aforementioned constraints whilst accounting for dynamic and uncertain events that may occur during operation. 
+Instead of a fixed customer set $N_c$ known in advance, we define: 
+$N_c(t)$ as the set of customers known at time $t$, which can change dynamically. 
+\paragraph{Importance of DVRPTW}
+\section{Solomon}
+Given the importance of VRPTW in the world, researchers have developed various benchmark datasets to ensure evaluations are fare and comparable. 
+One of the most important for VRPTW is the Solomon benchmark, which consists of 100 instances with 100 customers each, designed to test the performance of VRPTW algorithms under different conditions.
+\subsection{Geographical Distributions}
+The dataset is split into three classes based on the spatial arrangement of customers:
+C (Clustered): Customers are grouped in distinct clusters, which typically results in shorter total distances
+R (Random): Customers are uniformly distributed across the map; these are widely considered the most difficult instances because they lack clear structural patterns
+RC (Mixed): A combination of clustered and random distributions
 
-\begin{table}
-    \caption{Simple table example.\label{tab:simple}}
-    \centering
-    \begin{tblr}{|c|S[table-format=3.2]|c|}
-        \hline
-        \textbf{Header 1} & \textbf{Header 2} & \textbf{Header 3} \\
-        \hline
-        1                 & 2.3               & Orange            \\
-        2                 & 100.5             & Blue              \\
-        3                 & 35.0              & Black             \\
-        \hline
-    \end{tblr}
-\end{table}
+\subsection{Temporal and Capacity Constraints (Type 1 vs. Type 2)}
+Solomon further divided these into two categories based on the tightness of constraints:
+Type 1 (e.g., R1, C1, RC1): These feature a short scheduling horizon, narrow time windows, and small vehicle capacities, meaning vehicles can only serve a few customers per route
+Type 2 (e.g., R2, C2, RC2): These have a long scheduling horizon, wide time windows, and large vehicle capacities, allowing many customers to be serviced by a single vehicle
 
-\begin{table}
-    \centering
-    \caption{Complex table example.\label{tab:complex}}
-    \begin{tblr}{|Q[m,0.2\textwidth]|Q[m,0.2\textwidth]|Q[m,0.2\textwidth]|Q[m,0.2\textwidth]|}
-        \hline
-        \SetCell[r=2]{c} Table Head & \SetCell[c=3]{c} Table Column Head & & \\
-        \hline
-        & Table column subhead 1 & Table column subhead 2 & Table column subhead 3 \\
-        \hline
-        Item 1 & 2 & 3 & 4 \\
-        \hline
-        Item 2 & 2 & 3 & 4 \\
-        \hline
-        Item 3 & 2 & 3 & 4 \\
-        \hline
-        Item 4 & 2 & 3 & 4 \\
-        \hline
-    \end{tblr}
-\end{table}
+\subsection{Adaptation for Dynamic VRP (DVRPTW)}
+Although the original Solomon benchmark is static, it has been widely adapted for dynamic VRP research by introducing an "appearance time" for a percentage of the customers based on a Degree of Dynamism (DoD) $\epsilon$.
+For example, in an instance with 50\% dynamism, half of the customers are hidden at the start of the day and only revealed as the vehicles are already executing their routes, simulating real-world scenarios 
+where new orders can arrive unpredictably throughout the day.
+\subsection{Common Preprocessing Steps}
+% In your implementation section, note that it is standard practice to scale the raw Solomon coordinates—which usually occupy a 
+% square—down to a 
+% unit square
+% This normalization is crucial for the stability of neural network training in models like the Attention Model (AM) or RouteFinder
 
-\section{Inserting code snippet}%
-\label{sec:inserting_code_snippet}
+\section{Evaluation Metrics}
+The performance of algorithms addressing the Dynamic Vehicle Routing Problem with Time Windows (DVRPTW) 
+is typically assessed through a range of evaluation metrics, each capturing different 
+operational and computational aspects of solution quality. Since DVRPTW is inherently 
+a multi-objective optimisation problem, no single metric is sufficient to fully 
+describe algorithmic performance. Consequently, prior literature evaluates methods 
+according to service quality, routing efficiency, computational efficiency, 
+and decision-making effectiveness. The following metrics represent the most commonly 
+adopted measures in recent DVRPTW and related dynamic routing studies.
+\subsection{Service Quality Metrics}
+\begin{itemize}
+	\item \cite{chen2026} Lateness: sum of the time units by which each customer has been served late in a route by a vehicle, i.e. $ \sum \forall V \in \mathcal{V}, \forall i \in \mathcal{C} t_{served} - l_i $, where $l_i$ is the latest time a vehicle can arrive at customer $i$.
+	\item Rejection rate: Comparison of solution methods for the dynamic pickup and delivery problem with time windows
+	\item Responsivness: An ant colony system for responsive dynamic vehicle routing
+	\item Value of Information: The gap between real-time dynamic results and an "Oracle" (offline optimal) solution. Pillac et al. (2013) Section 1.4.3
+	\item Total Distance: The Euclidean sum of all arcs traversed by the entire fleet. Ojeda Rios et al. (2021) Section 3.4
+	\item Fleet Size: The total number of vehicles (K or V) required to fulfill all demands. Shahbazian et al. (2025) Table 4
+	\item Total Duration: Cumulative time from depot departure until the last vehicle returns. Xu et al. (2025)
+	\item Solving Time: The wall-clock computation time (s) required to return a solution for a snapshot. Dornemann (2023) Table 3
+	\item Optimality Gap: The percentage difference between the algorithm's cost and the Best Known Solution (BKS). Berto et al. (2024) Table 1
+\end{itemize}
+\subsection{Operational Efficiency Metrics}
 
-The code snippet in Listing~\ref{lst:python_example} demonstrates a very simple
-python program.
+\subsection{Computational Efficiency Metrics}
 
-\begin{lstlisting}[language=Python,caption=Python example,label={lst:python_example}]
-def main() -> None:
-    print("Hello World")
+\subsection{Benchmarking and Comparative Analysis}
+\section{Heuristics and Metaheuristics for VRP}
 
-if __name__ == "__main__":
-    main()
-\end{lstlisting}
+\section{AI Methods}
 
-\section{Inserting theorems, corollaries and lemmas}%
-\label{sec:inserting_theorems,_corollaries_and_lemmas}
 
-\begin{theorem}
-    Let \(f\) be a function whose derivative exists in every point, then \(f\) is
-    a continuous function.
-\end{theorem}
 
-\begin{theorem}[Pythagorean theorem]
-    \label{pythagorean}
-    This is a theorem about right triangles and can be summarised in the next
-    equation
-    \[ x^2 + y^2 = z^2 \]
-\end{theorem}
 
-And a consequence of theorem \ref{pythagorean} is the statement in the next
-corollary.
 
-\begin{corollary}
-    There's no right rectangle whose sides measure 3cm, 4cm, and 6cm.
-\end{corollary}
 
-You can reference theorems such as \ref{pythagorean} when a label is assigned.
 
-\begin{lemma}
-    Given two line segments whose lengths are \(a\) and \(b\) respectively there is a
-    real number \(r\) such that \(b=ra\).
-\end{lemma}
 
-\section{Inserting an algorithm}%
-\label{sec:inserting_an_algorithm}
 
-The pseudocode for a basic \gls{ea} using NSGA-II is given in
-Algorithm~\ref{alg:evolutionaryAlgorithm}.
 
-\begin{algorithm}
-    \caption{Pseudocode for an Evolutionary Algorithm}%
-    \label{alg:evolutionaryAlgorithm}
-    \begin{algorithmic}
-        \State \( \mathcal{P} \) = Population Size
-        \State \( \chi \) = Number of Generations
-        \State \( \omega \) = Crossover Probability
-        \State \( \psi \) = Mutation Probability
-        \State
-        \State population = GenerateInitialPopulation(\( \mathcal{P} \))
-        \For{\( 1, 2, \ldots, \chi \)}
-        \State offspring = TournamentSelection(population, \( \mathcal{P} \))
-        % Crossover
-        \For{\(c_i \in \) offspring, \( i = 1, 3, 5, \ldots, \mathcal{P}\)}
-        \State \(z\) = random(0, 1)
-        \If{\( z < \omega \)}
-        \State Crossover(\( c_i, c_{i+1} \))
-        \EndIf
-        \EndFor
-        % Mutation
-        \For{\(c_i \in \) offspring}
-        \State \(z\) = random(0, 1)
-        \If{\( z < \psi \)}
-        \State Mutate(\( c_i \))
-        \EndIf
-        \EndFor
-        % Calculate fitness
-        \State CalculatePopulationFitness(offspring)
-        % Update population size
-        \State population = NSGA-II([population + offspring], \(\mathcal{P}\))
-        \EndFor
-    \end{algorithmic}
-\end{algorithm}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Classical Vehicle Routing Problem (VRP)}
+\begin{itemize}
+	\item Transition to:
+	\begin{itemize}
+		\item Vehicle Routing Problem with Time Windows
+		\item Dynamic Vehicle Routing Problem
+		\item DVRPTW (your exact problem)
+	\end{itemize}
+	\item What to cover:
+	\begin{itemize}
+		\item Problem formulation (constraints, objectives)
+		\item NP-hardness and implications
+		\item Real-world applications (logistics, ride-sharing, last-mile delivery)
+	\end{itemize}
+\end{itemize}
+\section{Exact Methods for VRP}
+\begin{itemize}
+	\item Transition to:
+	\begin{itemize}
+		\item Branch-and-Bound
+		\item Integer Linear Programming (ILP)
+		\item Dynamic Programming
+	\end{itemize}
+	\item What to cover:
+	\begin{itemize}
+		\item Overview of each method and how it applies to VRP
+		\item Strengths and weaknesses (e.g., scalability issues)
+		\item Examples of successful applications in small to medium-sized VRP instances
+	\end{itemize}
+\end{itemize}
+\section{Heuristic and Metaheuristic Methods for VRP}
+\begin{itemize}
+	\item Transition to:
+	\begin{itemize}
+		\item Genetic Algorithms
+		\item GLS (Guided Local Search)		
+		\item Tabu Search
+	\end{itemize}
+	\item What to cover:
+	\begin{itemize}
+		\item Explanation of each method and its application to VRP
+		\item Advantages (e.g., ability to find good solutions in reasonable time) and disadvantages (e.g., no guarantee of optimality)
+		\item Examples of successful applications in large-scale VRP instances
+	\end{itemize}
+\end{itemize}
+\section{Reinforcement Learning for VRP}
+\begin{itemize}
+	\item Transition to:
+	\begin{itemize}
+		\item Pointer Network
+		\item Deep Q-Networks (DQN)
+		\item Policy Gradient Methods
+		\item Actor-Critic Methods
+	\end{itemize}
+	\item What to cover:
+	\begin{itemize}
+		\item Overview of each method and how it applies to VRP
+		\item Strengths (e.g., ability to learn from experience) and weaknesses (e.g., training time, convergence issues)
+		\item Examples of successful applications in VRP and related combinatorial optimization problems
+	\end{itemize}
+\end{itemize}
+
+\section{Dynamic VRP and Re-optimization Strategies}
+\begin{itemize}
+	\item Transition to:
+	\begin{itemize}
+		\item Handling Dynamism (e.g., new orders, traffic conditions)
+		\item Online algorithms
+		\item Re-optimization techniques (e.g., rolling horizon, event-triggered re-optimization)
+	\end{itemize}
+	\item What to cover:
+	\begin{itemize}
+		\item Challenges of dynamic VRP (e.g., uncertainty, real-time decision-making)
+		\item Overview of strategies to handle dynamism and re-optimize routes
+		\item Examples of successful applications in dynamic VRP scenarios
+	\end{itemize}
+\end{itemize}
+\end{document}

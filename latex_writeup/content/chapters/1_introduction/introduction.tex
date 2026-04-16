@@ -1,3 +1,27 @@
-\chapter{Introduction}%
+\chapter{Introduction and Objectives (10 marks)}%
 \label{chp:introduction}
-sssssssssssssssssss
+The Vehicle Routing Problem (VRP) is a classical combinatorial optimization problem 
+concerned with determining the most efficient set of routes for a fleet of vehicles 
+to service a group of customers. The primary objective is typically to minimize total 
+routing cost, although other factors, such as fuel consumption or fleet size, are often 
+considered in practical applications.
+
+The Dynamic Constrained Vehicle Routing Problem with Time Windows (DCVRPTW) is a more complex
+variant of VRP that incorporates dynamic elements, such as customers revealed in real time,
+as well as operational constraints, such as customer service time windows. This problem is
+particularly relevant in modern logistics and transportation, where companies must continuously
+adapt to changing conditions while meeting increasingly strict delivery expectations.
+
+This study investigates whether AI-based approaches can effectively support decision-making in
+highly dynamic scenarios with tight time windows.
+
+To this end, we compare three approaches: a purely heuristic method, a purely AI-based method,
+and a hybrid method in which AI-generated solutions are used as a warm start for subsequent
+heuristic refinement. Performance is evaluated using three metrics: responsiveness (time taken
+to service newly revealed customers), lateness (both the frequency and magnitude of delays), and
+rejection rate (the proportion of customers that cannot be feasibly served).
+
+Experiments are conducted on the Solomon dataset, a widely used benchmark for VRPTW problems.
+Beyond its academic relevance, this project is also practically significant for logistics and
+transportation, as it explores the potential of AI to improve operational efficiency in dynamic
+routing environments.

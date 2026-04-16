@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.3.27)  29 MAR 2026 12:31
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.3.27)  10 APR 2026 16:39
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -2022,140 +2022,63 @@ Requested font "cmr8" at 8.0pt
  -> /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/cm/cmr8.tfm
 Requested font "cmr6" at 6.0pt
  -> /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/cm/cmr6.tfm
-)
+ [3
+
+])
 \tf@toc=\write8
 \openout8 = `main.toc'.
 
- [3
-
-] (./main.lof)
+ [4] (./main.lof)
 \tf@lof=\write9
 \openout9 = `main.lof'.
 
- [4
+ [5
 
 ] (./main.lot)
 \tf@lot=\write10
 \openout10 = `main.lot'.
 
- [5
+ [6
 
-] (./main.acr) [6
-
-
-
-] (./main.gls) [7
-
-
-
-] (./content/chapters/1_introduction/introduction.tex
+] (./main.acr) (./main.gls) (./content/chapters/1_introduction/introduction.tex
 Chapter 1.
 ) (./content/chapters/2_background/background.tex [1
 
 
 
+
+
 ]
 Chapter 2.
-File: content/chapters/2_background/figures/sample.pdf Graphic file (type pdf)
-<use content/chapters/2_background/figures/sample.pdf>
 LaTeX Font Info:    Font shape `TU/Lato(0)/b/n' will be
-(Font)              scaled to size 17.28pt on input line 31.
+(Font)              scaled to size 17.28pt on input line 50.
 Requested font "[Lato-Bold.ttf]/OT:script=latn;language=dflt;+liga;+tnum;+lnum;mapping=tex-text;" at 17.28pt
  -> /usr/local/texlive/2026/texmf-dist/fonts/truetype/typoland/lato/Lato-Bold.ttf
 [2
 
-]
-Requested font "[lmmono12-regular]:" at 12.0pt
- -> /usr/local/texlive/2026/texmf-dist/fonts/opentype/public/lm/lmmono12-regular.otf
- [3]
-Underfull \hbox (badness 10000) in paragraph at lines 154--154
-[]\TU/Lato(0)/m/n/12 Table column
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 154--154
-[]\TU/Lato(0)/m/n/12 Table column
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 154--154
-[]\TU/Lato(0)/m/n/12 Table column
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 154--154
-[]\TU/Lato(0)/m/n/12 Table column
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 154--154
-[]\TU/Lato(0)/m/n/12 Table column
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 154--154
-[]\TU/Lato(0)/m/n/12 Table column
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 154--154
-[]\TU/Lato(0)/m/n/12 Table column
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 154--154
-[]\TU/Lato(0)/m/n/12 Table column
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 154--154
-[]\TU/Lato(0)/m/n/12 Table column
- []
-
-(/usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
-File: lstlang1.sty 2025/11/14 1.11b listings language file
-)
-Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 163.
-Requested font "[lmmono10-regular]:" at 10.0pt
- -> /usr/local/texlive/2026/texmf-dist/fonts/opentype/public/lm/lmmono10-regular.otf
-LaTeX Font Info:    Font shape `TU/Lato(0)/m/it' will be
-(Font)              scaled to size 12.0pt on input line 175.
-Requested font "[Lato-Italic.ttf]/OT:script=latn;language=dflt;+liga;+tnum;+lnum;mapping=tex-text;" at 12.0pt
- -> /usr/local/texlive/2026/texmf-dist/fonts/truetype/typoland/lato/Lato-Italic.ttf
- [4]
-Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 207.
-) (./content/chapters/3_literature_review/literature_review.tex [5] [6]
-Chapter 3.
-) (./content/chapters/4_methodology/methodology.tex [7
-
-]) (./content/chapters/5_results/results.tex) (./content/chapters/6_conclusion/conclusion.tex) [8] (./content/appendices/appendix_a.tex [9
-
-]
-Appendix A.
-) (./content/appendices/appendix_b.tex [10
-
-]
-Appendix B.
-) [11
-
-] (./main.aux)
+] [3]
+LaTeX Font Info:    Font shape `TU/Lato(0)/b/n' will be
+(Font)              scaled to size 14.4pt on input line 133.
+Requested font "[Lato-Bold.ttf]/OT:script=latn;language=dflt;+liga;+tnum;+lnum;mapping=tex-text;" at 14.4pt
+ -> /usr/local/texlive/2026/texmf-dist/fonts/truetype/typoland/lato/Lato-Bold.ttf
+ [4] [5] [6] [7] [8] (./main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 0D84CA2D7CB3CDE31011203A87AC2C4F;2831.
+(rerunfilecheck)             Checksum: 7811660899D8E0C8C852FFFD065BC056;5261.
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
- ) 
+ ) ) 
 Here is how much of TeX's memory you used:
- 38558 strings out of 468168
- 845914 string characters out of 5432815
- 1773825 words of memory out of 5000000
- 66829 multiletter control sequences out of 15000+600000
- 632933 words of font info for 95 fonts, out of 8000000 for 9000
+ 37864 strings out of 468168
+ 831473 string characters out of 5432815
+ 1741464 words of memory out of 5000000
+ 66166 multiletter control sequences out of 15000+600000
+ 632917 words of font info for 93 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 88i,11n,131p,2591b,4943s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 88i,11n,131p,2591b,3798s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on main.xdv (19 pages, 202688 bytes).
+Output written on main.xdv (15 pages, 187480 bytes).

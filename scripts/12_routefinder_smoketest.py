@@ -88,7 +88,7 @@ def parse_args():
         help="Number of customers per instance.",
     )
     parser.add_argument(
-        "--target-epochs",
+        "--num-epochs",
         type=int,
         default=150,
         help="Total number of training epochs.",
@@ -277,7 +277,7 @@ def main():
     interrupted_checkpoint_path = args.checkpoint_dir / "interrupted.ckpt"
     final_checkpoint_path = args.final_checkpoint_path or (
         args.output_root
-        / f"routefinder_{args.num_customers}cust_{args.target_epochs}epochs.ckpt"
+        / f"routefinder_{args.num_customers}cust_{args.num_epochs}epochs.ckpt"
     )
 
     args.output_root.mkdir(parents=True, exist_ok=True)
@@ -359,7 +359,7 @@ def main():
     )
 
     trainer = RL4COTrainer(
-        max_epochs=args.target_epochs,
+        max_epochs=args.num_epochs,
         accelerator=accelerator,
         devices=1,
         logger=None,
@@ -370,12 +370,12 @@ def main():
 
     resume_checkpoint = find_resume_checkpoint(args.checkpoint_dir)
     completed_epochs = get_completed_epochs(resume_checkpoint)
-    remaining_epochs = max(args.target_epochs - completed_epochs, 0)
+    remaining_epochs = max(args.num_epochs - completed_epochs, 0)
 
     if resume_checkpoint is not None:
         print(f"Resuming training from checkpoint: {resume_checkpoint}")
         print(
-            f"Completed epochs: {completed_epochs}/{args.target_epochs}. "
+            f"Completed epochs: {completed_epochs}/{args.num_epochs}. "
             f"Remaining epochs: {remaining_epochs}"
         )
 

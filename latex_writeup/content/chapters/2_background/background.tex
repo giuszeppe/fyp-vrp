@@ -87,17 +87,17 @@ The routing decisions satisfy
 
 
 % Variants
-\section{Variants}
+\section{VRP Variants}
 To model more realistic delivery environments, several extensions of the traditional VRP have been proposed to incorporate additional operational constraints.
 \paragraph{CVRP}
 The Capacitated Vehicle Routing Problem (CVRP) extends the classical VRP by introducing vehicle capacity constraints,
 in the form of a maximum load that each vehicle can carry, $Q$,  and a demand $q\in[0,Q]$ associated with each customer 
-such that the demand for each customer the demand doesn't exceed the vehicle capacity, i.e., $q_i \leq Q$ for all $i\in N_c$.
+such that the demand of each customer does not exceed the vehicle capacity, i.e., $q_i \leq Q$ for all $i\in N_c$.
 Formally, Capacity Constraint can be expressed as follows:
 The total demand assigned to a vehicle must not exceed its capacity:
 \[
 \sum_{i\in N_c} q_i y_{ik} \leq Q,
-\qquad \forall k\in K
+\qquad \forall k\in K where $K$ denotes the set of vehicles.
 \]
 \paragraph{VRPTW}
 In addition to the constraints of CVRP, VRPTW introduces time window constraints for each customer $i\in N_c$,
@@ -124,22 +124,31 @@ where $M$ is a sufficiently large constant to ensure the constraint is only acti
 \paragraph{DVRPTW}
 A more advanced extension is the Dynamic Capacitated Vehicle Routing Problem with Time Windows (DCVRPTW), 
 which incorporates all aforementioned constraints whilst accounting for dynamic and uncertain events that may occur during operation. 
+In DVRPTW, routing decisions must be continuously adapted as new customer requests arrive over time. 
+This requires algorithms to operate in an online setting, where only partial information is available at any given moment, and previously planned routes may need to be modified dynamically.
 Instead of a fixed customer set $N_c$ known in advance, we define: 
 $N_c(t)$ as the set of customers known at time $t$, which can change dynamically. 
 \paragraph{Importance of DVRPTW}
-\section{Solomon}
-Given the importance of VRPTW in the world, researchers have developed various benchmark datasets to ensure evaluations are fare and comparable. 
-One of the most important for VRPTW is the Solomon benchmark, which consists of 100 instances with 100 customers each, designed to test the performance of VRPTW algorithms under different conditions.
+The DVRPTW is particularly relevant in real-world logistics systems, where customer requests may arrive dynamically throughout the day. 
+Applications include same-day delivery, ride-sharing services, and emergency response systems, where decisions must be made in real time under uncertainty. 
+The dynamic nature of the problem significantly increases its complexity, as routing plans must be continuously updated while maintaining service quality and operational efficiency.
+\section{Benchmark Datasets}
+Due to the importance of VRPTW, standardised benchmark datasets have been developed to ensure evaluations are fair and comparable. 
+One of the most important for VRPTW is the Solomon benchmark, which consists of 100 instances with 100 customers each, designed to test the performance of VRPTW algorithms under different conditions. \cite{solomonAlgorithmsVehicleRouting1987}
 \subsection{Geographical Distributions}
 The dataset is split into three classes based on the spatial arrangement of customers:
-C (Clustered): Customers are grouped in distinct clusters, which typically results in shorter total distances
-R (Random): Customers are uniformly distributed across the map; these are widely considered the most difficult instances because they lack clear structural patterns
-RC (Mixed): A combination of clustered and random distributions
+\begin{itemize}
+\item C (Clustered): Customers are grouped in distinct clusters, which typically results in shorter total distances
+\item R (Random): Customers are uniformly distributed across the map; these are widely considered the most difficult instances because they lack clear structural patterns
+\item RC (Mixed): A combination of clustered and random distributions
+\end{itemize}
 
 \subsection{Temporal and Capacity Constraints (Type 1 vs. Type 2)}
 Solomon further divided these into two categories based on the tightness of constraints:
-Type 1 (e.g., R1, C1, RC1): These feature a short scheduling horizon, narrow time windows, and small vehicle capacities, meaning vehicles can only serve a few customers per route
-Type 2 (e.g., R2, C2, RC2): These have a long scheduling horizon, wide time windows, and large vehicle capacities, allowing many customers to be serviced by a single vehicle
+\begin{itemize}
+	\item Type 1 (e.g., C1, R1, RC1): These have a short scheduling horizon, narrow time windows, and small vehicle capacities, which typically require multiple vehicles to service customers and result in more complex routing decisions.
+	\item Type 2 (e.g., C2, R2, RC2): These have a long scheduling horizon, wide time windows, and large vehicle capacities, allowing many customers to be serviced by a single vehicle, which can simplify routing decisions but may also lead to longer routes and increased total distance.
+\end{itemize}
 
 \subsection{Adaptation for Dynamic VRP (DVRPTW)}
 Although the original Solomon benchmark is static, it has been widely adapted for dynamic VRP research by introducing an "appearance time" for a percentage of the customers based on a Degree of Dynamism (DoD) $\epsilon$.
@@ -162,129 +171,68 @@ and decision-making effectiveness. The following metrics represent the most comm
 adopted measures in recent DVRPTW and related dynamic routing studies.
 \subsection{Service Quality Metrics}
 \begin{itemize}
-	\item \cite{chen2026} Lateness: sum of the time units by which each customer has been served late in a route by a vehicle, i.e. $ \sum \forall V \in \mathcal{V}, \forall i \in \mathcal{C} t_{served} - l_i $, where $l_i$ is the latest time a vehicle can arrive at customer $i$.
-	\item Rejection rate: Comparison of solution methods for the dynamic pickup and delivery problem with time windows
-	\item Responsivness: An ant colony system for responsive dynamic vehicle routing
-	\item Value of Information: The gap between real-time dynamic results and an "Oracle" (offline optimal) solution. Pillac et al. (2013) Section 1.4.3
-	\item Total Distance: The Euclidean sum of all arcs traversed by the entire fleet. Ojeda Rios et al. (2021) Section 3.4
-	\item Fleet Size: The total number of vehicles (K or V) required to fulfill all demands. Shahbazian et al. (2025) Table 4
-	\item Total Duration: Cumulative time from depot departure until the last vehicle returns. Xu et al. (2025)
-	\item Solving Time: The wall-clock computation time (s) required to return a solution for a snapshot. Dornemann (2023) Table 3
-	\item Optimality Gap: The percentage difference between the algorithm's cost and the Best Known Solution (BKS). Berto et al. (2024) Table 1
+	
+	\item \cite{chen2026} Lateness: Lateness is defined as the sum of delays beyond the latest allowable service time, typically expressed as $\sum_i \max(0, t_i - b_i)$.
+	\item Rejection rate: Percentage of requests that are rejected due to capacity or time window constraints.% \cite{AntColony}
+	\item Responsiveness: It measures how quickly a routing algorithm adapts to newly arriving requests, typically quantified as the delay between request arrival and its service start time. \cite{AntColony} 
 \end{itemize}
 \subsection{Operational Efficiency Metrics}
+\begin{itemize}
+	\item Total Distance: The Euclidean sum of all arcs traversed by the entire fleet. %Ojeda Rios et al. (2021) Section 3.4
+	\item Fleet Size: The total number of vehicles (K or V) required to fulfill all demands. %Shahbazian et al. (2025) Table 4
+	\item Total Duration: Cumulative time from depot departure until the last vehicle returns. %-Xu et al. (2025)
+\end{itemize}
 
 \subsection{Computational Efficiency Metrics}
+\begin{itemize}
+	\item Solving Time: The wall-clock computation time (s) required to return a solution for a snapshot. %Dornemann (2023) Table 3
+\end{itemize}
 
 \subsection{Benchmarking and Comparative Analysis}
-\section{Heuristics and Metaheuristics for VRP}
+\begin{itemize}
+	\item Optimality Gap: The percentage difference between the algorithm's cost and the Best Known Solution. %Berto et al. (2024) Table 1
+	\item Value of Information: The gap between real-time dynamic results and an "Oracle" (offline optimal) solution that has all the knowledge beforehand.\cite{valueOfInformation} 
+\end{itemize}
+\section{Solution Methods}
+The VRP is NP-hard, making exact methods computationally infeasible for large instances. To address this, researchers have
+developed various heuristic and metaheuristic approaches that provide good quality solutions within reasonable time frames.
+\subsection{Heuristics}
+ Heuristics are problem-specific strategies that construct solutions based on intuitive rules or domain knowledge. These can be broadly categorised into two types:
+\begin{itemize}
+	\item{Constructive heuristics}: These build a solution from scratch by iteratively adding customers to routes based on criteria such as proximity or cost. Examples include the Nearest Neighbor, Clarke-Wright Savings, and Solomon's Insertion heuristics.\cite{metaheuristicsAndHeuristics}
+	\item {Improvement heuristics}: These start with an initial solution and iteratively improve it through local search techniques, such as 2-opt, 3-opt, or Or-opt, which involve swapping or relocating customers to reduce total distance or improve route feasibility.\cite{metaheuristicsAndHeuristics}
+\end{itemize}
+\subsection{Metaheuristics}
+ Metaheuristics are higher-level frameworks that guide the search process to explore the solution space more effectively.
+They often incorporate mechanisms to escape local optima and can be applied to a wide range of combinatorial problems. \cite{metaheuristicsAndHeuristics}
+Common metaheuristics for VRP include:
+\begin{itemize}
+	\item Genetic Algorithms (GA): Use evolutionary principles to evolve a population of solutions through selection, crossover, and mutation.
+	\item Tabu Search(TS): Employs memory structures to avoid cycling back to previously visited solutions.
+	\item Guided Local Search(GLS): Enhances local search by penalizing certain solution features to escape local minima.
+	\item Simulated Annealing (SA): Mimics the cooling process of metals to probabilistically accept worse solutions early on to escape local minima.
+	\item Ant Colony Optimization (ACO): Inspired by the foraging behavior of ants, it uses pheromone trails to guide the search for optimal routes.
+\end{itemize}
 
 \section{AI Methods}
+In addition to classical heuristics, recent work has explored AI-based approaches for solving combinatorial optimisation problems such as the VRP. 
+These methods aim to learn solution construction strategies directly from data, rather than relying on manually designed rules. 
+To enable this, optimisation problems are reformulated in a way that allows them to be processed by neural network models.
 
+A fundamental requirement in this setting is the representation of problem instances. 
+Routing problems are naturally expressed as graphs, where nodes correspond to locations and edges encode travel costs or distances. 
+Each node is associated with a feature representation that captures relevant problem attributes and enables processing by learning-based models.
 
+To capture interactions between nodes, attention mechanisms are commonly employed. 
+Attention mechanisms allow models to dynamically focus on relevant parts of the input when constructing solutions, enabling both local and global relationships between nodes to be captured.
 
+Solution construction is typically formulated as a sequential process. 
+A solution is generated step-by-step, where at each step the model selects the next node based on the current partial solution and the encoded problem representation. 
+This is achieved through a decoder that produces a probability distribution over feasible actions, while enforcing constraints such as visiting each customer only once. 
+As a result, the complete solution can be viewed as a sequence of decisions.
 
+To learn such decision-making strategies, reinforcement learning is commonly used. 
+In this framework, the quality of a constructed solution is evaluated using a reward signal, typically defined in terms of routing cost, and the model is trained to maximise expected reward over a distribution of problem instances. 
+This allows the model to learn effective solution strategies without requiring optimal solutions as supervision \cite{Kool2019}.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\section{Classical Vehicle Routing Problem (VRP)}
-\begin{itemize}
-	\item Transition to:
-	\begin{itemize}
-		\item Vehicle Routing Problem with Time Windows
-		\item Dynamic Vehicle Routing Problem
-		\item DVRPTW (your exact problem)
-	\end{itemize}
-	\item What to cover:
-	\begin{itemize}
-		\item Problem formulation (constraints, objectives)
-		\item NP-hardness and implications
-		\item Real-world applications (logistics, ride-sharing, last-mile delivery)
-	\end{itemize}
-\end{itemize}
-\section{Exact Methods for VRP}
-\begin{itemize}
-	\item Transition to:
-	\begin{itemize}
-		\item Branch-and-Bound
-		\item Integer Linear Programming (ILP)
-		\item Dynamic Programming
-	\end{itemize}
-	\item What to cover:
-	\begin{itemize}
-		\item Overview of each method and how it applies to VRP
-		\item Strengths and weaknesses (e.g., scalability issues)
-		\item Examples of successful applications in small to medium-sized VRP instances
-	\end{itemize}
-\end{itemize}
-\section{Heuristic and Metaheuristic Methods for VRP}
-\begin{itemize}
-	\item Transition to:
-	\begin{itemize}
-		\item Genetic Algorithms
-		\item GLS (Guided Local Search)		
-		\item Tabu Search
-	\end{itemize}
-	\item What to cover:
-	\begin{itemize}
-		\item Explanation of each method and its application to VRP
-		\item Advantages (e.g., ability to find good solutions in reasonable time) and disadvantages (e.g., no guarantee of optimality)
-		\item Examples of successful applications in large-scale VRP instances
-	\end{itemize}
-\end{itemize}
-\section{Reinforcement Learning for VRP}
-\begin{itemize}
-	\item Transition to:
-	\begin{itemize}
-		\item Pointer Network
-		\item Deep Q-Networks (DQN)
-		\item Policy Gradient Methods
-		\item Actor-Critic Methods
-	\end{itemize}
-	\item What to cover:
-	\begin{itemize}
-		\item Overview of each method and how it applies to VRP
-		\item Strengths (e.g., ability to learn from experience) and weaknesses (e.g., training time, convergence issues)
-		\item Examples of successful applications in VRP and related combinatorial optimization problems
-	\end{itemize}
-\end{itemize}
-
-\section{Dynamic VRP and Re-optimization Strategies}
-\begin{itemize}
-	\item Transition to:
-	\begin{itemize}
-		\item Handling Dynamism (e.g., new orders, traffic conditions)
-		\item Online algorithms
-		\item Re-optimization techniques (e.g., rolling horizon, event-triggered re-optimization)
-	\end{itemize}
-	\item What to cover:
-	\begin{itemize}
-		\item Challenges of dynamic VRP (e.g., uncertainty, real-time decision-making)
-		\item Overview of strategies to handle dynamism and re-optimize routes
-		\item Examples of successful applications in dynamic VRP scenarios
-	\end{itemize}
-\end{itemize}
-\end{document}
+% These concepts, graph-based representations, attention-based encoding, and sequential decision-making, form the foundation of modern neural approaches to routing problems, and provide the necessary background to understand attention-based models such as the Attention Model and its extensions.

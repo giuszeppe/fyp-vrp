@@ -1,12 +1,20 @@
 import sys
 import time
+import re
+import shutil
 import argparse
 from pathlib import Path
+from typing import Any, cast
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import torch
 from rl4co.utils.trainer import RL4COTrainer
+
+try:
+    from lightning.pytorch.callbacks import ModelCheckpoint
+except ImportError:
+    from pytorch_lightning.callbacks import ModelCheckpoint
 
 sys.path.append(str(Path("..").resolve() / "src"))
 
@@ -59,8 +67,26 @@ def parse_args():
     parser.add_argument(
         "--output-root",
         type=Path,
-        default=Path("../outputs/notebook_routefinder_solomon_generated"),
+        default=Path("../outputs/routefinder_with_lateness"),
         help="Directory where CSV/plots/checkpoints are saved.",
+    )
+    parser.add_argument(
+        "--checkpoint-dir",
+        type=Path,
+        default=None,
+        help="Checkpoint directory. Defaults to <output-root>/checkpoints",
+    )
+    parser.add_argument(
+        "--final-checkpoint-path",
+        type=Path,
+        default=None,
+        help="Optional explicit final checkpoint path. Defaults to <output-root>/routefinder_<N>cust_<E>epochs.ckpt",
+    )
+    parser.add_argument(
+        "--checkpoint-every-n-epochs",
+        type=int,
+        default=2,
+        help="Checkpoint save frequency in epochs.",
     )
 
     parser.add_argument(
@@ -206,6 +232,54 @@ def summarize_td(td, name):
     print("service min/mean/max:", st.min().item(), st.mean().item(), st.max().item())
 
 
+def _extract_epoch_from_checkpoint_name(path: Path) -> int:
+    matches = re.findall(r"epoch[-_](\d+)", path.stem)
+    if not matches:
+        return -1
+    return int(matches[-1])
+
+
+def find_resume_checkpoint(checkpoint_dir: Path) -> Path | None:
+    candidates = []
+
+    interrupted_checkpoint = checkpoint_dir / "interrupted.ckpt"
+    if interrupted_checkpoint.exists():
+        candidates.append(interrupted_checkpoint)
+
+    last_checkpoint = checkpoint_dir / "last.ckpt"
+    if last_checkpoint.exists():
+        candidates.append(last_checkpoint)
+
+    candidates.extend(
+        path for path in checkpoint_dir.glob("epoch-*.ckpt") if path.is_file()
+    )
+
+    if not candidates:
+        return None
+
+    return max(
+        candidates,
+        key=lambda path: (
+            path.name == "interrupted.ckpt",
+            path.name == "last.ckpt",
+            _extract_epoch_from_checkpoint_name(path),
+            path.stat().st_mtime,
+        ),
+    )
+
+
+def get_completed_epochs(checkpoint_path: Path | None) -> int:
+    if checkpoint_path is None:
+        return 0
+
+    try:
+        checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+    except TypeError:
+        checkpoint = torch.load(checkpoint_path, map_location="cpu")
+
+    return max(int(checkpoint.get("epoch", -1)) + 1, 0)
+
+
 def main():
     args = parse_args()
 
@@ -213,7 +287,14 @@ def main():
     rc_dataset_root = args.rc_dataset_root
     c_dataset_root = args.c_dataset_root
     output_root = args.output_root
+    checkpoint_dir = args.checkpoint_dir or (output_root / "checkpoints")
+    interrupted_checkpoint_path = checkpoint_dir / "interrupted.ckpt"
+    final_checkpoint_path = args.final_checkpoint_path or (
+        output_root / f"routefinder_{args.num_customers}_cust_{args.num_epochs}_epochs.ckpt"
+    )
+
     output_root.mkdir(parents=True, exist_ok=True)
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
     if torch.cuda.is_available():
         device = torch.device("cuda")
@@ -230,6 +311,7 @@ def main():
     print("RC dataset root:", rc_dataset_root.resolve())
     print("C dataset root:", c_dataset_root.resolve())
     print("Output root:", output_root.resolve())
+    print("Checkpoint dir:", checkpoint_dir.resolve())
 
     generator = MTVRPGenerator(
         num_loc=args.num_customers,
@@ -250,6 +332,16 @@ def main():
         },
     )
 
+    checkpoint_callback = ModelCheckpoint(
+        dirpath=checkpoint_dir,
+        filename="epoch-{epoch:03d}",
+        save_top_k=-1,
+        save_last=True,
+        every_n_epochs=args.checkpoint_every_n_epochs,
+        save_on_train_epoch_end=True,
+        auto_insert_metric_name=False,
+    )
+
     trainer = RL4COTrainer(
         max_epochs=args.num_epochs,
         accelerator=accelerator,
@@ -257,241 +349,50 @@ def main():
         logger=None,
         num_sanity_val_steps=0,
         precision="32-true",
+        callbacks=[cast(Any, checkpoint_callback)],
     )
 
+    resume_checkpoint = find_resume_checkpoint(checkpoint_dir)
+    completed_epochs = get_completed_epochs(resume_checkpoint)
+    remaining_epochs = max(args.num_epochs - completed_epochs, 0)
+
+    if resume_checkpoint is not None:
+        print(f"Resuming training from checkpoint: {resume_checkpoint}")
+        print(
+            f"Completed epochs: {completed_epochs}/{args.num_epochs}. "
+            f"Remaining epochs: {remaining_epochs}"
+        )
+
     if not args.skip_training:
-        trainer.fit(model)
-        # trainer.save_checkpoint(output_root / "end_of_training.pt")
-        # model = model.load_from_checkpoint(
-        #     output_root / "checkpoints/last.ckpt",
-        #     weights_only=False,
-        #     map_location=torch.device("cpu"),
-        # )
+        if remaining_epochs == 0:
+            if (
+                resume_checkpoint is not None
+                and resume_checkpoint.resolve() != final_checkpoint_path.resolve()
+            ):
+                shutil.copy2(resume_checkpoint, final_checkpoint_path)
 
-    if not args.skip_eval:
-        instance_paths = find_rc_instances(dataset_root)
-        assert instance_paths, f"No RC instances found under {dataset_root.resolve()}"
-
-        if args.max_eval_instances is not None:
-            instance_paths = instance_paths[: args.max_eval_instances]
-
-        instances = [
-            parse_solomon(path, max_customers=args.num_customers)
-            for path in instance_paths
-        ]
-        print("Loaded instances:", [instance.instance_id for instance in instances])
-
-        def solve_with_routefinder(instance, num_augment=args.num_augment):
-            t0 = time.perf_counter()
-            td = instance_to_routefinder_td(
-                instance,
-                normalize_coords=args.normalize_coords,
-            ).to(device)
-            td_reset = env.reset(td)
-            model.to(device).eval()
-
-            with torch.inference_mode():
-                if num_augment > 1:
-                    out = evaluate_routefinder(
-                        model,
-                        td_reset.clone(),
-                        num_augment=num_augment,
-                    )
-                    actions = out.get(
-                        "best_aug_actions",
-                        out.get("best_multistart_actions", out.get("actions")),
-                    )
-                else:
-                    out = model.policy(
-                        td_reset.clone(),
-                        env,
-                        phase="test",
-                        decode_type="greedy",
-                        return_actions=True,
-                    )
-                    actions = out["actions"]
-
-            solution = routefinder_actions_to_solution(
-                actions,
-                instance,
-                strategy="routefinder",
-            )
-            solution.total_distance = total_distance(instance, solution)
-            solution.solve_time_s = time.perf_counter() - t0
-            solution.details.update({"num_augment": num_augment})
-            return solution
-
-        ortools = ORToolsVRPTWSolver()
-        routefinder_solutions = {}
-        ortools_solutions = {}
-        rows = []
-
-        for instance in instances:
-            rf_solution = solve_with_routefinder(instance)
-            or_solution = ortools.solve(
-                instance,
-                time_limit_s=args.ortools_time_limit_s,
-            )
-
-            routefinder_solutions[instance.instance_id] = rf_solution
-            ortools_solutions[instance.instance_id] = or_solution
-
-            gap_pct = (
-                100.0
-                * (rf_solution.total_distance - or_solution.total_distance)
-                / or_solution.total_distance
-            )
-            rows.append(
-                {
-                    "instance_id": instance.instance_id,
-                    "n_customers": instance.n_customers,
-                    "routefinder_distance": rf_solution.total_distance,
-                    "ortools_distance": or_solution.total_distance,
-                    "gap_to_ortools_pct": gap_pct,
-                    "routefinder_routes": len(
-                        [r for r in rf_solution.routes if r.node_ids]
-                    ),
-                    "ortools_routes": len(
-                        [r for r in or_solution.routes if r.node_ids]
-                    ),
-                    "routefinder_time_s": rf_solution.solve_time_s,
-                    "ortools_time_s": or_solution.solve_time_s,
-                }
-            )
-
-        results_df = (
-            pd.DataFrame(rows)
-            .sort_values("gap_to_ortools_pct")
-            .reset_index(drop=True)
-        )
-        results_df[
-            [
-                "routefinder_distance",
-                "ortools_distance",
-                "gap_to_ortools_pct",
-                "routefinder_time_s",
-                "ortools_time_s",
-            ]
-        ] = results_df[
-            [
-                "routefinder_distance",
-                "ortools_distance",
-                "gap_to_ortools_pct",
-                "routefinder_time_s",
-                "ortools_time_s",
-            ]
-        ].round(3)
-
-        print(results_df.to_string(index=False))
-        results_df.to_csv(output_root / "routefinder_vs_ortools.csv", index=False)
-        print("Saved table to", output_root / "routefinder_vs_ortools.csv")
-
-        if not args.skip_plots:
-            fig, axes = plt.subplots(1, 2, figsize=(16, 5))
-
-            plot_df = results_df.set_index("instance_id")
-            plot_df[["routefinder_distance", "ortools_distance"]].plot(
-                kind="bar",
-                ax=axes[0],
-            )
-            axes[0].set_title("RouteFinder vs OR-Tools Distance")
-            axes[0].set_ylabel("Total distance")
-            axes[0].grid(axis="y", alpha=0.3)
-
-            plot_df["gap_to_ortools_pct"].plot(kind="bar", ax=axes[1], color="tab:orange")
-            axes[1].axhline(0.0, color="black", linewidth=1)
-            axes[1].set_title("RouteFinder Gap vs OR-Tools")
-            axes[1].set_ylabel("Gap (%)")
-            axes[1].grid(axis="y", alpha=0.3)
-
-            fig.tight_layout()
-            fig.savefig(output_root / "routefinder_vs_ortools_summary.png", dpi=180)
-            plt.show()
             print(
-                "Saved summary plot to",
-                output_root / "routefinder_vs_ortools_summary.png",
+                f"Training already complete. Final checkpoint available at {final_checkpoint_path}"
             )
-
-        if not args.skip_plots:
-            from dvrptw_bench.viz.route_plot import plot_routes
-
-            for instance in instances[: min(3, len(instances))]:
-                print(f"\n=== {instance.instance_id} ===")
-                print(
-                    "RouteFinder distance:",
-                    routefinder_solutions[instance.instance_id].total_distance,
+        else:
+            try:
+                super(RL4COTrainer, trainer).fit(
+                    model,
+                    ckpt_path=str(resume_checkpoint) if resume_checkpoint is not None else None,
+                    weights_only=False,
                 )
+            except KeyboardInterrupt:
+                trainer.save_checkpoint(interrupted_checkpoint_path)
                 print(
-                    "OR-Tools distance:",
-                    ortools_solutions[instance.instance_id].total_distance,
+                    f"Training interrupted. Saved resume checkpoint to {interrupted_checkpoint_path}"
                 )
-                plot_routes(instance, routefinder_solutions[instance.instance_id])
-                plot_routes(instance, ortools_solutions[instance.instance_id])
+                raise
 
-        print(env.generator(1)["time_windows"][0][:10])
-        print(
-            instance_to_routefinder_td(
-                instances[0],
-                normalize_coords=args.normalize_coords,
-            )["time_windows"][0][:10]
-        )
+            trainer.save_checkpoint(final_checkpoint_path)
+            if interrupted_checkpoint_path.exists():
+                interrupted_checkpoint_path.unlink()
 
-        summarize_td(env.generator(1), "train generator")
-        summarize_td(
-            instance_to_routefinder_td(
-                instances[0],
-                normalize_coords=args.normalize_coords,
-            ),
-            "solomon inference",
-        )
-
-    if not args.skip_demo:
-        td_data = env.generator(args.num_rollout_test_instances)
-        variant_names = env.get_variant_names(td_data)
-
-        td_test = env.reset(td_data)
-        actions = rollout(env, td_test.clone(), greedy_policy)
-        rewards_nearest_neighbor = env.get_reward(td_test, actions)
-
-        print(f"Averaged cost: {-rewards_nearest_neighbor.mean():.3f}")
-
-        for idx in [0, 1, 2]:
-            env.render(td_test[idx], actions[idx])
-            print("Cost: ", -rewards_nearest_neighbor[idx].item())
-            print("Problem: ", variant_names[idx])
-
-        td_test = td_test.to(device)
-        model = model.to(device)
-        out = evaluate(model, td_test.clone())
-
-        actions = out["best_aug_actions"]
-        rewards = env.get_reward(td_test, actions)
-
-        print(f"Averaged cost: {-rewards.mean():.3f}")
-
-        for i in range(3):
-            print(f"Problem {i + 1} | Cost: {-rewards[i]:.3f}")
-            print("Variant", env.get_variant_names(td_test[i]))
-            env.render(td_test[i].cpu(), actions[i].cpu())
-
-        td_test = td_test.cpu()
-        actions_pyvrp, costs_pyvrp = solve(
-            td_test,
-            max_runtime=args.pyvrp_max_runtime,
-            num_procs=args.pyvrp_num_procs,
-            solver="pyvrp",
-        )
-        rewards_pyvrp = env.get_reward(td_test.clone().cpu(), actions_pyvrp)
-
-        print(f"Averaged cost PyVRP: {-rewards_pyvrp.mean():.3f}")
-        print(
-            f"Nearest Neighbor gap to HGS-PyVRP: "
-            f"{gap(rewards_nearest_neighbor.cpu(), rewards_pyvrp.cpu()):.3f}%"
-        )
-        print(
-            f"RouteFinder gap to HGS-PyVRP: "
-            f"{gap(rewards.cpu(), rewards_pyvrp.cpu()):.3f}%"
-        )
+            print(f"Final checkpoint saved to {final_checkpoint_path}")
 
 
 if __name__ == "__main__":

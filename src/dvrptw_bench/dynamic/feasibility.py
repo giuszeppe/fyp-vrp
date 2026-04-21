@@ -5,9 +5,10 @@ from __future__ import annotations
 import math
 
 from dvrptw_bench.common.typing import FeasibilityReport, Solution, VRPTWInstance
+from dvrptw_bench.dynamic.dynamic_instance import DynamicInstance
 
 
-def _travel(instance: VRPTWInstance, nodes: dict[int, object], from_id: int, to_id: int) -> float:
+def _travel(instance: DynamicInstance, nodes: dict[int, object], from_id: int, to_id: int) -> float:
     if 0 <= from_id < len(instance.distance_matrix) and 0 <= to_id < len(instance.distance_matrix):
         return instance.distance_matrix[from_id][to_id]
     a = nodes[from_id]
@@ -15,7 +16,7 @@ def _travel(instance: VRPTWInstance, nodes: dict[int, object], from_id: int, to_
     return math.hypot(a.x - b.x, a.y - b.y)
 
 
-def verify_solution(instance: VRPTWInstance, solution: Solution) -> FeasibilityReport:
+def verify_solution(instance: DynamicInstance, solution: Solution) -> FeasibilityReport:
     nodes = {n.id: n for n in instance.all_nodes}
 
     cap_violation = 0.0

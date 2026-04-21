@@ -98,9 +98,11 @@ class RouteFinderModel:
     def load(self, path: str | Path) -> None:
         self.model = RouteFinderBase.load_from_checkpoint(
             str(path),
+            map_location=self.device,
             env=self.env,
             policy=self.policy,
             strict=False,
+            weights_only=False,
         )
         self.model.to(self.device)
         self.model.eval()

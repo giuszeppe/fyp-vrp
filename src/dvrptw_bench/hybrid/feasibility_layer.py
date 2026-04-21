@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dvrptw_bench.common.errors import InfeasibleSolutionError
 from dvrptw_bench.common.typing import FeasibilityReport, Solution, VRPTWInstance
+from dvrptw_bench.dynamic.dynamic_instance import DynamicInstance
 from dvrptw_bench.dynamic.feasibility import verify_solution
 from dvrptw_bench.heuristics.constructive_pmca import PMCAVRPTWSolver
 
@@ -13,10 +14,10 @@ class FeasibilityLayer:
         self.mode = mode
         self.fallback_heuristic = fallback_heuristic
 
-    def verify(self, solution: Solution, instance: VRPTWInstance) -> FeasibilityReport:
+    def verify(self, solution: Solution, instance: DynamicInstance) -> FeasibilityReport:
         return verify_solution(instance, solution)
 
-    def enforce(self, solution: Solution, instance: VRPTWInstance) -> Solution:
+    def enforce(self, solution: Solution, instance: DynamicInstance) -> Solution:
         rep = self.verify(solution, instance)
         if rep.feasible:
             return solution
@@ -32,7 +33,7 @@ class FeasibilityLayer:
 
         return PMCAVRPTWSolver().solve(instance, time_limit_s=2.0)
 
-    def _simple_repair(self, solution: Solution, instance: VRPTWInstance) -> Solution:
+    def _simple_repair(self, solution: Solution, instance: DynamicInstance) -> Solution:
         all_ids = {c.id for c in instance.customers}
         seen: set[int] = set()
         for r in solution.routes:

@@ -16,6 +16,35 @@ class ORToolsDVRPTWSolver:
     def __init__(self, soft_time_windows: bool = True):
         self.soft_time_windows = soft_time_windows
 
+    def _warm_start_routes_for_assignment(
+        self,
+        instance: DynamicInstance,
+        warm_start: Solution,
+    ) -> list[list[int]]:
+        """Convert solution customer IDs to OR-Tools manager node positions."""
+        routes = [[] for _ in range(instance.vehicle_count)]
+        seen_customer_ids: set[int] = set()
+
+        for route in warm_start.routes:
+            if route.vehicle_id < 0 or route.vehicle_id >= instance.vehicle_count:
+                continue
+
+            node_positions: list[int] = []
+            for customer_id in route.node_ids:
+                if customer_id in seen_customer_ids:
+                    continue
+
+                node_pos = instance.node_pos_for_customer(customer_id)
+                if node_pos is None:
+                    continue
+
+                seen_customer_ids.add(customer_id)
+                node_positions.append(node_pos)
+
+            routes[route.vehicle_id] = node_positions
+
+        return routes
+
     def solve(self, instance: DynamicInstance, time_limit_s: float, warm_start: Solution | None = None) -> Solution | None:
         t0 = time.perf_counter()
         try:
@@ -25,18 +54,7 @@ class ORToolsDVRPTWSolver:
             ends = instance.ends
             manager = pywrapcp.RoutingIndexManager(len(instance.all_nodes), instance.vehicle_count, starts, ends)
             routing = pywrapcp.RoutingModel(manager)
-
-            # if warm_start is not None:
-            #     initial_routes = [[] for _ in range(instance.vehicle_count)]
-            #     for route in warm_start.routes:
-            #         initial_routes[route.vehicle_id] = route.node_ids
-            #     # print(starts, ends, instance.all_nodes)
-            #     print("Warm start routes:", initial_routes)
-                
-            #     initial_assignment = routing.ReadAssignmentFromRoutes(
-            #         initial_routes,
-            #         True,
-            #     )
+            initial_assignment = None
 
             def demand_callback(from_idx: int) -> int:
                 node_pos = manager.IndexToNode(from_idx)
@@ -114,11 +132,18 @@ class ORToolsDVRPTWSolver:
             params.time_limit.seconds = max(1, int(time_limit_s))
             # params.log_search = True
 
-            # if initial_assignment is not None:
-            #     assignment = routing.SolveFromAssignmentWithParameters(initial_assignment, params)
-            # else:
-            assignment = routing.SolveWithParameters(params)
-            # assignment = routing.SolveWithParameters(params)
+            if warm_start is not None:
+                initial_routes = self._warm_start_routes_for_assignment(instance, warm_start)
+                if any(initial_routes):
+                    initial_assignment = routing.ReadAssignmentFromRoutes(
+                        initial_routes,
+                        True,
+                    )
+
+            if initial_assignment is not None:
+                assignment = routing.SolveFromAssignmentWithParameters(initial_assignment, params)
+            else:
+                assignment = routing.SolveWithParameters(params)
             routes: list[Route] = []
             if assignment:
                 for v in range(instance.vehicle_count):

@@ -46,7 +46,8 @@ class RL4COPolicy:
         self.model.train()
         return {"status": "ok"}
 
-    def infer_instance(self, instance: VRPTWInstance, decode_type: str = "sampling", num_samples: int = 1024, select_best: bool = True) -> Solution:
+    def infer_instance(self, instance, decode_type: str = "sampling", num_samples: int = 1024, select_best: bool = True) -> Solution:
+        print(type(instance))
         solution = self.model.solve(instance, decode_type=decode_type, num_samples=num_samples, select_best=select_best)
         return solution
 

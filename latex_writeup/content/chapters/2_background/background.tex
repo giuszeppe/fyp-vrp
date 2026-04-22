@@ -56,33 +56,38 @@ Each edge $(i,j)\in E$ is associated with a travel cost $c_{ij}$.
 A fleet of vehicles departs from the depot(s), serves each customer exactly once,
 and minimizes the total travel cost.
 Let $x_{ijk}\in\{0,1\}$ indicate whether vehicle $k$ traverses edge $(i,j)$.
-The objective is to minimize the total travel cost:
-\[
+The objective is to minimize the total travel cost, as shown in Equation~\eqref{eq:vrp-objective}:
+\begin{equation}
+\label{eq:vrp-objective}
 \min \sum_{k\in K}\sum_{i\in N}\sum_{j\in N\setminus\{i\}} c_{ij}x_{ijk}.
-\]
+\end{equation}
 The routing decisions satisfy
 \begin{itemize}
-	\item Assignment Constraint: Each customer is served by exactly one vehicle.
-\[
+	\item Assignment Constraint: Each customer is served by exactly one vehicle, as in Equation~\eqref{eq:vrp-assignment}.
+\begin{equation}
+\label{eq:vrp-assignment}
 \sum_{k\in K}\sum_{j\in N\setminus\{i\}} x_{ijk}=1,
 \qquad \forall i\in N_c,
-\]
-	\item Flow Conservation: Each vehicle that arrives at a customer must also depart from it.
-\[
+\end{equation}
+	\item Flow Conservation: Each vehicle that arrives at a customer must also depart from it, as in Equation~\eqref{eq:vrp-flow-conservation}.
+\begin{equation}
+\label{eq:vrp-flow-conservation}
 \sum_{j\in N\setminus\{i\}} x_{ijk}
 =
 \sum_{j\in N\setminus\{i\}} x_{jik},
 \qquad \forall i\in N_c,\; \forall k\in K.
-\]
-	\item Vehicle Returns to Depot: Each vehicle must start and end at the depot.
-\[
+\end{equation}
+	\item Vehicle Returns to Depot: Each vehicle must start and end at the depot, as shown in Equations~\eqref{eq:vrp-depot-departure} and~\eqref{eq:vrp-depot-return}.
+\begin{equation}
+\label{eq:vrp-depot-departure}
 \sum_{j\in N\setminus\{0\}} x_{0jk} = 1,
 \qquad \forall k\in K,
-\]
-\[
+\end{equation}
+\begin{equation}
+\label{eq:vrp-depot-return}
 \sum_{i\in N\setminus\{0\}} x_{i0k} = 1,
 \qquad \forall k\in K.
-\]
+\end{equation}
 \end{itemize}
 
 
@@ -94,11 +99,13 @@ The Capacitated Vehicle Routing Problem (CVRP) extends the classical VRP by intr
 in the form of a maximum load that each vehicle can carry, $Q$,  and a demand $q\in[0,Q]$ associated with each customer 
 such that the demand of each customer does not exceed the vehicle capacity, i.e., $q_i \leq Q$ for all $i\in N_c$.
 Formally, Capacity Constraint can be expressed as follows:
-The total demand assigned to a vehicle must not exceed its capacity:
-\[
+The total demand assigned to a vehicle must not exceed its capacity, as in Equation~\eqref{eq:cvrp-capacity}:
+\begin{equation}
+\label{eq:cvrp-capacity}
 \sum_{i\in N_c} q_i y_{ik} \leq Q,
-\qquad \forall k\in K where $K$ denotes the set of vehicles.
-\]
+\qquad \forall k\in K.
+\end{equation}
+where $K$ denotes the set of vehicles.
 \paragraph{VRPTW}
 In addition to the constraints of CVRP, VRPTW introduces time window constraints for each customer $i\in N_c$,
 defined by a time interval $[a_i, b_i]$ within which the service must start, often representing business operating
@@ -106,17 +113,19 @@ hours or delivery appointment slots.
 Moreover, each customer now has a service time $s_i$ that represents the time required to complete the service at customer $i$.
 Formally, the VRPTW additional constraints can be expressed as follows:
 \begin{itemize}
-	\item Time Window Constraint: Each customer must be served within their specified time window.
-	\[
+	\item Time Window Constraint: Each customer must be served within their specified time window, as in Equation~\eqref{eq:vrptw-time-window}.
+	\begin{equation}
+	\label{eq:vrptw-time-window}
 	a_i \leq t_i \leq b_i,
 	\qquad \forall i\in N_c.
-	\]
-	\item Service Time Constraint: The service time at each customer must be accounted for in the scheduling of routes.
+	\end{equation}
+	\item Service Time Constraint: The service time at each customer must be accounted for in the scheduling of routes, as in Equation~\eqref{eq:vrptw-service-time}.
 	Let $\tau_{ij}$ denote the travel time from node $i$ to node $j$.
-	\[
+	\begin{equation}
+	\label{eq:vrptw-service-time}
 t_j \geq t_i + s_i + \tau_{ij} - M(1 - x_{ijk}),
 \qquad \forall i,j\in N_c,\; \forall k\in K,
-\]
+	\end{equation}
 where $M$ is a sufficiently large constant to ensure the constraint is only active when vehicle $k$ travels from customer $i$ to customer $j$.
 	
 \end{itemize}
@@ -179,7 +188,7 @@ adopted measures in recent DVRPTW and related dynamic routing studies.
 \subsection{Operational Efficiency Metrics}
 \begin{itemize}
 	\item Total Distance: The Euclidean sum of all arcs traversed by the entire fleet. %Ojeda Rios et al. (2021) Section 3.4
-	\item Fleet Size: The total number of vehicles (K or V) required to fulfill all demands. %Shahbazian et al. (2025) Table 4
+	\item Fleet Size: The total number of vehicles (K or V) required to fulfil all demands. %Shahbazian et al. (2025) Table 4
 	\item Total Duration: Cumulative time from depot departure until the last vehicle returns. %-Xu et al. (2025)
 \end{itemize}
 
@@ -194,12 +203,39 @@ adopted measures in recent DVRPTW and related dynamic routing studies.
 	\item Value of Information: The gap between real-time dynamic results and an "Oracle" (offline optimal) solution that has all the knowledge beforehand.\cite{valueOfInformation} 
 \end{itemize}
 \section{Solution Methods}
-The VRP is NP-hard, making exact methods computationally infeasible for large instances. To address this, researchers have
-developed various heuristic and metaheuristic approaches that provide good quality solutions within reasonable time frames.
+The VRP is NP-hard, making exact methods computationally infeasible for large instances. 
+In practice, this is commonly addressed using traditional optimisation methods, particularly heuristics and meta-heuristics, which target high-quality solutions within reasonable time frames.
+We will now give a brief overview of these methods, as well as recent AI-based approaches that have shown promise in solving complex routing problems.
+% These methods are distinct from approximation algorithms in the strict theoretical sense, as they do not typically provide proven approximation ratios.
+
+\subsection{Exact Methods}
+
+Exact methods are optimisation approaches that seek provably optimal solutions through mathematical programming techniques. 
+They are particularly useful for smaller or structured VRP instances as computational effort typically increases rapidly with problem size, and often serve as benchmarks for evaluating approximate methods.
+It's important to note that in dynamic settings, optimality may only apply to the currently known state before new information is revealed \cite{ojedariosRecentDynamicVehicle2021}.
+
+Common examples include linear programming relaxations, integer programming formulations, branch-and-bound procedures, branch-and-cut methods, and branch-price-and-cut algorithms for large routing models. Extensions such as stochastic or robust optimisation are also used when uncertainty in demand or travel times must be considered \cite{meraliyevComprehensiveSurveyMethods2025}.
+
+% \subsection{Exact Methods}
+% Exact methods are optimisation approaches that seek provably optimal solutions for a given problem instance through mathematical programming techniques. According to \cite{meraliyevComprehensiveSurveyMethods2025}, exact methods remain important in Vehicle Routing Problem (VRP) research, particularly for smaller or more structured instances where optimality is computationally achievable.
+% Common exact approaches include:
+
+% \begin{itemize}
+%     \item \textbf{Linear Programming (LP):} Commonly used as a relaxation of routing formulations to generate lower bounds and support more advanced exact solution procedures.
+%     \item \textbf{Integer Programming (IP):} Frequently applied to VRP formulations where binary or integer decision variables represent routing choices such as vehicle movements, customer assignments, or service decisions.
+%     \item \textbf{Branch-and-Bound:} A tree-search procedure that partitions the solution space into smaller subproblems while eliminating branches that cannot outperform the current best solution.
+%     \item \textbf{Branch-and-Cut:} An extension of branch-and-bound that adds valid inequalities during the search process to strengthen the formulation and improve computational efficiency.
+%     \item \textbf{Branch-Price-and-Cut:} A decomposition-based exact method that combines branching, cutting planes, and column generation, particularly effective for VRP variants with large route sets or time-window constraints.
+%     \item \textbf{Stochastic and Robust Exact Extensions:} The survey also highlights methods such as chance-constrained optimisation, two-stage stochastic programming, multi-stage stochastic programming, and robust optimisation for handling uncertainty in travel times or customer demand.
+% \end{itemize}
+
+% Although exact methods can provide high-quality benchmark solutions, their computational effort often increases substantially with problem size and uncertainty, which limits their direct applicability in large-scale or real-time routing environments \cite{meraliyevComprehensiveSurveyMethods2025}. In dynamic routing settings, exact methods may only guarantee optimality for the currently known system state before new information is revealed \cite{ojedariosRecentDynamicVehicle2021}.
+
+
 \subsection{Heuristics}
  Heuristics are problem-specific strategies that construct solutions based on intuitive rules or domain knowledge. These can be broadly categorised into two types:
 \begin{itemize}
-	\item{Constructive heuristics}: These build a solution from scratch by iteratively adding customers to routes based on criteria such as proximity or cost. Examples include the Nearest Neighbor, Clarke-Wright Savings, and Solomon's Insertion heuristics.\cite{metaheuristicsAndHeuristics}
+	\item{Constructive heuristics}: These build a solution from scratch by iteratively adding customers to routes based on criteria such as proximity or cost. Examples include the Nearest Neighbour, Clarke-Wright Savings, and Solomon's Insertion heuristics.\cite{metaheuristicsAndHeuristics}
 	\item {Improvement heuristics}: These start with an initial solution and iteratively improve it through local search techniques, such as 2-opt, 3-opt, or Or-opt, which involve swapping or relocating customers to reduce total distance or improve route feasibility.\cite{metaheuristicsAndHeuristics}
 \end{itemize}
 \subsection{Metaheuristics}
@@ -211,28 +247,15 @@ Common metaheuristics for VRP include:
 	\item Tabu Search(TS): Employs memory structures to avoid cycling back to previously visited solutions.
 	\item Guided Local Search(GLS): Enhances local search by penalizing certain solution features to escape local minima.
 	\item Simulated Annealing (SA): Mimics the cooling process of metals to probabilistically accept worse solutions early on to escape local minima.
-	\item Ant Colony Optimization (ACO): Inspired by the foraging behavior of ants, it uses pheromone trails to guide the search for optimal routes.
+	\item Ant Colony Optimisation (ACO): Inspired by the foraging behaviour of ants, it uses pheromone trails to guide the search for optimal routes.
 \end{itemize}
 
-\section{AI Methods}
-In addition to classical heuristics, recent work has explored AI-based approaches for solving combinatorial optimisation problems such as the VRP. 
-These methods aim to learn solution construction strategies directly from data, rather than relying on manually designed rules. 
-To enable this, optimisation problems are reformulated in a way that allows them to be processed by neural network models.
+\subsection{AI Methods} 
 
-A fundamental requirement in this setting is the representation of problem instances. 
-Routing problems are naturally expressed as graphs, where nodes correspond to locations and edges encode travel costs or distances. 
-Each node is associated with a feature representation that captures relevant problem attributes and enables processing by learning-based models.
+Recent research has explored AI-based approaches, particularly Neural Combinatorial Optimisation (NCO), for solving the VRP and its variants. Unlike classical heuristics, these methods aim to learn routing strategies directly from data rather than relying solely on manually designed rules \cite{nazariReinforcementLearningSolving2018, Kool2019, RouteFinder}. This is attractive in practice because trained models can be reused across many similar problem instances and adapted more easily when operating conditions change.
 
-To capture interactions between nodes, attention mechanisms are commonly employed. 
-Attention mechanisms allow models to dynamically focus on relevant parts of the input when constructing solutions, enabling both local and global relationships between nodes to be captured.
+Many modern AI approaches represent routing problems as graphs, where nodes correspond to depots or customers and edges capture travel costs or distances. Neural network models then learn useful patterns from node features such as coordinates, demands, or time windows \cite{nazariReinforcementLearningSolving2018, Kool2019}. Attention-based architectures are particularly common, as they allow the model to focus dynamically on the most relevant customers when constructing a route \cite{Kool2019}.
 
-Solution construction is typically formulated as a sequential process. 
-A solution is generated step-by-step, where at each step the model selects the next node based on the current partial solution and the encoded problem representation. 
-This is achieved through a decoder that produces a probability distribution over feasible actions, while enforcing constraints such as visiting each customer only once. 
-As a result, the complete solution can be viewed as a sequence of decisions.
+Solution generation is typically treated as a sequential decision process, where the model selects the next customer step-by-step based on the current partial route. Feasibility constraints, such as capacity limits or time windows, are commonly enforced through masking schemes that prevent invalid actions \cite{nazariReinforcementLearningSolving2018, Kool2019}.
 
-To learn such decision-making strategies, reinforcement learning is commonly used. 
-In this framework, the quality of a constructed solution is evaluated using a reward signal, typically defined in terms of routing cost, and the model is trained to maximise expected reward over a distribution of problem instances. 
-This allows the model to learn effective solution strategies without requiring optimal solutions as supervision \cite{Kool2019}.
-
-% These concepts, graph-based representations, attention-based encoding, and sequential decision-making, form the foundation of modern neural approaches to routing problems, and provide the necessary background to understand attention-based models such as the Attention Model and its extensions.
+Training is often performed using reinforcement learning (RL), where the model learns through repeated interaction with simulated instances and is rewarded for producing lower-cost routes \cite{nazariReinforcementLearningSolving2018, Kool2019, Hottung2020}. Once trained, these methods can generate solutions quickly, making them promising for dynamic or real-time routing applications \cite{shahbazianKnowledgeguidedHybridDeep2025, RouteFinder}.

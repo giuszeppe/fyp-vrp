@@ -48,6 +48,19 @@ cost-efficient routes for a fleet of vehicles to service customers whilst satisf
 
 % VRP
 \section{Vehicle Routing Problem (VRP)} % Adapted from RouteFinder paper, I don't know if I have to cite it here or not
+% add image of a VRP instance with nodes and edges
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{vrp-route-plot-example.png}
+\end{minipage}\hfill
+\begin{minipage}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{bad-vrp-solution.png}
+\end{minipage}
+\caption{Example of a Vehicle Routing Problem (VRP) instance and good solution (left) vs bad solution (right).}
+\end{figure}
 The vehicle routing problem (VRP) can be defined on a graph $G$ as follows:
 $G=(N,E)$, where $N = N_d \cup N_c$ is the set of nodes,
 $N_d=\{0,\dots,m-1\}$ is the set of depots, and
@@ -89,6 +102,9 @@ The routing decisions satisfy
 \qquad \forall k\in K.
 \end{equation}
 \end{itemize}
+
+This formulation assumes a single trip per vehicle (i.e., each vehicle departs from and returns to the depot once). Multi-trip variants, where vehicles may perform multiple depot-to-route cycles within the planning horizon, are also studied in the literature \cite{meraliyevComprehensiveSurveyMethods2025}. 
+The one-trip assumption is adopted here as a modelling simplification.
 
 
 % Variants
@@ -143,9 +159,14 @@ Applications include same-day delivery, ride-sharing services, and emergency res
 The dynamic nature of the problem significantly increases its complexity, as routing plans must be continuously updated while maintaining service quality and operational efficiency.
 \section{Benchmark Datasets}
 Due to the importance of VRPTW, standardised benchmark datasets have been developed to ensure evaluations are fair and comparable. 
-One of the most important for VRPTW is the Solomon benchmark, which consists of 100 instances with 100 customers each, designed to test the performance of VRPTW algorithms under different conditions. \cite{solomonAlgorithmsVehicleRouting1987}
+One of the most important for VRPTW is the Solomon benchmark, introduced by Solomon in 1987 \cite{solomonAlgorithmsVehicleRouting1987}. It consists of 56 benchmark instances, each with 100 customers, designed to evaluate VRPTW algorithms under different operating conditions.
 \subsection{Geographical Distributions}
 The dataset is split into three classes based on the spatial arrangement of customers:
+\begin{figure}
+\centering
+\includegraphics[width=0.95\textwidth]{r_c_rc_visualisation.png}
+\caption{Visualisation of the three geographical distributions in the Solomon benchmark: Clustered (C), Random (R), and Mixed (RC).}
+\end{figure}
 \begin{itemize}
 \item C (Clustered): Customers are grouped in distinct clusters, which typically results in shorter total distances
 \item R (Random): Customers are uniformly distributed across the map; these are widely considered the most difficult instances because they lack clear structural patterns
@@ -178,30 +199,51 @@ describe algorithmic performance. Consequently, prior literature evaluates metho
 according to service quality, routing efficiency, computational efficiency, 
 and decision-making effectiveness. The following metrics represent the most commonly 
 adopted measures in recent DVRPTW and related dynamic routing studies.
-\subsection{Service Quality Metrics}
-\begin{itemize}
+% \subsection{Service Quality Metrics}
+% \begin{itemize}
 	
-	\item \cite{chen2026} Lateness: Lateness is defined as the sum of delays beyond the latest allowable service time, typically expressed as $\sum_i \max(0, t_i - b_i)$.
-	\item Rejection rate: Percentage of requests that are rejected due to capacity or time window constraints.% \cite{AntColony}
-	\item Responsiveness: It measures how quickly a routing algorithm adapts to newly arriving requests, typically quantified as the delay between request arrival and its service start time. \cite{AntColony} 
-\end{itemize}
-\subsection{Operational Efficiency Metrics}
-\begin{itemize}
-	\item Total Distance: The Euclidean sum of all arcs traversed by the entire fleet. %Ojeda Rios et al. (2021) Section 3.4
-	\item Fleet Size: The total number of vehicles (K or V) required to fulfil all demands. %Shahbazian et al. (2025) Table 4
-	\item Total Duration: Cumulative time from depot departure until the last vehicle returns. %-Xu et al. (2025)
-\end{itemize}
+% 	\item \cite{chen2026} Lateness: Lateness is defined as the sum of delays beyond the latest allowable service time, typically expressed as $\sum_i \max(0, t_i - b_i)$.
+% 	\item Rejection rate: Percentage of requests that are rejected due to capacity or time window constraints.% \cite{AntColony}
+% 	\item Responsiveness: It measures how quickly a routing algorithm adapts to newly arriving requests, typically quantified as the delay between request arrival and its service start time. \cite{AntColony} 
+% \end{itemize}
+% \subsection{Operational Efficiency Metrics}
+% \begin{itemize}
+% 	\item Total Distance: The Euclidean sum of all arcs traversed by the entire fleet. %Ojeda Rios et al. (2021) Section 3.4
+% 	\item Fleet Size: The total number of vehicles (K or V) required to fulfil all demands. %Shahbazian et al. (2025) Table 4
+% 	\item Total Duration: Cumulative time from depot departure until the last vehicle returns. %-Xu et al. (2025)
+% \end{itemize}
 
-\subsection{Computational Efficiency Metrics}
-\begin{itemize}
-	\item Solving Time: The wall-clock computation time (s) required to return a solution for a snapshot. %Dornemann (2023) Table 3
-\end{itemize}
+% \subsection{Computational Efficiency Metrics}
+% \begin{itemize}
+% 	\item Solving Time: The wall-clock computation time (s) required to return a solution for a snapshot. %Dornemann (2023) Table 3
+% \end{itemize}
 
-\subsection{Benchmarking and Comparative Analysis}
-\begin{itemize}
-	\item Optimality Gap: The percentage difference between the algorithm's cost and the Best Known Solution. %Berto et al. (2024) Table 1
-	\item Value of Information: The gap between real-time dynamic results and an "Oracle" (offline optimal) solution that has all the knowledge beforehand.\cite{valueOfInformation} 
-\end{itemize}
+% \subsection{Benchmarking and Comparative Analysis}
+% \begin{itemize}
+% 	\item Optimality Gap: The percentage difference between the algorithm's cost and the Best Known Solution. %Berto et al. (2024) Table 1
+% 	\item Value of Information: The gap between real-time dynamic results and an "Oracle" (offline optimal) solution that has all the knowledge beforehand.\cite{valueOfInformation} 
+% \end{itemize}
+\begin{longtblr}[
+caption = {Summary of evaluation metrics for DVRPTW.},
+label = {tab:dvrptw-evaluation-metrics},
+]{
+	width=\textwidth,
+	colspec={Q[l,wd=0.22\textwidth] Q[l,wd=0.20\textwidth] Q[l,wd=0.45\textwidth]},
+	row{1}={font=\bfseries},
+	hlines,
+	vlines
+}
+Category & Metric & Definition \\
+Service quality & Lateness & Sum of delays beyond the latest allowable service time, typically $\sum_i \max(0, t_i - b_i)$ \cite{chen2026}. \\
+Service quality & Rejection rate & Percentage of requests rejected due to capacity or time-window constraints. \\
+Service quality & Responsiveness & Delay between request arrival and service start time; measures how quickly the algorithm adapts to new requests \cite{AntColony}. \\
+Operational efficiency & Total distance & Euclidean sum of all arcs traversed by the fleet. \\
+Operational efficiency & Fleet size & Total number of vehicles ($K$ or $V$) required to fulfil all demands. \\
+Operational efficiency & Total duration & Cumulative time from depot departure until the last vehicle returns. \\
+Computational efficiency & Solving time & Wall-clock computation time (s) required to produce a solution for a snapshot. \\
+Benchmarking and comparison & Optimality gap & Percentage difference between algorithm cost and the best known solution. \\
+Benchmarking and comparison & Value of information & Gap between real-time dynamic results and an offline "oracle" solution with full prior knowledge \cite{valueOfInformation}. \\
+\end{longtblr}
 \section{Solution Methods}
 The VRP is NP-hard, making exact methods computationally infeasible for large instances. 
 In practice, this is commonly addressed using traditional optimisation methods, particularly heuristics and meta-heuristics, which target high-quality solutions within reasonable time frames.

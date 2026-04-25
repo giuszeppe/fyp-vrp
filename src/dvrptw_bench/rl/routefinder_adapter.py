@@ -103,6 +103,8 @@ def scale_times_to_max_time(
 def instance_to_routefinder_td(
     instance: VRPTWInstance,
     normalize_coords: bool = True,
+    reveal_times: torch.Tensor | None = None,
+    is_dynamic: torch.Tensor | None = None,
 ) -> TensorDict:
     coords_raw = torch.tensor(
         [[instance.depot.x, instance.depot.y], *[[c.x, c.y] for c in instance.customers]],
@@ -165,6 +167,10 @@ def instance_to_routefinder_td(
         },
         batch_size=[],
     )
+    if reveal_times is not None:
+        td.set("reveal_times", reveal_times.to(dtype=torch.float32))
+    if is_dynamic is not None:
+        td.set("is_dynamic", is_dynamic.to(dtype=torch.bool))
     return td.unsqueeze(0)
 
 

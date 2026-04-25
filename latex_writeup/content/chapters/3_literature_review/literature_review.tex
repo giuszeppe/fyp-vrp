@@ -1,5 +1,28 @@
-\chapter{Literature Review}%
+\chapter{Literature Review (20 marks)}%
 \label{chp:literature_review}
+
+% What Is a Literature Review?
+% A literature review is a review or discussion of the current published material available on a
+% particular topic. It attempts to synthesize and evaluate the material and information according to
+% the research question(s), thesis, and central theme(s). In other words, instead of supporting an
+% argument, or simply making a list of summarized research, a literature review synthesizes and
+% evaluates the ideas of others on your given topic. This allows your readers to know what is being
+% said about your given topic, how these sources compare with one another, and what gaps there
+% are in the research.
+
+% Marking: How well did you:
+% - Review and analyse existing research within the domain;
+% - Evaluate knowledge progress and state-of-the-art;
+% - Survey and review the domain identifying seminal works, main issues, key results, adopted
+% techniques, and any open challenges;
+% - Analyse the literature to identify relationships between work and ongoing research activity;
+% - Manage to retain focus in line with the chosen research domain;
+% - Show peer-review relevance of quoted works, and the scientific reliability of sources;
+% - Justify the selection of sources;
+% - Demonstrate analytical and synthetic skills resulting in sufficient insight;
+% - Expound and present purpose of study, key results, techniques, any gaps and controversies,
+% open challenges, and drawn conclusions;
+% - Provide a synoptic overview of the above
 
 % | Section                            | What Goes Here                          |
 % | ---------------------------------- | --------------------------------------- |
@@ -10,72 +33,281 @@
 % | 3.5 Comparative Research Gaps      | What prior papers fail to compare       |
 % | 3.6 Research Positioning           | Why your thesis matters                 |
 
+\section{Literature Review}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Mauris sed ipsum risus.
-Nulla aliquet quis quam sed eleifend.
-Donec rutrum, dolor id vulputate pharetra, nulla tortor laoreet nisl,
-pellentesque dapibus velit dolor suscipit purus.
-Phasellus vitae eleifend sem.
-Integer ultricies ex in neque pellentesque, vitae facilisis orci aliquam.
-In pellentesque mollis turpis, eu tristique lacus eleifend nec.
-Vestibulum orci neque, rhoncus vitae convallis eu, suscipit quis dui.
-Nulla libero elit, porta sit amet sagittis vel, placerat sit amet tortor.
-Aliquam hendrerit dolor sit amet sollicitudin ornare.
-Aliquam placerat sodales est, in vestibulum nisl efficitur in.
-Nulla venenatis aliquam sem, at volutpat nisl pellentesque eleifend.
-Praesent vitae euismod nulla, eget vehicula turpis.
-Duis quis tellus vitae nisi tempus tincidunt.
+Having introduced the Vehicle Routing Problem, its dynamic time-window variant, benchmark datasets, evaluation metrics, and major solution paradigms, this chapter critically reviews the development of the Dynamic Vehicle Routing Problem literature, with particular emphasis on Dynamic Vehicle Routing Problems with Time Windows (DVRPTW), online re-optimisation, and the evolution from classical optimisation methods to recent AI-based and hybrid approaches.
 
-Nam quis aliquet nisi, non pharetra ligula.
-Phasellus pulvinar mattis neque, nec interdum justo condimentum hendrerit.
-Mauris fermentum venenatis faucibus.
-Pellentesque egestas eleifend libero, quis placerat ante fermentum et.
-Suspendisse accumsan gravida rhoncus.
-Vestibulum auctor sodales vehicula.
-Pellentesque a urna et elit placerat laoreet a quis turpis.
-Morbi ut sem at nunc posuere malesuada vel nec libero.
-Nam et urna suscipit, bibendum diam sed, aliquet leo.
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Ut pretium mauris et nulla malesuada, mattis tristique lectus molestie.
-Aenean accumsan iaculis quam, eget varius libero placerat eu.
-Fusce mauris justo, vulputate a sollicitudin a, malesuada at est.
-Sed ac augue elit.
-Maecenas massa lorem, tincidunt vitae neque et, maximus dictum tellus.
+According to \cite{ojedariosRecentDynamicVehicle2021}, the VRP literature can be broadly classified into four categories: static and deterministic, static and stochastic, dynamic and deterministic, and dynamic and stochastic. Since this project considers customer requests revealed over time in a deterministic setting, the review focuses primarily on the dynamic literature, with particular relevance to dynamic and deterministic routing and selected dynamic and stochastic studies where they inform solution methodology or problem modelling.
 
-Vivamus sit amet orci erat.
-Morbi eleifend velit purus, sed gravida metus ullamcorper sed.
-Aliquam sit amet interdum nulla, in aliquam diam.
-Aliquam non libero tortor.
-Nulla imperdiet dolor vel justo semper, ut efficitur enim varius.
-Donec ultrices odio id orci fringilla tristique.
-Ut fringilla nec felis a finibus.
-Sed a felis sed odio elementum porta a ac nisl.
-Curabitur suscipit, sem et facilisis tempus, nisl elit vestibulum eros, in
-varius dolor enim vitae ante.
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
-curae; Nullam condimentum tempor consectetur.
-Aliquam non porta nisi.
-Proin molestie tincidunt tellus, id varius nibh finibus eget.
+The chapter is structured around four major methodological streams: metaheuristics, AI-based approaches, and hybrid approaches. 
+Within each stream, the review identifies seminal works, key techniques, benchmark settings, and principal findings, 
+while also examining their limitations in the context of real-time routing, dynamic customer arrivals, 
+and practical decision-making constraints. Particular attention is given to how prior studies 
+address online re-optimisation, responsiveness, solution quality, and benchmark design, in order
+ to position the present study within the current state of research and to justify the research 
+ gap it addresses.
 
-Vestibulum et neque erat.
-Curabitur metus velit, dictum non vehicula vitae, sodales sed purus.
-In mattis a mauris nec imperdiet.
-Duis volutpat mi eget egestas placerat.
-Vivamus non purus erat.
-Cras quis egestas libero.
-Sed id diam at enim vehicula porttitor.
+\subsection{Heuristic Approaches}
+In this subsection, we review approaches whose solution approaches are driven mainly by constructive,
+insertion, dispatch, auction, or local-improvement heuristics, and exclude metaheuristics,
+RL/neural methods, and exact re-optimization frameworks. This filter is applied because the
+literature often mixes approaches heavily with metaheuristics, and it is important to isolate
+the contribution of heuristic methods to the development of dynamic routing, and to identify their
+limitations in the context of real-time decision-making and dynamic customer arrivals. In fact,
+heuristics are often combined with other paradigms because, although they can generate feasible
+decisions quickly and are therefore well suited to dynamic settings, they are frequently too myopic
+to maintain high solution quality under evolving requests, travel-time uncertainty, and tight
+operational constraints; in-fact, insertion heuristics can only add new customer at a time, giving a potential
+sub-optimal solution when multiple customers are added simultaneously. Conversely, exact methods, 
+metaheuristics, and learning-based methods can improve solution quality or adaptability, 
+but often need heuristic components to remain computationally viable or operationally robust in 
+real time \cite{jungDuallySustainableUrban2017,ozbayginIterativeReoptimizationFramework2019}.
 
-Mauris tincidunt elementum porttitor.
-Curabitur eu elit et metus luctus ultrices.
-Aenean varius orci in turpis consectetur efficitur.
-Quisque lacinia sagittis pharetra.
-Aliquam efficitur aliquam arcu, vel ullamcorper tortor volutpat nec.
-Curabitur sit amet semper tortor.
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
-curae; Cras at leo aliquet, porta mauris nec, pharetra augue.
-Nam volutpat eu urna in ullamcorper.
-Aliquam ultrices condimentum odio id eleifend.
-Mauris tellus felis, mattis et pellentesque ac, laoreet vitae eros.
-Aliquam at nisl lorem.
-Quisque consequat ligula nec tellus ornare eleifend.
+% decide whether to include this subparagraph or not
+% {\color{red}
+% This trade-off is evident across the literature, where exact dynamic re-optimization relies on
+% route/column reuse to accelerate repeated solves \cite{ozbayginIterativeReoptimizationFramework2019}, metaheuristic
+% studies decompose dynamic problems into heuristic subproblems or enhance constructive heuristics
+% with VNS \cite{bouziyane2018SolvingDynamicVehicle}, and recent AI-based methods embed learned policies
+% inside search frameworks such as ALNS, LNS, VNS, or greedy insertion rather than replacing
+% heuristic search altogether \cite{shahbazianKnowledgeguidedHybridDeep2025,reijnen2024,hottungNeuralDeconstructionSearch2025}.
+% }
+% end of decision
+\paragraph{First attempts}
+The earliest dynamic routing studies in this line of work can be traced back to Wilson and Colvin
+\cite{wilson1977computer}, who considered a single-vehicle dial-a-ride setting in which the dynamic
+element is the arrival of trip requests. Their work is commonly cited as an early dynamic dial-a-ride
+study and is associated with real-time route adjustment under low computational requirements.
+Psaraftis later extended this stream of research in the immediate-request setting, where a customer
+request must be handled as soon as possible through immediate replanning of the active route
+\cite{psaraftisDynamicProgrammingSolution1980}. In the broader dynamic-routing literature, this
+operational emphasis on reacting quickly to newly revealed information is closely related to the idea
+of responsiveness. Schyns \cite{AntColonySchyns2015} defines responsiveness as completing a service
+as early as possible within the allowed time window, so that the customer or asset can resume its
+activities sooner.
+\paragraph{EV Attempt}
+A more recent classical heuristic approach based on insertion logic is proposed by
+Jung et al. \cite{jungDuallySustainableUrban2017}, who study a real-time shared-taxi,
+dynamic dial-a-ride--type problem for an electric-vehicle taxi fleet. Their method uses a
+two-stage insertion heuristic within a real-time dispatch algorithm. In the first stage, the
+algorithm identifies a candidate set of feasible vehicles based on the new passenger request,
+its trip points, and its time-window constraints. In the second stage, it selects the best
+vehicle and the best pickup and drop-off insertion positions by minimizing the impact on waiting
+time and in-vehicle time for both the new and existing passengers. The method is evaluated in
+simulation on a large-scale network in Seoul, South Korea, and the results show that shared-taxi
+operations can improve passenger delivery performance and partially offset the productivity losses
+caused by EV charging constraints. Overall, this study illustrates why insertion heuristics remain
+a canonical baseline in dynamic routing: they are fast, interpretable, and naturally event-driven.
+At the same time, their inherently local decision logic limits their anticipatory capability, which
+helps explain why later studies increasingly combine heuristic dispatch with metaheuristic,
+optimization-based, or learning-based components.
+% Heuristics with additional complexity compared to the insertion ones are also proposed in the literature, for example,
+% by \cite{steeverDynamicCourierRouting2019}. In his work, the author defines the dynamic VFCDP (Virtual Food Court 
+% Delivery Problem) which is a dynamic VRP variant with multiple restaurants and customers, where each customer order
+% can be fulfilled by multiple restaurants. 
+% The dynamic element consists primarily of customer orders arriving over time, although the paper also discusses operational
+% uncertainty from traffic, parking, restaurant prep-time error, and variable pickup timing. 
+% The author himself classifies the problem as a dynamic and stochastic VRP variant and the solution as a dynamic and deterministic one.
+% The proposed solution is an Auction-based rolling heuristic: it builds a small subproblem that can be solved quickly 
+% for each newly arrived customer, and then uses the resulting candidate updated route and objective value to compute
+% a bid for each courier that reflects the estimated mean service quality if that courier takes the order.
+% The new request is then assigned to the best bidder, and only that couriers' route is updated. To address 
+% the myopic nature of this approach, the paper also proposes a proactive variant that incorporates two new metrics:
+% equity and dispersion. The former measures how well couriers remain aligned with likely restaurant-demand centers, 
+% while the latter encourages them to stay spatially spread out. Unlike the myopic version, 
+% the proactiva variant is encouraged to choose assignments that could yield a better fleet position for future requests, 
+% rather than just immediate bid quality.
+\paragraph{VFCDP}
+Heuristic approaches with greater structural richness than simple insertion rules are also proposed in the literature. 
+A representative example is \cite{steeverDynamicCourierRouting2019}, which introduces the dynamic Virtual Food Court 
+Delivery Problem (VFCDP), a food-delivery routing problem in which a single customer order may involve items collected 
+from multiple restaurants. The dynamic element arises primarily from customer orders arriving over time, although the paper 
+also discusses additional operational uncertainty due to traffic conditions, parking delays, restaurant preparation-time errors, 
+and variable pickup times. Accordingly, the operational setting is treated as dynamic-stochastic, whereas each decision step 
+is handled through a deterministic snapshot of the currently known system state.
+
+To support real-time decision-making, the paper proposes an auction-based rolling heuristic. Instead of re-optimizing the 
+entire system after each order arrival, the method constructs a small subproblem for each courier, consisting only of that 
+courier, the customers already assigned to it, and the newly arrived request. Solving these reduced subproblems yields a 
+candidate route and objective value for each courier, from which a normalized bid is computed to represent the expected 
+average service quality if that courier takes the new order. In the myopic version of the heuristic, the request is assigned 
+to the courier with the best bid and only that courier's route is updated.
+
+To reduce the myopic nature of this approach, \cite{steeverDynamicCourierRouting2019} also proposes a proactive variant 
+that incorporates two anticipatory metrics, equity and dispersion. Equity captures how well the fleet remains aligned with 
+likely future restaurant-demand centers, while dispersion encourages couriers to remain spatially distributed across the 
+service area. Thus, unlike the myopic variant, the proactive heuristic evaluates assignments not only by their immediate 
+service quality, but also by how well they preserve the fleet's readiness for future demand. Computational results show 
+that the proactive heuristic improves customer-oriented measures such as freshness and earliness relative to the myopic 
+version. This paper is therefore particularly relevant in the heuristics-only literature because it shows how dynamic routing 
+heuristics can move beyond basic insertion logic toward more anticipatory dispatch policies without relying on metaheuristics.
+
+Others approach that make extensive use of heuristics but combine them with metaheuristic or learning-based components
+are also common in the literature, and are reviewed in the next two sections.
+
+
+\subsection{Metaheuristic Approaches}
+% Dynamic routing problems are inherently more complex than their static counterparts due to the evolving nature of requests,
+% travel conditions, and other operational inputs during route execution. Exact methods do not fit well within the tight time constraints
+% of online usage and, whilst heuristics are a fit chioce with that regard, they're often too short sighted unless augmented in some way \cite{steeverDynamicCourierRouting2019}
+% This is why metaheuristics emerged as a middle ground, allowing for a more global search than classical heuristics while remaining 
+% practical on the computational side.
+
+Dynamic routing problems are inherently more difficult than their static counterparts because relevant information, 
+such as customer requests, travel times, and service conditions, may be revealed or updated during route execution.
+In this setting, classical constructive and insertion-based heuristics remain attractive because they can restore 
+feasibility quickly and support real-time decision-making\cite{jungDuallySustainableUrban2017}, but their search is often limited by local, choices. 
+At the opposite extreme, exact optimization approaches can provide high-quality or near-optimal solutions, 
+yet they often face severe response-time constraints when repeated re-optimization is required online.\cite{ozbayginIterativeReoptimizationFramework2019} 
+Metaheuristics therefore emerged as an important middle ground: they offer broader and more effective search 
+than simple heuristics, while remaining substantially more practical than exact optimization in many dynamic-routing
+environments \cite{AntColonySchyns2015,bouziyane2018SolvingDynamicVehicle,cotaIntegratingVehicleScheduling2022}.
+
+% \paragraph{Bouziyane  (2018)Solving a Dynamic Vehicle Routing Problem with Soft Time Windows Based on Static Problem Resolution by a Hybrid Approach. International Journal of Supply and Operations Management}
+% One of the clearest pattern in the literature to apply meta-heuristics to a dynamic problem is the one adopted by Bouziyane \cite{bouziyane2018SolvingDynamicVehicle}.
+% This approach do not attempt to solve the dynamic problem directly in one unified model, in fact, they discretize a day of 
+% operation into intervals and solve each time interval as a partial static problem using an hybrid hybrid evolutionary/local-search mechanism. 
+% Please note that w.r.t this paper, this approach is considered a meta-heuristic ones and not an hybrid one, as our terminology considers hybrid
+% those approaches that employ an AI component as a warm start for successive meta-heuristic search.
+% The hybrid GA-VNS produced competitive results on benchmark instances and demonstrated that discretized static subproblem resolution
+% is workable for DVRPSTW
+
+
+\paragraph{Bouziyane (2018), \textit{Solving a Dynamic Vehicle Routing Problem with Soft Time Windows Based on Static Problem Resolution by a Hybrid Approach}}
+One of the cleanest patterns in the literature on metaheuristics for dynamic routing 
+is the one adopted by Bouziyane et al. \cite{bouziyane2018SolvingDynamicVehicle}. 
+Rather than solving the dynamic problem through a single unified online model, the authors discretize 
+the operational day into time intervals and treat each interval as a partial static problem. 
+Each of these static subproblems is then solved using a GA-VNS procedure. Under the terminology adopted
+in this review, this approach is classified as a \emph{metaheuristic} rather than a \emph{hybrid} method,
+since the search is entirely driven by evolutionary and neighborhood-based metaheuristic components,
+without an AI-based warm start or learning-guided search component. The main methodological contribution
+of the paper is therefore not only the specific GA-VNS combination, but also the broader rolling-resolution
+strategy: dynamicity is handled through repeated static reformulation, while solution quality is improved 
+through metaheuristic search inside each snapshot. The reported results show that this framework can produce 
+competitive solutions on benchmark instances, thereby demonstrating that discretized static subproblem 
+resolution is a workable strategy for the DVRPSTW.
+
+\paragraph{Schyns: Ant Colony System}
+% As of now, we have seen how meta-heuristics can help us solve a certain problem more efficiently, however,
+% it is not the only way they have been used in the literature. Schyns \cite{AntColonySchyns2015} employs an 
+% ant colony system approach to increase the responsivness to solve a dynamic vehicle routing problem with time windows,
+% heterogenous fleet and optional / partial split delivery and demonstrates it on an airport refueling problem other 
+% than VRP benchmark instances such as the Solomon Dataset.
+% New informations can arrive during execution, making the environment highly dynamical.
+% This paper most notable contribution is not the algorithm, but rather the metric introduce: responsiveness. This measures 
+% whether new customers are served as soon as possible or not. Moreover, using pheromone conservation, it saves memory across re-optimisation
+% to increase the performances
+% Then move to papers where the novelty is not just the algorithm, but also the objective.
+
+% This is where Schyns (2015) belongs. The paper is not only an ACS metaheuristic for a dynamic routing setting; it also shifts attention away from pure distance minimization toward responsiveness, i.e. completing service as early as possible within the time window.
+
+% That gives you a useful transition:
+
+% some metaheuristics are about solving the dynamic problem more effectively,
+% others are about optimizing different performance criteria that matter in real operations.
+As discussed so far, metaheuristics are often used to improve the efficiency and solution quality of dynamic routing algorithms.
+However, this is not their only role in the literature. A good example is provided by Schyns \cite{AntColonySchyns2015}, 
+who applies an Ant Colony System (ACS) to a rich dynamic vehicle routing setting with time windows, heterogeneous fleets, 
+and optional or partial split deliveries. The method is illustrated both on a real airport refueling application and on 
+benchmark vehicle-routing instances, including dynamic adaptations of classical VRPTW datasets such as Solomon-based instances.
+In these benchmark experiments, the original static instances are transformed into a dynamic setting by revealing new information 
+over time rather than assuming that all requests are known at the start of the planning horizon; the paper then compares 
+different strategies for re-optimizing the routes as this information becomes available.
+
+In this problem setting, new information may arrive during route execution, making the operating environment highly dynamic.
+The most notable contribution of the paper is therefore not only the use of ACS itself, but also the introduction of the 
+concept of \emph{responsiveness} as a primary objective. Rather than focusing exclusively on minimizing travel distance, 
+the paper emphasizes completing service as early as possible within the allowed time window, so that customers or operational 
+assets can resume their activities sooner. In addition, the method uses pheromone conservation across successive re-optimizations,
+allowing the algorithm to retain useful search memory as the dynamic problem evolves.
+The broader significance of this paper is therefore that it illustrates how metaheuristics in dynamic routing are 
+used not only to improve solution quality, but also to support richer service-oriented objectives that go beyond 
+classical distance minimization.
+
+% \paragraph{Ferrucci, F., Bock, S. (2016). Pro-active real-time routing in applications with multiple request patterns.}
+% Similarly to the paper discussed in the heuristics sections, meta-heuristics can be implemented in a proactive way. 
+% In fact, this is the main contribution brought up by \cite{ferrucciProactiveRealtimeRouting2016}, which studies a 
+% DVRPSTW: Dynamic Vehicle Routing Problem with Soft Time Window constraints in a high-dynamism service setting 
+% with urgent requests arriving during the day.
+% New request arrivals throughout the day, with the additional complication that different days may follow different
+% request-arrival patterns, and the current day's pattern may need to be inferred online. It employs a A pro-active real-time 
+% routing metaheuristic framework that uses stochastic knowledge and forecast profiles of request arrivals. 
+% It groups historical days into multiple profiles using k-means, generates stochastic knowledge offline, and adapts 
+% that knowledge online as the day unfolds.
+% The key innovation compared to the pro-active approach seen before is moving from a single-profile anticipation scheme 
+% to a multiple-profile one. Instead of assuming every day follows one common request pattern, the method identifies 
+% several patterns and dynamically selects/adapts the relevant profile combination in real time.
+\paragraph{Ferrucci, F., Bock, S. (2016). \textit{Pro-active real-time routing in applications with multiple request patterns}.}
+Ferrucci and Bock \cite{ferrucciProactiveRealtimeRouting2016} study a dynamic routing setting in which new customer 
+requests arrive throughout the day and must be incorporated in real time. Their main contribution is a proactive 
+routing approach that uses stochastic knowledge about future demand, while recognizing that different days may follow
+ different request-arrival patterns. Instead of relying on a single historical profile, the method groups past days 
+ into multiple profiles and dynamically selects the most suitable one as the day unfolds. In this way, the approach 
+ adapts its anticipation mechanism online rather than assuming a fixed demand structure. The broader significance of 
+ the paper is that it shows how metaheuristic and search-based dynamic routing methods can evolve beyond purely 
+ reactive behavior by embedding progressively richer forms of pattern-based anticipation into the decision process.
+\subsection{AI-based Approaches}
+AI-based approaches have attracted growing interest in the VRP literature because, once trained, they can generate 
+solutions through fast inference rather than solving each instance from scratch, while still achieving competitive
+solution quality on many benchmark settings \cite{nazariReinforcementLearningSolving2018,RouteFinder}.
+Their main limitation, however, is that performance often depends strongly on the similarity between the training
+and test distributions. As several recent works emphasize, learned routing policies may struggle to generalize to
+unseen scenarios, problem variants, or larger instances unless specific mechanisms for transfer, adaptation, or 
+multi-variant training are introduced \cite{chenReinforcementLearningApproach2026,RouteFinder,Hottung2025}. 
+
+These challenges become even more pronounced in dynamic routing. In such settings, the state of the system evolves 
+continuously as new requests, travel times, or other operational conditions are revealed over time. 
+As a result, each decision point can be viewed as a new routing state with characteristics that may differ from those
+seen during training. This makes distribution shift a central issue for AI-based dynamic routing, and helps explain 
+why recent work increasingly focuses not only on learned route construction, but also on improved generalization, 
+dynamic adaptation, and integration with search-based optimization frameworks 
+\cite{chenReinforcementLearningApproach2026,sultanaFastApproximateSolutions,Hottung2020}.
+\paragraph{Nazari Reinforcement Learning for Solving the Vehicle Routing Problem}
+Nazari et al. \cite{nazariReinforcementLearningSolving2018} propose one of the early reinforcement-learning frameworks 
+for solving the VRP end-to-end. Their method uses an RNN decoder with attention, trained by policy gradient, to generate 
+routes directly from problem instances without retraining for each new instance. A key contribution is that the model is 
+designed to handle dynamic input elements efficiently, in particular customer demands that change during decoding as 
+visited nodes are served and their effective demand becomes zero. The paper is important because it demonstrates that 
+learned policies can act as fast inference-time routing heuristics and can outperform classical baselines such as Google 
+OR-Tools on many medium-sized instances, while also showing the promise of extending RL-based routing to richer variants 
+such as split delivery and stochastic VRP.
+
+\paragraph{Sultana Fast Approximate Solutions using Reinforcement Learning for Dynamic Capacitated Vehicle Routing with Time Windows}
+Sultana et al. \cite{sultanaFastApproximateSolutions} propose a reinforcement-learning approach for the capacitated 
+vehicle routing problem with time windows and dynamic routing (CVRP-TWDR), where customers may “pop up” during route 
+execution. Their method models each vehicle as a decentralized agent that independently evaluates the value of serving 
+available customers, while a centralized allocation heuristic finalizes the assignments. The paper is important because 
+it shows how learned value functions can support fast, parallelizable decision-making in dynamic fleet routing, while 
+remaining flexible with respect to fleet size, number of customers, and out-of-distribution test instances
+
+\paragraph{RouteFinder: Towards Foundation Models for Vehicle Routing Problems. Transactions on Machine Learning Research.}
+RouteFinder \cite{RouteFinder} represents a recent shift in the AI-based routing literature from 
+single-variant neural solvers toward foundation-style models for families of vehicle routing problems. 
+The framework is built on the idea that many VRP variants can be represented as combinations of a common set of 
+routing attributes, and it therefore introduces a unified environment capable of handling 48 VRP variants, together 
+with global attribute embeddings and efficient adapter layers for fine-tuning to unseen variants. In this sense, 
+RouteFinder extends the earlier line of attention-based learned heuristics exemplified by Kool et al. 
+\cite{Kool2019}, who showed that a single attention model could learn strong heuristics across 
+several routing-related problems with the same hyperparameter setting. The broader significance of RouteFinder is 
+that it shifts the AI literature from learning a good policy for one routing formulation toward learning transferable 
+routing representations across multiple formulations and constraints.
+
+\subsection{Hybrid Approaches}
+Hybrid methods emerge because no single paradigm simultaneously provides the response speed, search strength, constraint handling, and scalability required by realistic dynamic routing problems. Classical heuristics are fast but often too local, exact methods are strong but frequently too slow for repeated online use, and purely learned approaches may struggle with generalization or with enforcing complex operational constraints. Hybrid methods therefore combine complementary components, typically using learning to guide or accelerate search while relying on search, heuristics, or optimization routines to preserve feasibility and improve final solution quality \cite{sshahbazianKnowledgeguidedHybridDeep2025,liEtAl2021,Hottung2025}.
+
+\paragraph{AI controlling the search space.}
+A first pattern in recent work is that AI is not used to replace neighborhood search, but to control it adaptively online. Reijnen et al. \cite{reijnen2024} illustrate this through DR-ALNS, where reinforcement learning configures Adaptive Large Neighborhood Search by selecting operators, adjusting destroy severity, and controlling acceptance according to the current search state. Xu et al. \cite{xuLearningSearchVehicle} adopt a similar idea in RL-AVNS for the Vehicle Routing Problem with Multiple Time Windows, using RL to select neighborhood operators inside an adaptive VNS framework while introducing a temporal-flexibility metric to strengthen the shaking phase. In a supervised-learning setting, Feijen et al. \cite{feijen2024} follow the same logic through LENS, where a learned model predicts whether a candidate neighborhood is likely to yield improvement if destroyed and repaired. Taken together, these studies show that one of the most effective roles of AI in hybrid routing is not route construction itself, but the adaptive control of search neighborhoods and re-optimization decisions.
+
+\paragraph{Learning to select subproblems or reduce the optimization burden.}
+A second hybrid strategy uses learning, or related reuse mechanisms, to decide where expensive optimization effort should be concentrated. Li et al. \cite{liEtAl2021} provide a clear example with their learning-to-delegate framework for large-scale VRP, where a Transformer identifies promising subproblems and delegates their improvement to a strong black-box subsolver such as LKH-3 or HGS. Dornemann \cite{dornemann2023} follows a similar burden-reduction logic by combining graph-convolutional-network guidance with tree search and, in a second formulation, with QUBO reduction for quantum-inspired solving. Khadilkar \cite{khadilkar2022} also adopts this perspective by combining RL-based policy rollouts with a MAX-SAT solver in CVRP-TW. Across these works, hybridization is less about replacing optimization than about making it selective: learning is used to identify where exact or high-performance search is most worth applying.
+
+\paragraph{AI-generated initial solutions refined by search.}
+The most integrated hybrid approaches use AI to generate promising routing structure and then refine it through search or heuristic reconstruction. Shahbazian et al. \cite{shahbazianKnowledgeguidedHybridDeep2025} exemplify this design in the Dynamic Multi-Depot Electric Vehicle Routing Problem with Time Windows by combining knowledge-guided multi-agent deep reinforcement learning with Variable Neighborhood Search. A double-deep Q-network generates an initial routing policy, which is then refined by VNS; notably, state--action permissibility and geographic partitioning are embedded into the learning stage so that vehicles are guided toward depot-consistent decisions before local-search improvement. Falkner et al. \cite{falknerLargeNeighborhoodSearch2022} propose a related approach for the VRPTW, in which a learned neural construction heuristic serves as the repair operator inside Large Neighborhood Search. Hottung et al. \cite{Hottung2025} extend this line further by learning which nodes to remove from a current solution and reconstructing the result through greedy insertion. In all three cases, AI supplies a promising initial or intermediate routing structure, while search and heuristic refinement provide the robustness and solution-quality improvements that purely learned policies often lack.
+\subsection{Summary of Research Gaps}
+
+The literature shows that dynamic vehicle routing has been studied through heuristics, metaheuristics, exact re-optimization, AI-based methods, and hybrid approaches. However, these methodological streams are often evaluated in separate benchmark ecosystems, which makes direct comparison difficult. In particular, classical DVRPTW studies mainly compare handcrafted OR methods on Solomon-derived dynamic instances, whereas recent AI and hybrid works are more often tested in static, stochastic, or method-specific settings.
+
+As a result, the main gap addressed by this study is not the absence of dynamic DVRPTW research itself, but the lack of a controlled comparison between a modern learned routing model, a classical rolling re-optimization solver, and a learned warm-start hybrid under a shared dynamic deterministic DVRPTW protocol. A second related gap concerns evaluation: prior studies often emphasize either routing cost or service-oriented performance, but less frequently examine them together. This leaves room for a more integrated analysis of total cost, lateness, rejection, responsiveness, and computation time in one common framework.
+
+The contribution of the present study should therefore be understood primarily as a comparative and integration study. More specifically, it addresses the weak representation of work that evaluates AI, OR, and AI-seeded re-optimization side by side in a dynamic deterministic Solomon-derived DVRPTW setting with soft service penalties and customer rejection.

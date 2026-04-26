@@ -36,15 +36,18 @@
 % landscape.
 
 % Intro
-Logistics optimisation concerns the systematic allocation and coordination of 
-transportation, inventory, and distribution resources to minimise operational 
-costs whilst maximising service efficiency within supply chain networks.
-The importance of logistics optimisation has grown significantly in recent years, 
-driven by the expansion of e-commerce platforms and increasing consumer expectations for rapid, on-demand delivery fulfilment.
-Many logistical decision-making problems can be mathematically formulated as combinatorial optimisation tasks, 
-wherein the objective is to determine the best solution from a finite but often exponentially large set of possible alternatives.
-A prominent example is the Vehicle Routing Problem (VRP), an NP-hard combinatorial optimisation problem concerned with determining 
-cost-efficient routes for a fleet of vehicles to service customers whilst satisfying practical constraints.
+Logistics optimisation concerns the systematic allocation and coordination of
+transportation, inventory, and distribution resources to minimise operational
+costs whilst maximising service efficiency within supply chain networks. The
+importance of logistics optimisation has grown significantly in recent years,
+driven by the expansion of e-commerce platforms and increasing consumer
+expectations for rapid, on-demand delivery fulfilment. Many logistical
+decision-making problems can be mathematically formulated as combinatorial
+optimisation tasks, wherein the objective is to determine the best solution from
+a finite but often exponentially large set of possible alternatives. A prominent
+example is the Vehicle Routing Problem (VRP), an NP-hard combinatorial
+optimisation problem concerned with determining cost-efficient routes for a
+fleet of vehicles to service customers whilst satisfying practical constraints.
 
 % VRP
 \section{Vehicle Routing Problem (VRP)} % Adapted from RouteFinder paper, I don't know if I have to cite it here or not
@@ -62,14 +65,13 @@ cost-efficient routes for a fleet of vehicles to service customers whilst satisf
 \caption{Example of a Vehicle Routing Problem (VRP) instance and good solution (left) vs bad solution (right).}
 \end{figure}
 The vehicle routing problem (VRP) can be defined on a graph $G$ as follows:
-$G=(N,E)$, where $N = N_d \cup N_c$ is the set of nodes,
-$N_d=\{0,\dots,m-1\}$ is the set of depots, and
-$N_c=\{m,\dots,m+n-1\}$ is the set of customers.
-Each edge $(i,j)\in E$ is associated with a travel cost $c_{ij}$.
-A fleet of vehicles departs from the depot(s), serves each customer exactly once,
-and minimizes the total travel cost.
-Let $x_{ijk}\in\{0,1\}$ indicate whether vehicle $k$ traverses edge $(i,j)$.
-The objective is to minimize the total travel cost, as shown in Equation~\eqref{eq:vrp-objective}:
+$G=(N,E)$, where $N = N_d \cup N_c$ is the set of nodes, $N_d=\{0,\dots,m-1\}$
+is the set of depots, and $N_c=\{m,\dots,m+n-1\}$ is the set of customers. Each
+edge $(i,j)\in E$ is associated with a travel cost $c_{ij}$. A fleet of vehicles
+departs from the depot(s), serves each customer exactly once, and minimizes the
+total travel cost. Let $x_{ijk}\in\{0,1\}$ indicate whether vehicle $k$
+traverses edge $(i,j)$. The objective is to minimize the total travel cost, as
+shown in Equation~\eqref{eq:vrp-objective}:
 \begin{equation}
 \label{eq:vrp-objective}
 \min \sum_{k\in K}\sum_{i\in N}\sum_{j\in N\setminus\{i\}} c_{ij}x_{ijk}.
@@ -103,19 +105,26 @@ The routing decisions satisfy
 \end{equation}
 \end{itemize}
 
-This formulation assumes a single trip per vehicle (i.e., each vehicle departs from and returns to the depot once). Multi-trip variants, where vehicles may perform multiple depot-to-route cycles within the planning horizon, are also studied in the literature \cite{meraliyevComprehensiveSurveyMethods2025}. 
-The one-trip assumption is adopted here as a modelling simplification.
+This formulation assumes a single trip per vehicle (i.e., each vehicle departs
+from and returns to the depot once). Multi-trip variants, where vehicles may
+perform multiple depot-to-route cycles within the planning horizon, are also
+studied in the literature \cite{meraliyevComprehensiveSurveyMethods2025}. The
+one-trip assumption is adopted here as a modelling simplification.
 
 
 % Variants
 \section{VRP Variants}
-To model more realistic delivery environments, several extensions of the traditional VRP have been proposed to incorporate additional operational constraints.
+To model more realistic delivery environments, several extensions of the
+traditional VRP have been proposed to incorporate additional operational
+constraints.
 \paragraph{CVRP}
-The Capacitated Vehicle Routing Problem (CVRP) extends the classical VRP by introducing vehicle capacity constraints,
-in the form of a maximum load that each vehicle can carry, $Q$,  and a demand $q\in[0,Q]$ associated with each customer 
-such that the demand of each customer does not exceed the vehicle capacity, i.e., $q_i \leq Q$ for all $i\in N_c$.
-Formally, Capacity Constraint can be expressed as follows:
-The total demand assigned to a vehicle must not exceed its capacity, as in Equation~\eqref{eq:cvrp-capacity}:
+The Capacitated Vehicle Routing Problem (CVRP) extends the classical VRP by
+introducing vehicle capacity constraints, in the form of a maximum load that
+each vehicle can carry, $Q$,  and a demand $q\in[0,Q]$ associated with each
+customer such that the demand of each customer does not exceed the vehicle
+capacity, i.e., $q_i \leq Q$ for all $i\in N_c$. Formally, Capacity Constraint
+can be expressed as follows: The total demand assigned to a vehicle must not
+exceed its capacity, as in Equation~\eqref{eq:cvrp-capacity}:
 \begin{equation}
 \label{eq:cvrp-capacity}
 \sum_{i\in N_c} q_i y_{ik} \leq Q,
@@ -123,45 +132,59 @@ The total demand assigned to a vehicle must not exceed its capacity, as in Equat
 \end{equation}
 where $K$ denotes the set of vehicles.
 \paragraph{VRPTW}
-In addition to the constraints of CVRP, VRPTW introduces time window constraints for each customer $i\in N_c$,
-defined by a time interval $[a_i, b_i]$ within which the service must start, often representing business operating
-hours or delivery appointment slots.
-Moreover, each customer now has a service time $s_i$ that represents the time required to complete the service at customer $i$.
+In addition to the constraints of CVRP, VRPTW introduces time window constraints
+for each customer $i\in N_c$, defined by a time interval $[a_i, b_i]$ within
+which the service must start, often representing business operating hours or
+delivery appointment slots. Moreover, each customer now has a service time $s_i$
+that represents the time required to complete the service at customer $i$.
 Formally, the VRPTW additional constraints can be expressed as follows:
 \begin{itemize}
 	\item Time Window Constraint: Each customer must be served within their specified time window, as in Equation~\eqref{eq:vrptw-time-window}.
 	\begin{equation}
 	\label{eq:vrptw-time-window}
-	a_i \leq t_i \leq b_i,
+a_i \leq t_i \leq b_i,
 	\qquad \forall i\in N_c.
 	\end{equation}
 	\item Service Time Constraint: The service time at each customer must be accounted for in the scheduling of routes, as in Equation~\eqref{eq:vrptw-service-time}.
-	Let $\tau_{ij}$ denote the travel time from node $i$ to node $j$.
+Let $\tau_{ij}$ denote the travel time from node $i$ to node $j$.
 	\begin{equation}
 	\label{eq:vrptw-service-time}
 t_j \geq t_i + s_i + \tau_{ij} - M(1 - x_{ijk}),
 \qquad \forall i,j\in N_c,\; \forall k\in K,
 	\end{equation}
-where $M$ is a sufficiently large constant to ensure the constraint is only active when vehicle $k$ travels from customer $i$ to customer $j$.
-	
+where $M$ is a sufficiently large constant to ensure the constraint is only
+active when vehicle $k$ travels from customer $i$ to customer $j$.
+
 \end{itemize}
 
 \paragraph{DVRPTW}
-A more advanced extension is the Dynamic Capacitated Vehicle Routing Problem with Time Windows (DCVRPTW), 
-which incorporates all aforementioned constraints whilst accounting for dynamic and uncertain events that may occur during operation. 
-In DVRPTW, routing decisions must be continuously adapted as new customer requests arrive over time. 
-This requires algorithms to operate in an online setting, where only partial information is available at any given moment, and previously planned routes may need to be modified dynamically.
-Instead of a fixed customer set $N_c$ known in advance, we define: 
-$N_c(t)$ as the set of customers known at time $t$, which can change dynamically. 
+A more advanced extension is the Dynamic Capacitated Vehicle Routing Problem
+with Time Windows (DCVRPTW), which incorporates all aforementioned constraints
+whilst accounting for dynamic and uncertain events that may occur during
+operation. In DVRPTW, routing decisions must be continuously adapted as new
+customer requests arrive over time. This requires algorithms to operate in an
+online setting, where only partial information is available at any given moment,
+and previously planned routes may need to be modified dynamically. Instead of a
+fixed customer set $N_c$ known in advance, we define: $N_c(t)$ as the set of
+customers known at time $t$, which can change dynamically.
 \paragraph{Importance of DVRPTW}
-The DVRPTW is particularly relevant in real-world logistics systems, where customer requests may arrive dynamically throughout the day. 
-Applications include same-day delivery, ride-sharing services, and emergency response systems, where decisions must be made in real time under uncertainty. 
-The dynamic nature of the problem significantly increases its complexity, as routing plans must be continuously updated while maintaining service quality and operational efficiency.
+The DVRPTW is particularly relevant in real-world logistics systems, where
+customer requests may arrive dynamically throughout the day. Applications
+include same-day delivery, ride-sharing services, and emergency response
+systems, where decisions must be made in real time under uncertainty. The
+dynamic nature of the problem significantly increases its complexity, as routing
+plans must be continuously updated while maintaining service quality and
+operational efficiency.
 \section{Benchmark Datasets}
-Due to the importance of VRPTW, standardised benchmark datasets have been developed to ensure evaluations are fair and comparable. 
-One of the most important for VRPTW is the Solomon benchmark, introduced by Solomon in 1987 \cite{solomonAlgorithmsVehicleRouting1987}. It consists of 56 benchmark instances, each with 100 customers, designed to evaluate VRPTW algorithms under different operating conditions.
+Due to the importance of VRPTW, standardised benchmark datasets have been
+developed to ensure evaluations are fair and comparable. One of the most
+important for VRPTW is the Solomon benchmark, introduced by Solomon in 1987
+\cite{solomonAlgorithmsVehicleRouting1987}. It consists of 56 benchmark
+instances, each with 100 customers, designed to evaluate VRPTW algorithms under
+different operating conditions.
 \subsection{Geographical Distributions}
-The dataset is split into three classes based on the spatial arrangement of customers:
+The dataset is split into three classes based on the spatial arrangement of
+customers:
 \begin{figure}
 \centering
 \includegraphics[width=0.95\textwidth]{r_c_rc_visualisation.png}
@@ -174,89 +197,66 @@ The dataset is split into three classes based on the spatial arrangement of cust
 \end{itemize}
 
 \subsection{Temporal and Capacity Constraints (Type 1 vs. Type 2)}
-Solomon further divided these into two categories based on the tightness of constraints:
+Solomon further divided these into two categories based on the tightness of
+constraints:
 \begin{itemize}
 	\item Type 1 (e.g., C1, R1, RC1): These have a short scheduling horizon, narrow time windows, and small vehicle capacities, which typically require multiple vehicles to service customers and result in more complex routing decisions.
 	\item Type 2 (e.g., C2, R2, RC2): These have a long scheduling horizon, wide time windows, and large vehicle capacities, allowing many customers to be serviced by a single vehicle, which can simplify routing decisions but may also lead to longer routes and increased total distance.
 \end{itemize}
 
 \subsection{Adaptation for Dynamic VRP (DVRPTW)}
-Although the original Solomon benchmark is static, it has been widely adapted for dynamic VRP research by introducing an "appearance time" for a percentage of the customers based on a Degree of Dynamism (DoD) $\epsilon$.
-For example, in an instance with 50\% dynamism, half of the customers are hidden at the start of the day and only revealed as the vehicles are already executing their routes, simulating real-world scenarios 
-where new orders can arrive unpredictably throughout the day.
-\subsection{Common Preprocessing Steps}
+Although the original Solomon benchmark is static, it has been widely adapted
+for dynamic VRP research by introducing an "appearance time" for a percentage of
+the customers based on a Degree of Dynamism (DoD) $\epsilon$. For example, in an
+instance with 50\% dynamism, half of the customers are hidden at the start of
+the day and only revealed as the vehicles are already executing their routes,
+simulating real-world scenarios where new orders can arrive unpredictably
+throughout the day.
+% \subsection{Common Preprocessing Steps}
 % In your implementation section, note that it is standard practice to scale the raw Solomon coordinates—which usually occupy a 
 % square—down to a 
 % unit square
 % This normalization is crucial for the stability of neural network training in models like the Attention Model (AM) or RouteFinder
 
 \section{Evaluation Metrics}
-The performance of algorithms addressing the Dynamic Vehicle Routing Problem with Time Windows (DVRPTW) 
-is typically assessed through a range of evaluation metrics, each capturing different 
-operational and computational aspects of solution quality. Since DVRPTW is inherently 
-a multi-objective optimisation problem, no single metric is sufficient to fully 
-describe algorithmic performance. Consequently, prior literature evaluates methods 
-according to service quality, routing efficiency, computational efficiency, 
-and decision-making effectiveness. The following metrics represent the most commonly 
-adopted measures in recent DVRPTW and related dynamic routing studies.
-% \subsection{Service Quality Metrics}
-% \begin{itemize}
-	
-% 	\item \cite{chen2026} Lateness: Lateness is defined as the sum of delays beyond the latest allowable service time, typically expressed as $\sum_i \max(0, t_i - b_i)$.
-% 	\item Rejection rate: Percentage of requests that are rejected due to capacity or time window constraints.% \cite{AntColony}
-% 	\item Responsiveness: It measures how quickly a routing algorithm adapts to newly arriving requests, typically quantified as the delay between request arrival and its service start time. \cite{AntColony} 
-% \end{itemize}
-% \subsection{Operational Efficiency Metrics}
-% \begin{itemize}
-% 	\item Total Distance: The Euclidean sum of all arcs traversed by the entire fleet. %Ojeda Rios et al. (2021) Section 3.4
-% 	\item Fleet Size: The total number of vehicles (K or V) required to fulfil all demands. %Shahbazian et al. (2025) Table 4
-% 	\item Total Duration: Cumulative time from depot departure until the last vehicle returns. %-Xu et al. (2025)
-% \end{itemize}
+Because DVRPTW is multi-objective, prior studies rarely rely on a single
+performance measure. Instead, evaluations typically combine:
 
-% \subsection{Computational Efficiency Metrics}
-% \begin{itemize}
-% 	\item Solving Time: The wall-clock computation time (s) required to return a solution for a snapshot. %Dornemann (2023) Table 3
-% \end{itemize}
+(i) operational metrics such as fleet size and travelled distance;
 
-% \subsection{Benchmarking and Comparative Analysis}
-% \begin{itemize}
-% 	\item Optimality Gap: The percentage difference between the algorithm's cost and the Best Known Solution. %Berto et al. (2024) Table 1
-% 	\item Value of Information: The gap between real-time dynamic results and an "Oracle" (offline optimal) solution that has all the knowledge beforehand.\cite{valueOfInformation} 
-% \end{itemize}
-\begin{longtblr}[
-caption = {Summary of evaluation metrics for DVRPTW.},
-label = {tab:dvrptw-evaluation-metrics},
-]{
-	width=\textwidth,
-	colspec={Q[l,wd=0.22\textwidth] Q[l,wd=0.20\textwidth] Q[l,wd=0.45\textwidth]},
-	row{1}={font=\bfseries},
-	hlines,
-	vlines
-}
-Category & Metric & Definition \\
-Service quality & Lateness & Sum of delays beyond the latest allowable service time, typically $\sum_i \max(0, t_i - b_i)$ \cite{chen2026}. \\
-Service quality & Rejection rate & Percentage of requests rejected due to capacity or time-window constraints. \\
-Service quality & Responsiveness & Delay between request arrival and service start time; measures how quickly the algorithm adapts to new requests \cite{AntColonySchyns2015}. \\
-Operational efficiency & Total distance & Euclidean sum of all arcs traversed by the fleet. \\
-Operational efficiency & Fleet size & Total number of vehicles ($K$ or $V$) required to fulfil all demands. \\
-Operational efficiency & Total duration & Cumulative time from depot departure until the last vehicle returns. \\
-Computational efficiency & Solving time & Wall-clock computation time (s) required to produce a solution for a snapshot. \\
-Benchmarking and comparison & Optimality gap & Percentage difference between algorithm cost and the best known solution. \\
-Benchmarking and comparison & Value of information & Gap between real-time dynamic results and an offline "oracle" solution with full prior knowledge \cite{valueOfInformation}. \\
-\end{longtblr}
+(ii) service metrics such as lateness, rejection rate, and responsiveness\cite{AntColonySchyns2015};
+
+(iii) computational metrics such as runtime; and
+
+(iv) comparative measures such as gaps to offline oracle solutions or best-known
+references \cite{ojedariosRecentDynamicVehicle2021}.
+
+The precise metrics adopted in this dissertation are formalised in the
+Methodology chapter.\ref{chp:methodology}
 \section{Solution Methods}
-The VRP is NP-hard, making exact methods computationally infeasible for large instances. 
-In practice, this is commonly addressed using traditional optimisation methods, particularly heuristics and meta-heuristics, which target high-quality solutions within reasonable time frames.
-We will now give a brief overview of these methods, as well as recent AI-based approaches that have shown promise in solving complex routing problems.
+The VRP is NP-hard, making exact methods computationally infeasible for large
+instances. In practice, this is commonly addressed using traditional
+optimisation methods, particularly heuristics and meta-heuristics, which target
+high-quality solutions within reasonable time frames. We will now give a brief
+overview of these methods, as well as recent AI-based approaches that have shown
+promise in solving complex routing problems.
 % These methods are distinct from approximation algorithms in the strict theoretical sense, as they do not typically provide proven approximation ratios.
 
 \subsection{Exact Methods}
 
-Exact methods are optimisation approaches that seek provably optimal solutions through mathematical programming techniques. 
-They are particularly useful for smaller or structured VRP instances as computational effort typically increases rapidly with problem size, and often serve as benchmarks for evaluating approximate methods.
-It's important to note that in dynamic settings, optimality may only apply to the currently known state before new information is revealed \cite{ojedariosRecentDynamicVehicle2021}.
+Exact methods are optimisation approaches that seek provably optimal solutions
+through mathematical programming techniques. They are particularly useful for
+smaller or structured VRP instances as computational effort typically increases
+rapidly with problem size, and often serve as benchmarks for evaluating
+approximate methods. It's important to note that in dynamic settings, optimality
+may only apply to the currently known state before new information is revealed
+\cite{ojedariosRecentDynamicVehicle2021}.
 
-Common examples include linear programming relaxations, integer programming formulations, branch-and-bound procedures, branch-and-cut methods, and branch-price-and-cut algorithms for large routing models. Extensions such as stochastic or robust optimisation are also used when uncertainty in demand or travel times must be considered \cite{meraliyevComprehensiveSurveyMethods2025}.
+Common examples include linear programming relaxations, integer programming
+formulations, branch-and-bound procedures, branch-and-cut methods, and
+branch-price-and-cut algorithms for large routing models. Extensions such as
+stochastic or robust optimisation are also used when uncertainty in demand or
+travel times must be considered \cite{meraliyevComprehensiveSurveyMethods2025}.
 
 % \subsection{Exact Methods}
 % Exact methods are optimisation approaches that seek provably optimal solutions for a given problem instance through mathematical programming techniques. According to \cite{meraliyevComprehensiveSurveyMethods2025}, exact methods remain important in Vehicle Routing Problem (VRP) research, particularly for smaller or more structured instances where optimality is computationally achievable.
@@ -275,15 +275,19 @@ Common examples include linear programming relaxations, integer programming form
 
 
 \subsection{Heuristics}
- Heuristics are problem-specific strategies that construct solutions based on intuitive rules or domain knowledge. These can be broadly categorised into two types:
+Heuristics are problem-specific strategies that construct solutions based on
+intuitive rules or domain knowledge. These can be broadly categorised into two
+types:
 \begin{itemize}
 	\item{Constructive heuristics}: These build a solution from scratch by iteratively adding customers to routes based on criteria such as proximity or cost. Examples include the Nearest Neighbour, Clarke-Wright Savings, and Solomon's Insertion heuristics.\cite{metaheuristicsAndHeuristics}
 	\item {Improvement heuristics}: These start with an initial solution and iteratively improve it through local search techniques, such as 2-opt, 3-opt, or Or-opt, which involve swapping or relocating customers to reduce total distance or improve route feasibility.\cite{metaheuristicsAndHeuristics}
 \end{itemize}
 \subsection{Metaheuristics}
- Metaheuristics are higher-level frameworks that guide the search process to explore the solution space more effectively.
-They often incorporate mechanisms to escape local optima and can be applied to a wide range of combinatorial problems. \cite{metaheuristicsAndHeuristics}
-Common metaheuristics for VRP include:
+Metaheuristics are higher-level frameworks that guide the search process to
+explore the solution space more effectively. They often incorporate mechanisms
+to escape local optima and can be applied to a wide range of combinatorial
+problems. \cite{metaheuristicsAndHeuristics} Common metaheuristics for VRP
+include:
 \begin{itemize}
 	\item Genetic Algorithms (GA): Use evolutionary principles to evolve a population of solutions through selection, crossover, and mutation.
 	\item Tabu Search(TS): Employs memory structures to avoid cycling back to previously visited solutions.
@@ -294,10 +298,32 @@ Common metaheuristics for VRP include:
 
 \subsection{AI Methods} 
 
-Recent research has explored AI-based approaches, particularly Neural Combinatorial Optimisation (NCO), for solving the VRP and its variants. Unlike classical heuristics, these methods aim to learn routing strategies directly from data rather than relying solely on manually designed rules \cite{nazariReinforcementLearningSolving2018, Kool2019, RouteFinder}. This is attractive in practice because trained models can be reused across many similar problem instances and adapted more easily when operating conditions change.
+Recent research has explored AI-based approaches, particularly Neural
+Combinatorial Optimisation (NCO), for solving the VRP and its variants. Unlike
+classical heuristics, these methods aim to learn routing strategies directly
+from data rather than relying solely on manually designed rules
+\cite{nazariReinforcementLearningSolving2018, Kool2019, RouteFinder}. This is
+attractive in practice because trained models can be reused across many similar
+problem instances and adapted more easily when operating conditions change.
 
-Many modern AI approaches represent routing problems as graphs, where nodes correspond to depots or customers and edges capture travel costs or distances. Neural network models then learn useful patterns from node features such as coordinates, demands, or time windows \cite{nazariReinforcementLearningSolving2018, Kool2019}. Attention-based architectures are particularly common, as they allow the model to focus dynamically on the most relevant customers when constructing a route \cite{Kool2019}.
+Many modern AI approaches represent routing problems as graphs, where nodes
+correspond to depots or customers and edges capture travel costs or distances.
+Neural network models then learn useful patterns from node features such as
+coordinates, demands, or time windows
+\cite{nazariReinforcementLearningSolving2018, Kool2019}. Attention-based
+architectures are particularly common, as they allow the model to focus
+dynamically on the most relevant customers when constructing a route
+\cite{Kool2019}.
 
-Solution generation is typically treated as a sequential decision process, where the model selects the next customer step-by-step based on the current partial route. Feasibility constraints, such as capacity limits or time windows, are commonly enforced through masking schemes that prevent invalid actions \cite{nazariReinforcementLearningSolving2018, Kool2019}.
+Solution generation is typically treated as a sequential decision process, where
+the model selects the next customer step-by-step based on the current partial
+route. Feasibility constraints, such as capacity limits or time windows, are
+commonly enforced through masking schemes that prevent invalid actions
+\cite{nazariReinforcementLearningSolving2018, Kool2019}.
 
-Training is often performed using reinforcement learning (RL), where the model learns through repeated interaction with simulated instances and is rewarded for producing lower-cost routes \cite{nazariReinforcementLearningSolving2018, Kool2019, Hottung2020}. Once trained, these methods can generate solutions quickly, making them promising for dynamic or real-time routing applications \cite{shahbazianKnowledgeguidedHybridDeep2025, RouteFinder}.
+Training is often performed using reinforcement learning (RL), where the model
+learns through repeated interaction with simulated instances and is rewarded for
+producing lower-cost routes \cite{nazariReinforcementLearningSolving2018,
+Kool2019, Hottung2020}. Once trained, these methods can generate solutions
+quickly, making them promising for dynamic or real-time routing applications
+\cite{shahbazianKnowledgeguidedHybridDeep2025, RouteFinder}.

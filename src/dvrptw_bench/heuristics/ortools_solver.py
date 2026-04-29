@@ -14,8 +14,6 @@ class ORToolsVRPTWSolver(HeuristicSolver):
     name = "ortools"
 
     def solve(self, instance: VRPTWInstance, time_limit_s: float, warm_start: Solution | None = None) -> Solution:
-        print("Warm Start:", warm_start)
-        print("Instance: ", instance.customers)
         t0 = time.perf_counter()
         try:
             from ortools.constraint_solver import pywrapcp, routing_enums_pb2

@@ -124,8 +124,8 @@ class DynamicSimulator:
             # lateness = max(0.0, service_start - c.due_time, completion_time - c.due_time)
             lateness = max(0.0, service_start - c.due_time)
             if lateness > 0:
-                print(f"service_start: {service_start}, c.due_time: {c.due_time}, completion_time: {completion_time}, lateness: {lateness}")
-                print(f"Customer {c.id} is late.")
+                # print(f"service_start: {service_start}, c.due_time: {c.due_time}, completion_time: {completion_time}, lateness: {lateness}")
+                # print(f"Customer {c.id} is late.")
                 violations["late_count"] += 1.0
                 violations["late_sum"] += lateness
                 violations["late_customer_ids"].add(c.id)

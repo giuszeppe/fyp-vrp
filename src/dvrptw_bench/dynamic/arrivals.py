@@ -39,7 +39,7 @@ def build_dynamic_scenario(
     feasible = True
     reason = None
 
-    print(f"CUstomers length: {len(instance.customers)}, n_dyn: {n_dyn}, dynamic_ids: {sorted(dynamic_ids)}")
+    # print(f"CUstomers length: {len(instance.customers)}, n_dyn: {n_dyn}, dynamic_ids: {sorted(dynamic_ids)}")
     for c in instance.customers:
         if c.id not in dynamic_ids:
             adjusted.append(c)

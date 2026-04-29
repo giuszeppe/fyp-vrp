@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import FIRST_COMPLETED, Future, ProcessPoolExecutor, wait
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
@@ -345,14 +345,7 @@ def _lookup_oracle_cost(paths: EvaluationPaths, unit: WorkUnit) -> float | None:
 
 
 def _run_oracle_unit(paths: EvaluationPaths, project_root: Path, unit: WorkUnit, models: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    oracle_budget_s = 300.0
-    print(
-        "[oracle] "
-        f"instance={unit.instance_name} "
-        f"size={unit.evaluation_size} "
-        f"budget_s={oracle_budget_s:.1f} "
-        f"work_id={unit.work_id}"
-    )
+    oracle_budget_s = 10.0
     instance = parse_solomon(Path(load_manifest(paths.root).dataset_root) / unit.instance_name, max_customers=unit.evaluation_size)
     model_type, solver = create_model("oracle", project_root, models)
     solution = solver.solve(instance, time_limit_s=oracle_budget_s, warm_start=None)
@@ -482,6 +475,8 @@ def _finalize_success(paths: EvaluationPaths, ledger: Ledger, unit: WorkUnit, re
         f"instance={unit.instance_name} "
         f"size={unit.evaluation_size} "
         f"output={result_path}"
+        ,
+        flush=True,
     )
 
 
@@ -490,6 +485,28 @@ def _finalize_failure(paths: EvaluationPaths, ledger: Ledger, unit: WorkUnit, er
     state.status = "failed"
     state.error_message = error_message
     save_ledger(paths, ledger)
+    print(
+        f"[{unit.modality}] failed "
+        f"instance={unit.instance_name} "
+        f"size={unit.evaluation_size} "
+        f"error={error_message}",
+        flush=True,
+    )
+
+
+def _reset_units_to_pending(paths: EvaluationPaths, ledger: Ledger, units: list[WorkUnit]) -> None:
+    changed = False
+    for unit in units:
+        state = ledger.items[unit.work_id]
+        if state.status != "in_progress":
+            continue
+        state.status = "pending"
+        state.completed_at = None
+        state.output_path = None
+        state.error_message = None
+        changed = True
+    if changed:
+        save_ledger(paths, ledger)
 
 
 def _default_workers(modality: str, task_count: int) -> int:
@@ -498,6 +515,27 @@ def _default_workers(modality: str, task_count: int) -> int:
     if modality in {"oracle", "heuristic"}:
         return max(1, min(os.cpu_count() or 1, task_count))
     return 1
+
+
+def _budget_for_unit(unit: WorkUnit) -> float:
+    if unit.modality == "oracle":
+        return 10.0
+    if unit.modality == "heuristic":
+        return 5.0
+    if unit.modality == "hybrid":
+        return 0.5
+    return 5.0
+
+
+def _log_unit_started(unit: WorkUnit) -> None:
+    print(
+        f"[{unit.modality}] started "
+        f"instance={unit.instance_name} "
+        f"size={unit.evaluation_size} "
+        f"budget_s={_budget_for_unit(unit):.1f} "
+        f"work_id={unit.work_id}",
+        flush=True,
+    )
 
 
 def _execute_unit_payload(
@@ -514,38 +552,6 @@ def _execute_unit_payload(
     if modality == "oracle":
         return _run_oracle_unit(paths, project_root, unit, models)
     return _run_dynamic_unit(paths, project_root, unit, models)
-
-
-def _run_units_parallel(
-    data_root: Path,
-    project_root: Path,
-    modality: str,
-    units: list[WorkUnit],
-    workers: int,
-) -> list[tuple[WorkUnit, dict[str, Any] | None, str | None]]:
-    outcomes: list[tuple[WorkUnit, dict[str, Any] | None, str | None]] = []
-    with ProcessPoolExecutor(max_workers=workers) as executor:
-        future_map = {
-            executor.submit(
-                _execute_unit_payload,
-                str(data_root),
-                str(project_root),
-                modality,
-                unit.model_dump(mode="json"),
-            ): unit
-            for unit in units
-        }
-        try:
-            for future in as_completed(future_map):
-                unit = future_map[future]
-                try:
-                    outcomes.append((unit, future.result(), None))
-                except Exception as exc:
-                    outcomes.append((unit, None, str(exc)))
-        except KeyboardInterrupt:
-            executor.shutdown(wait=False, cancel_futures=True)
-            raise
-    return outcomes
 
 
 def _run_units_sequential(
@@ -568,6 +574,79 @@ def _run_units_sequential(
         except Exception as exc:
             outcomes.append((unit, None, str(exc)))
     return outcomes
+
+
+def _submit_unit(
+    executor: ProcessPoolExecutor,
+    data_root: Path,
+    project_root: Path,
+    modality: str,
+    unit: WorkUnit,
+) -> Future:
+    _log_unit_started(unit)
+    return executor.submit(
+        _execute_unit_payload,
+        str(data_root),
+        str(project_root),
+        modality,
+        unit.model_dump(mode="json"),
+    )
+
+
+def _stop_executor(executor: ProcessPoolExecutor) -> None:
+    executor.shutdown(wait=False, cancel_futures=True)
+    for process in getattr(executor, "_processes", {}).values():
+        try:
+            process.terminate()
+        except Exception:
+            pass
+
+
+def _run_parallel_streaming(
+    paths: EvaluationPaths,
+    ledger: Ledger,
+    data_root: Path,
+    project_root: Path,
+    modality: str,
+    queue: deque[WorkUnit],
+    worker_count: int,
+) -> int:
+    completed = 0
+    in_flight: dict[Future, WorkUnit] = {}
+    executor = ProcessPoolExecutor(max_workers=worker_count)
+    try:
+        for _ in range(min(worker_count, len(queue))):
+            unit = _claim_next_pending_unit(paths, ledger, queue)
+            if unit is None:
+                break
+            future = _submit_unit(executor, data_root, project_root, modality, unit)
+            in_flight[future] = unit
+
+        while in_flight:
+            done, _pending = wait(set(in_flight.keys()), return_when=FIRST_COMPLETED)
+            for future in done:
+                unit = in_flight.pop(future)
+                try:
+                    result = future.result()
+                    _finalize_success(paths, ledger, unit, result)
+                    completed += 1
+                except Exception as exc:
+                    _finalize_failure(paths, ledger, unit, str(exc))
+
+                next_unit = _claim_next_pending_unit(paths, ledger, queue)
+                if next_unit is not None:
+                    next_future = _submit_unit(executor, data_root, project_root, modality, next_unit)
+                    in_flight[next_future] = next_unit
+        executor.shutdown(wait=True, cancel_futures=False)
+        return completed
+    except KeyboardInterrupt:
+        _reset_units_to_pending(paths, ledger, list(in_flight.values()))
+        _stop_executor(executor)
+        raise
+    except BaseException:
+        _reset_units_to_pending(paths, ledger, list(in_flight.values()))
+        _stop_executor(executor)
+        raise
 
 
 def run_modality(
@@ -606,6 +685,8 @@ def run_modality(
 
         if worker_count == 1:
             claimed = _claim_pending_units(paths, ledger, pending_units, limit=attempted)
+            for unit in claimed:
+                _log_unit_started(unit)
             outcomes = _run_units_sequential(paths, project_root, modality, claimed, models)
             completed = 0
             for unit, result, error_message in outcomes:
@@ -617,48 +698,15 @@ def run_modality(
             return completed, attempted
         else:
             queue = deque(pending_units)
-            completed = 0
-            future_map: dict[Any, WorkUnit] = {}
-            with ProcessPoolExecutor(max_workers=worker_count) as executor:
-                initial = min(worker_count, len(queue))
-                for _ in range(initial):
-                    unit = _claim_next_pending_unit(paths, ledger, queue)
-                    if unit is None:
-                        break
-                    future = executor.submit(
-                        _execute_unit_payload,
-                        str(data_root),
-                        str(project_root),
-                        modality,
-                        unit.model_dump(mode="json"),
-                    )
-                    future_map[future] = unit
-
-                try:
-                    while future_map:
-                        for future in as_completed(list(future_map.keys()), timeout=None):
-                            unit = future_map.pop(future)
-                            try:
-                                result = future.result()
-                                _finalize_success(paths, ledger, unit, result)
-                                completed += 1
-                            except Exception as exc:
-                                _finalize_failure(paths, ledger, unit, str(exc))
-
-                            next_unit = _claim_next_pending_unit(paths, ledger, queue)
-                            if next_unit is not None:
-                                next_future = executor.submit(
-                                    _execute_unit_payload,
-                                    str(data_root),
-                                    str(project_root),
-                                    modality,
-                                    next_unit.model_dump(mode="json"),
-                                )
-                                future_map[next_future] = next_unit
-                            break
-                except KeyboardInterrupt:
-                    executor.shutdown(wait=False, cancel_futures=True)
-                    raise
+            completed = _run_parallel_streaming(
+                paths=paths,
+                ledger=ledger,
+                data_root=data_root,
+                project_root=project_root,
+                modality=modality,
+                queue=queue,
+                worker_count=worker_count,
+            )
             return completed, attempted
 
 

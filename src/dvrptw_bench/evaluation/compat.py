@@ -45,6 +45,7 @@ class BenchmarkResult:
     average_lateness: float
     service_level: float
     total_cost: float
+    routes: list[dict[str, Any]]
     oracle_gap: float | None = None
     run_id: int = 0
     timestamp: str = ""
@@ -224,6 +225,7 @@ def result_from_solution(
     error_message: str | None = None,
 ) -> BenchmarkResult:
     metrics = MetricsCalculator.calculate_metrics(instance, solution, oracle_cost)
+    routes = [route.model_dump(mode="json") for route in getattr(solution, "routes", [])]
     return BenchmarkResult(
         instance_id=instance.instance_id,
         evaluation_size=evaluation_size,
@@ -241,6 +243,7 @@ def result_from_solution(
         average_lateness=metrics["average_lateness"],
         service_level=metrics["service_level"],
         total_cost=metrics["total_cost"],
+        routes=routes,
         oracle_gap=metrics["oracle_gap"],
         run_id=run_id,
         timestamp=datetime.now().isoformat(),

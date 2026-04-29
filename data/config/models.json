@@ -1,0 +1,12 @@
+[
+  {
+    "checkpoint_candidates": [
+      "trained_models/solomon_generated_50_working.ckpt",
+      "good_runs/solomon_generated_50_working.pt"
+    ],
+    "enabled": true,
+    "model_id": "routefinder_solomon_generated_50",
+    "num_customers": 50,
+    "variant": "solomon_generated"
+  }
+]

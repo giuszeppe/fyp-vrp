@@ -11,7 +11,7 @@
 
 % Schema
 % - How I did what I wanted to do is the focus
-% - What I want to do is: benchmark between heuristics, AI (with my twists) and Hybrid approaches on Dynamic solomon instances
+% - What I want to do is: benchmark between heuristics, AI (with my twists) and Hybrid approaches on Dynamic Solomon instances
 % To say we have, at the very least:
 % - what dynamic means, (customer disclosure over time),
 % what stays the same, time windows (hard or soft -> soft in our case), when re-optimisation happens
@@ -23,7 +23,7 @@
 % - Dynamic setting -> how I made scenario dynamics, why I did it that way, how does the simulator work, performances, observability (visualisation)
 % solver agnostic, code publicy available, dod, cutoff, seeds. How did I implement it in ORTOols and why it was much easier for Routefinder.
 % how snapshots are built during re-optimisation
-% - Instance to problem pipeline -> how are parsed, how are normalised and scaled for routefinder
+% - Instance to problem pipeline -> how are parsed, how are normalised and scaled for RouteFinder
 % - How did I setup the benchmark? Which decisions were made? Is it seed-dependent? How do I ensure fairness? How much time do I give heuristics? Role of oracle
 % - What am I removing? Stochastic, stochastic travel times, heterogeneous fleet, pickup & delivery, real maps, large-scale 1000-node instances
 % - Metrics included and why:  total distance,number of vehicles used, lateness count / lateness sum if soft TW are
@@ -80,7 +80,7 @@
 %   - what the AI outputs
 %   - how routes/actions are converted into a warm
 %     start
-%   - how OR-Tools consumes that warm start
+%   - how ORTools consumes that warm start
 %   - whether PyVRP supports equivalent seeding in
 %     your implementation
 %   - what happens when the AI proposal is
@@ -123,7 +123,7 @@
 %     scale benchmarking is the target
 
 % \paragraph{AI Setup}
-% %Description of the model adopted, routefinder.
+% %Description of the model adopted, RouteFinder.
 % Things to discuss
 % - training datasets
 % - train/validation split logic
@@ -164,8 +164,8 @@
 % (for each variant)
 % - number of customers -> not edit to the code, just a different parameter passed
 % - lateness -> changed the env (env_flexible.py)
-% - geometry -> solomon_generator -> the generator now takes in input a list of solomon instances,
-% and based on a counter gives one or another solomon instance when generating a batch. The
+% - geometry -> Solomon_generator -> the generator now takes in input a list of Solomon instances,
+% and based on a counter gives one or another Solomon instance when generating a batch. The
 % sampling of locations has been disabled.
 % - dynamic training -> see below
 % \paragraph{OR Tools setup}
@@ -206,7 +206,7 @@
 % use different solvers and models to conduct our comparative study.
 
 % The solver-agnostic simulator allowed us to benchmark different approaches seamlessly.
-% For the metaheuristics part, we used OR-Tools and PyVRP. For the AI component, we took
+% For the metaheuristics part, we used ORTools and PyVRP. For the AI component, we took
 % the RouteFinder \cite{RouteFinder} code and trained it in different ways to understand
 % the impact of those changes on the final result.
 %end of dynamic simulator section
@@ -292,7 +292,7 @@
 % generation process and the environment
 % dynamics. This was implemented through the
 % DynamicGenerator in src/dvrptw_bench/
-% paper_dynamic_routefinder/generator.py:1 and
+% paper_dynamic_RouteFinder/generator.py:1 and
 % the MTVRPDynamicEnv in src/dvrptw_bench/rl/
 % env_dynamic.py:1. The objective of these
 % modifications was to expose the model, during
@@ -395,12 +395,17 @@
 %end of dynamic training section
 
 \chapter{Methodology}
+\label{chp:methodology}
 
 This chapter describes the experimental framework used to compare classical
 optimisation, AI-based, and hybrid solution methods for the Dynamic Vehicle
 Routing Problem with Time Windows (DVRPTW). The study focuses on dynamic
-deterministic customer disclosure scenarios derived from Solomon benchmark
-instances.
+deterministic customer disclosure scenarios derived from the Solomon benchmark
+set. All 56 benchmark instances are considered, spanning the three standard
+Solomon families (C, R, and RC) and including both Type 1 and Type 2 variants.
+For each instance, a subset of the 100 customers will be used for reasons better
+explained in the limitations section\ref{limitations}.
+
 
 The chapter first defines the problem setting and benchmark construction
 process, followed by the configuration of the compared methods. It then presents
@@ -408,47 +413,136 @@ the dynamic simulation environment, fairness protocol, and evaluation metrics
 used to assess solution quality, computational efficiency, and service
 performance.
 
-% \chapter{Methodology}
-% This chapter describes the methodology developed to benchmark heuristic, AI-based, and hybrid approaches for dynamic vehicle routing. Particular emphasis is placed on fair comparison under online re-optimisation, controlled customer disclosure scenarios, and reproducible evaluation across multiple hardware settings.
-% The chapter details the benchmark generation pipeline, solver implementations, hybrid warm-start mechanism, and metrics used throughout the experimental study.
+To support reproducibility, the benchmark artefact is intended to be released as
+open-source code in a public repository [GitHub repository placeholder:
+        \texttt{https://github.com/username/dvrptw-benchmark}]. The repository is
+intended to include the simulator, data-processing pipeline, solver adapters,
+training scripts, benchmark configuration files, and visualisation utilities
+used in this study. Together with the Solomon benchmark instances, fixed random
+seeds, and the reported experimental settings, this should allow the benchmark
+scenarios, training procedures, and evaluation runs to be reproduced by other
+researchers.
 
-\section{Experimental problem setting}
-In this study, dynamicity is modelled through progressive disclosure of a subset
-of Solomon customers according to fixed reveal schedules. Such thing is the only
-element of dynamicity employed in this project. In fact, city locations,
-customer demands, travel times, time windows, and the reveal schedule once
-generated are fixed. Since it uses no stochastic elements, it falls under the
-umbrella of Dynamic and Deterministic problem. Time windows are considered both
-in their hard and in their soft version, this to evaluate and study the
-differences between various models and approaches when lateness is allowed. Of
-course, a penalty is applied when a solver proposes a solution containing
-lateness. In order to ensure the benchmark is interpretable and reproducible, we
-need to define formally three concepts: lateness, infeasibility and rejection.
-Lateness is {\color{red} add definitions } Infeasibilty is {\color{red} add
-definitions } Rejection is {\color{red} add definitions } In this study,
-re-optimisation happens at discrete-intervals, whenever a new customer is
-disclosed. When it happens, depending on the solver used, a snapshot of the
-current dynamic instance is created and it is then optimised as if it were a
-static instance from that point onwards.
 
-The objective is gonna be split in two categories: dynamic measures and static
-measures. For the static ones, we'll be using a lexicographic order -> number of
-vehicles and then total cost For the dynamic ones, we'll be using responsivness,
-rejection rate and lateness.
+\section{Experimental Problem Setting}
+{\color{red} discuss the hardware used for evaluation (low,mid,high-end) in
+evaluation}
 
-Thanks to these setting, we'll be able to answer a few key questions that will
-allows us to compare AI, Heuristics and Hybrids effectively. Such questions are:
-\begin{itemize}
-    \item Can AI compete with classical heuristics in dynamic routing?
-    \item Does hybrid warm-start improve runtime or quality?
-    \item Does dynamic-aware AI training improve online performance?
-    \item How sensitive are methods to Degree of Dynamism?
-\end{itemize}
+In this study, dynamicity is modelled through the progressive disclosure of a
+subset of customers from the Solomon benchmark instances. Progressive customer
+disclosure is the only source of dynamicity considered. Customer locations,
+demands, travel times, service times, and time windows remain deterministic and
+fixed once a scenario has been generated. Consequently, the resulting benchmark
+belongs to the class of dynamic deterministic vehicle routing problems.
+\cite{ojedariosRecentDynamicVehicle2021}
 
-\section{Solution Methods}
-In this chapter we will introduce bla bla bla. First of all, we need to state
-how solomon instances have been treated.
-\paragraph{Solomon To Problem To Solution Pipeline}
+Both hard and soft time-window settings are considered. Under hard time windows,
+service must begin within the customer interval. Under soft time windows, late
+service is permitted but incurs a penalty. This allows comparison between
+methods under both strict feasibility requirements and more flexible service
+regimes.
+
+Re-optimisation occurs whenever a new customer request is revealed. At each
+event, the current execution state is converted into a residual snapshot
+instance, which is then re-solved from that point onward using the selected
+method.
+
+\subsection*{Degree of Dynamism}
+
+The degree of dynamism (DoD), denoted by $\epsilon$, controls the proportion of
+customers that are unavailable at time zero and are instead revealed during
+execution. For an instance containing $N$ customers, $\mathrm{round}(\epsilon
+N)$ customers are designated as dynamic requests.
+
+The benchmark evaluates the following levels:
+
+\[
+    \epsilon \in \{0.10, 0.25, 0.50, 0.75\}.
+\]
+
+These values represent progressively more challenging scenarios, ranging from
+low to high dynamicity.
+
+\subsection*{Reveal Horizon}
+
+For each dynamic customer, the reveal time is sampled uniformly from
+
+\[
+[0,\tau], \qquad \tau = \alpha T,
+\]
+
+where $T$ is the depot planning horizon and $\alpha = 0.8$. Hence, all dynamic
+requests are disclosed within the first 80\% of the planning horizon.
+
+This avoids trivial late disclosures while preserving substantial online
+uncertainty during execution.
+
+\section{Simulator}
+The dynamic benchmark was implemented as an event-driven simulator that converts
+each static Solomon instance into a partially revealed DVRPTW scenario prior to
+execution. For a given degree of dynamism, $\epsilon$, the simulator samples
+$\mathrm{round}(\epsilon N)$ customers to become dynamic, where $N$ is the total
+number of customers. Each selected customer is assigned a reveal time drawn
+uniformly from the interval $[0,
+        \min(l_i,\tau)]$,
+where $l_i$ is the original due time and $\tau=\text{cutoff\_ratio}\times T$,
+with $T$ denoting the depot planning horizon. Once revealed, the customer
+becomes available only from that instant onward by updating its ready time to
+$\max(e_i,r_i)$, where $e_i$ is the original ready time and $r_i$ is the sampled
+reveal time. Original due times are preserved.
+
+During execution, vehicles are advanced exactly to each reveal event while
+preserving their current position, elapsed time, residual capacity, travelled
+distance, and any non-preemptive service already in progress. At each event, the
+simulator constructs a residual snapshot instance containing all currently
+revealed unserved customers together with one artificial start node per vehicle
+representing its current execution state. The selected solver is then invoked to
+re-optimise the remaining routes under the shared time budget.
+
+If re-optimisation fails to incorporate a newly revealed request, that request
+is recorded as rejected and the previously committed plan is retained. This is a
+known limitation that will be discussed here\ref{limitations}. Final performance
+is evaluated on the routes actually executed over time, rather than on
+intermediate planned solutions, with feasibility assessed through unserved
+customers, capacity violations, and time-window violations.
+
+The simulator was designed to be solver-agnostic: any method capable of taking
+an
+\texttt{Instance}
+object as input and returning a
+\texttt{Solution}
+object can be integrated into the benchmark. This common interface was central
+to the comparative study, as it enabled consistent evaluation of heuristic,
+AI-based, and hybrid approaches within the same dynamic execution framework.
+\subsection{Simulator Visualisation}
+Visualisation was used as a supporting tool for qualitative inspection of both
+static and dynamic solutions. In particular, it was used to verify the
+correctness of generated scenarios, to inspect the timing of customer disclosure
+events, and to observe how routes evolved across re- optimisation steps in the
+dynamic setting. The visualisation component also includes an interactive
+inspection capability, which was useful for debugging individual instances by
+allowing closer examination of customer visibility, vehicle progression, route
+changes, and the effect of successive reveal events. This was especially
+valuable for validating simulator behaviour and for interpreting differences
+between heuristic, AI, and hybrid solution strategies, although visual analysis
+was not used as a primary benchmark metric. {\color{red}Simulator image}
+
+
+
+\section{Benchmark Pipeline and Solution Methods}
+
+{\color{red} Remember a pipeline image}
+
+This section describes the three families of solution methods compared in the
+benchmark: classical heuristics, AI-based policies, and hybrid approaches. Since
+all methods are evaluated on the same dynamic Solomon scenarios, the section
+first defines the common representation pipeline used to parse raw benchmark
+instances, transform them into solver-ready problem objects, and reconstruct
+residual snapshots during online re-optimisation. This shared pipeline ensures
+that performance differences are attributable to the solution methods rather
+than to inconsistent input processing or problem encoding.
+
+\paragraph{Common Instance Representation}
 The raw Solomon file is first parsed into a structured VRPTW instance by
 extracting the depot, the list of customers, the available number of vehicles,
 the vehicle capacity, and the time-window and service information associated
@@ -459,7 +553,7 @@ common VRPTWInstance representation. This intermediate format is
 solver-independent and serves as the shared input object for all methods in the
 benchmark, including heuristics, AI models, and hybrid approaches.
 
-\paragraph{Dynamic Snapshot creation}
+\paragraph{Dynamic Snapshot Construction}
 Snapshots are constructed as residual problem states whenever a new customer
 reveal event occurs. At each event time, the simulator first advances all
 vehicles from their previous states up to the current time, updating their
@@ -488,22 +582,22 @@ and updated temporal constraints. As a result, each solver re-optimises from the
 true execution state at the time of disclosure rather than restarting from the
 original static benchmark instance.
 
-\subsection{Heuristics}
+\subsection{Classical Heuristics Methods}
 \paragraph{ORTools}
-The first heuristic method we're going to explain is ORTools
-\cite{ORTools}.
-OR-Tools is an open-source optimisation toolkit developed by Google that
-provides efficient algorithms for solving combinatorial optimisation problems,
-including vehicle routing problems. OR-Tools was used in this work as a
-classical heuristic baseline for the VRPTW and DVRPTW experiments. It was
-configured as a time-bounded routing solver that combines a constructive phase
-with a subsequent improvement phase. First, it generates an initial feasible
-solution using a greedy route-building strategy. This initial plan is then
-refined through local search, with the objective of reducing total travel
-distance while maintaining feasibility with respect to vehicle capacities and
-time-related constraints. In this way, OR-Tools is used not as an exact
-optimisation method, but as a practical metaheuristic baseline designed to
-produce strong solutions within short computational budgets.
+The first classical baseline is OR-Tools\cite{ortools_routing}, used here as a
+time-bounded routing solver. ORTools is an open-source optimisation toolkit
+developed by Google that provides efficient algorithms for solving combinatorial
+optimisation problems, including vehicle routing problems. ORTools was used in
+this work as a classical heuristic baseline for the VRPTW and DVRPTW
+experiments. It was configured as a time-bounded routing solver that combines a
+constructive phase with a subsequent improvement phase. The exact configuration
+can be found in the evaluation section \ref{chp:evaluation}. First, it generates
+an initial feasible solution using a greedy route-building strategy. This
+initial plan is then refined through local search, with the objective of
+reducing total travel distance while maintaining feasibility with respect to
+vehicle capacities and time-related constraints. In this way, ORTools is used
+not as an exact optimisation method, but as a practical metaheuristic baseline
+designed to produce strong solutions within short computational budgets.
 
 The solver was configured to model the standard VRPTW constraints explicitly.
 Vehicle capacities were enforced throughout each route, and travel time was
@@ -516,273 +610,207 @@ because, in the dynamic setting, new requests may be revealed after routes are
 already under execution, making strict time-window feasibility harder to
 preserve under short re-optimisation times.
 
-The stopping criterion for OR-Tools was based entirely on a fixed runtime
-budget. In the static benchmark, each instance was solved for at most the
-allocated time limit. In the dynamic benchmark, the same principle was applied
-at every re-optimisation event: whenever new customer information became
-available, the solver was invoked on the residual problem and allowed to search
-only within the assigned per-event budget. This ensured that OR-Tools remained
-directly comparable with the AI and hybrid methods under the same online
-decision-making conditions.
+ORTools was executed under the shared runtime policy described in
+Section~\ref{sec:fairness}. In dynamic experiments, the solver was invoked on
+each residual snapshot using the allocated per-event budget.
 
-In the hybrid setting, OR-Tools also served as a route-improvement component.
-Instead of always starting from scratch, it could be seeded with an initial plan
-produced by the AI model. The role of OR-Tools in this case was to refine that
-candidate solution within the same fixed runtime budget, thereby combining the
-constructive guidance of the learned policy with the improvement capability of a
-classical local-search-based optimiser.
-\paragraph{PyVRP}
+In the hybrid experiments, ORTools was also used as the downstream improvement
+solver. Its hybrid role is described separately in Section~\ref{sec:hybrid}.
+
+The exact parameter settings used for OR-Tools are reported in the evaluation
+and reproducibility sections. Only limited tuning was required, as the adopted
+configuration follows standard practice in the OR-Tools routing literature,
+using well-established first-solution and local-search strategies designed for
+general VRPTW instances.
+
+% The stopping criterion for ORTools was based entirely on a fixed runtime
+% budget. In the static benchmark, each instance was solved for at most the
+% allocated time limit. In the dynamic benchmark, the same principle was applied
+% at every re-optimisation event: whenever new customer information became
+% available, the solver was invoked on the residual problem and allowed to search
+% only within the assigned per-event budget. This ensured that ORTools remained
+% directly comparable with the AI and hybrid methods under the same online
+% decision-making conditions.
+
+% In the hybrid setting, ORTools also served as a route-improvement component.
+% Instead of always starting from scratch, it could be seeded with an initial plan
+% produced by the AI model. The role of ORTools in this case was to refine that
+% candidate solution within the same fixed runtime budget, thereby combining the
+% constructive guidance of the learned policy with the improvement capability of a
+% classical local-search-based optimiser.
+\paragraph{PyVRP (still undecided...)}
 
 \subsection{AI Methods}
-\paragraph{RouteFinder (base setup)}
+
+\subsubsection{RouteFinder (Base Setup)}
 
 RouteFinder was adopted as the primary AI-based routing method in this study. It
 was selected due to its strong reported benchmark performance and open-source
 implementation, which allowed controlled retraining and modification.
+\cite{RouteFinder}
 
 The focus of this methodology is therefore not the original RouteFinder
 architecture itself, but how the framework was configured, adapted, and
-evaluated within the proposed DVRPTW benchmark. We will now discuss how
-routefinder has been used in this project, from the instance file to the
-solution class, ending with how the inference step has been configured. Later,
-we will tackle customisation we've made to the training part in order to achieve
-different results.
+evaluated within the proposed DVRPTW benchmark.
 
-\paragraph{RouteFinder Pipeline from VRP Instance class to Solution}
-The RouteFinder pipeline starts with a cleaned VRPTW Instance produced by the
-previously discussed raw-file-to-instance pipeline.
+\paragraph{RouteFinder Pipeline from VRPTW Instance to Solution}
+{\color{red} I'm considering moving more low-level details to the appendix here,
+such as TensorDict mention, depot tokens as separators, internal node indices.
+Mention the fact that we ignore training cost as we are considering an
+inference-only scenario} Given the shared
+\texttt{VRPTWInstance},
+RouteFinder requires an additional conversion step into its tensor-based input
+format. The instance is converted into a
+\texttt{TensorDict}
+containing customer coordinates, normalised demands, service times, time
+windows, vehicle capacity, and related routing attributes. When coordinate
+normalisation is enabled, spatial coordinates are rescaled to the unit square,
+and time-related quantities are scaled consistently so that travel distance and
+travel time remain aligned with the unit-speed assumption used by the model.
 
-The next stage is the adaptation of this VRPTWInstance into the data format
-expected by RouteFinder. Since RouteFinder operates on tensors rather than on
-Python objects, the instance is converted into a TensorDict representation. This
-includes customer coordinates, normalized demands, service times, time windows,
-vehicle capacity, and related routing attributes. When coordinate normalization
-is enabled, spatial coordinates are rescaled to the unit square, and
-time-related quantities are scaled by the same factor so that travel distance
-and travel time remain consistent under the unit-speed assumption used by the
-model. This conversion step is important because it ensures that the benchmark
-instances have the same numerical structure as the training data used by
-RouteFinder.
+The resulting tensor representation is then passed to the RouteFinder
+environment, which initialises the decoding state. The trained model generates a
+route by sequentially selecting feasible actions according to its learned
+policy. Inference may be performed greedily or with test-time augmentation. In
+the latter case, multiple transformed versions of the same instance are
+evaluated, and the best decoded route is retained.
 
-Once the tensor representation has been created, it is passed through the
-RouteFinder environment, which prepares the initial decoding state. The trained
-RouteFinder model then performs inference on this state. In the standard
-setting, inference can be carried out greedily, meaning that at each decoding
-step the model selects the most preferred feasible next node according to its
-learned policy. However, the implementation also supports test-time
-augmentation, which was used to obtain stronger solutions at evaluation time.
-Under this setting, multiple transformed versions of the same instance are
-generated internally and evaluated by the model, and the best decoded action
-sequence among them is retained. This does not change the trained model itself,
-but it improves solution quality by exploiting geometric symmetries and reducing
-the effect of a single decoding trajectory. The inference configuration can
-therefore include the decoding mode, the number of augmentations, and, where
-relevant, whether multiple sampled solutions are generated before selecting the
-best one. The output of RouteFinder is therefore not yet a benchmark-level
-solution object, but a sequence of actions corresponding to the order in which
-the model chooses nodes during decoding.
+The decoded output is an action sequence rather than a benchmark-level solution.
+Therefore, a final reconstruction step maps depot tokens to route separators and
+translates RouteFinder's internal customer indices back to the original Solomon
+customer identifiers. The resulting vehicle routes are stored in the common
+\texttt{Solution} format, allowing the benchmark framework to compute distance,
+runtime, feasibility, and service-quality metrics consistently across methods.
 
-The final stage is the conversion of this decoded action sequence into the
-project's common Solution format. In this conversion, depot tokens are
-interpreted as route separators, and customer indices are mapped back from
-RouteFinder's internal node ordering to the original customer identifiers from
-the Solomon instance. The resulting routes are then packaged into the Solution
-class as a list of vehicle routes, together with metadata such as the strategy
-name. After this reconstruction, the benchmark layer can compute total travel
-distance, runtime, and any additional feasibility or performance metrics.
-Consequently, the RouteFinder pipeline can be summarised as a four-step process:
-parse the Solomon text file into a structured VRPTW instance, convert that
-instance into RouteFinder tensors, decode a route sequence with the trained
-neural model, and finally reconstruct the decoded sequence into the shared
-Solution object used throughout the benchmark framework.
+\subsubsection{Training Variants}
 
-\subsection{Training Variants}
+{\color{red} Probably need a citation to confirm why we would need training
+variants at all...} {\color{red} Use Ablation table in evaluation}
 
 To examine how training conditions influence the performance of neural routing
 policies in dynamic vehicle routing, several RouteFinder variants were trained
-under different data- generation assumptions. Although some of these design
-choices were later combined, they can be understood as arising from three
-distinct methodological directions: a general synthetic training regime, a
-Solomon-shaped training regime, and a dynamic training regime. In addition, each
-of these directions was studied under different problem sizes and under both
-strict and lateness-enabled settings.
+under different data-generation assumptions. These can be grouped into three
+main methodological directions: a general synthetic training regime, a
+Solomon-shaped training regime, and a dynamic training regime. Each direction
+was also studied under different problem sizes and under both strict and
+lateness-enabled settings.
 
-\subsubsection{General Synthetic Variant}
+\paragraph{General Synthetic Variant}
 
 The first training direction used general synthetic VRPTW instances generated
 without explicitly reproducing the structural characteristics of Solomon
-benchmarks. In this setting, customer locations and associated routing
-attributes were sampled more generically, producing a broad distribution of
-instances intended to encourage generalisation. The motivation for this variant
-was to test whether a policy trained on diverse, less structured data could
-learn routing behaviours that transfer effectively to benchmark problems, even
-when the training distribution is not specifically tailored to Solomon-style
-geometry or time-window structure. This variant therefore serves as the most
-distribution- agnostic learned baseline.
+benchmarks. Customer locations and associated routing attributes were sampled
+more generically, producing a broad distribution of instances intended to
+encourage generalisation. This variant therefore serves as the most
+distribution-agnostic learned baseline.
 
-\subsubsection{Solomon-Shaped Variant}
+\paragraph{Solomon-Shaped Variant}
 
-The second training direction aimed to reduce the mismatch between the training
+The second training direction aimed to reduce mismatch between the training
 distribution and the benchmark distribution by constructing instances that more
-closely resemble Solomon problems. In this variant, the generated training data
-were shaped to reflect the geometric and temporal regularities commonly found in
-Solomon benchmarks, such as clustered or structured customer layouts, realistic
-depot-centred routing patterns, and tighter benchmark-like time-window profiles.
-The purpose of this approach was to expose the model during training to
-instances that are more representative of the evaluation domain, thereby
-encouraging the learned policy to specialise in the type of routing structure it
-would later encounter at test time. This variant can therefore be interpreted as
-a distribution-aligned training strategy, in contrast with the broader general
-synthetic regime.
+closely resemble Solomon problems. Generated training data reflected geometric
+and temporal regularities commonly found in Solomon benchmarks, such as
+clustered customer layouts, depot-centred routing patterns, and tighter
+benchmark-like time windows. This variant can therefore be interpreted as a
+distribution-aligned training strategy.
 
-\subsubsection{Dynamic Training Variant}
+\paragraph{Dynamic Training Variant}
 
 The third training direction focused on the disclosure process itself. Rather
 than training only on fully known static VRPTW instances, this variant trained
 the model on partially revealed routing problems in which some customers became
-available only during the course of execution. The motivation was to align the
-learning process more closely with the true DVRPTW setting considered in the
-benchmark. Under this formulation, the model is not merely asked to construct
-routes under complete information, but to make decisions under progressive
-customer revelation. This encourages the policy to learn behaviours that are
-robust to incomplete information, delayed request availability, and repeated
-route revision. Conceptually, this variant differs from the previous two because
-it alters the information structure of the problem rather than only the shape of
-the training distribution.
+available only during execution. The objective was to align training more
+closely with the true DVRPTW setting by exposing the policy to incomplete
+information and repeated route revision.
 
-\subsubsection{Lateness and Problem-Size Variants}
+\paragraph{Lateness and Problem-Size Variants}
 
 Across the above training directions, additional variants were introduced by
 changing two further factors. First, models were trained for different problem
-sizes, specifically 50-customer and 75-customer instances, in order to assess
-the sensitivity of learned performance to the scale of the routing problem.
-Second, both strict and lateness-enabled versions were considered. In the strict
-setting, customer time windows were treated as hard constraints, whereas in the
-lateness-enabled setting, late service was permitted but penalised. This
-distinction was important because it allowed the study to compare models trained
-for classical VRPTW feasibility against models trained for a softer and more
-realistic service regime in which limited delay may be operationally acceptable.
+sizes, specifically 50-customer and 75-customer instances. Second, both strict
+and lateness-enabled versions were considered. In the strict setting, time
+windows were treated as hard constraints, whereas in the lateness-enabled
+setting, late service was permitted but penalised.
 
-\subsubsection{Combined Model Families}
+\paragraph{Combined Model Families}
 
 Taken together, these design dimensions define a family of trained models rather
-than a single learned solver. The core methodological comparison is therefore
-not only between heuristics, AI, and hybrid methods, but also within the AI
-category itself. In particular, the experiments allow assessment of whether
-performance is improved more by broad synthetic generalisation, by
-benchmark-shaped distribution matching, or by explicit exposure to dynamic
-customer disclosure during training. This is important because the dynamic
-Solomon benchmark used in the evaluation combines both structured benchmark
-geometry and online request revelation, meaning that different training
-assumptions may confer different advantages.
-\subsection{Training Setup}
+than a single learned solver. The experiments therefore compare not only
+heuristics, AI, and hybrid methods, but also alternative AI training regimes.
+
+\subsubsection{Training Setup}
+{\color{red}I must either try training with multiple seeds or justify why
+training variance is negligible.}
 
 All neural models were trained using the RouteFinder architecture within the
 same general optimisation framework, while varying the training distribution
 according to the methodological variant under study. In all cases, training data
 were generated online rather than assembled as a fixed stored dataset.
+
 Consequently, the distinction between training and validation data did not rely
 on a conventional file-based split, but on separate generated samples: a large
 stream of instances was used for training, while a smaller independently
 generated set was used for validation under the same generation regime. This
 design ensured that validation measured generalisation within the target
-distribution rather than memorisation of a finite benchmark subset. The
-validation generator was sampled from exactly the same distribution as training.
+distribution rather than memorisation of a finite benchmark subset.
 
 For most experiments, the training configuration followed a common pattern.
-Models were trained for between 200 epochs depending on the experiment, with a
-batch size of 256 instances per optimisation step. The training set size per
-epoch was fixed at 100{,}000 generated instances, while the validation set
-contained 10{,}000 instances. Optimisation was carried out using the default
-RouteFinder training framework with Adam- style gradient-based optimisation, a
-learning rate of $3
-    \times 10^{-4}$, and a weight decay of $10^{-6}$. These
-settings were kept constant across variants in order to isolate the effect of
-the training distribution and environment design rather than changes in
-optimiser tuning.
+Models were trained for 200 epochs, with a batch size of 256 instances per
+optimisation step. The training set size per epoch was fixed at 100{,}000
+generated instances, while the validation set contained 10{,}000 instances.
+
+Optimisation was carried out using the default RouteFinder training framework
+with Adam-style gradient-based optimisation, a learning rate of $3
+    \times 10^{-4}$, and
+a weight decay of $10^{-6}$. These settings were kept constant across variants
+in order to isolate the effect of the training distribution and environment
+design.
 
 Checkpointing was used throughout training to preserve intermediate models and
-support resumption after interruption. In the longer experiments, checkpoints
-were saved periodically, typically every two epochs, together with a final
-checkpoint at the end of training. Training could then be resumed from the most
-recent valid checkpoint if required. No early stopping strategy was applied, and
-model selection was therefore based primarily on the final trained checkpoint
-rather than selecting the epoch with the best validation metric. This choice was
-made to keep the training procedure consistent across variants and to avoid
-introducing an additional model-selection criterion that might differ across
-training regimes.
+support resumption after interruption. No early stopping strategy was applied,
+and model selection was based primarily on the final trained checkpoint.
 
 At inference time, decoding was performed either greedily or using test-time
-augmentation. Under greedy decoding, the model selects the most promising
-feasible next action at each step. Under augmented decoding, multiple
-transformed versions of the same instance are evaluated and the best resulting
-solution is retained. In the experiments reported here, the standard inference
-setting used augmentation rather than single-pass greedy decoding whenever a
-stronger learned baseline was desired. The typical augmentation count used at
-inference was eight, meaning that eight transformed candidate evaluations were
-considered before selecting the final route sequence.
+augmentation. Under augmented decoding, multiple transformed versions of the
+same instance were evaluated and the best resulting solution retained. The
+typical augmentation count used at inference was eight.
 
-Finally, each model configuration has been trained once rather than across
-multiple independent training seeds. The comparison therefore focuses on
-methodological differences between model families rather than on estimating
-variance over repeated retraining. Randomness was instead controlled more
-explicitly at the benchmark level through the seeds used to generate dynamic
-scenarios during evaluation.
-% If any model
-% family was retrained under multiple random seeds, or if seed-
-% averaged results are later included, this should be stated
-% clearly in this subsection [CONFIRM TRAINING SEED POLICY].
+Finally, each model configuration was trained once rather than across multiple
+independent training seeds. Randomness was instead controlled more explicitly at
+the benchmark level through the seeds used to generate dynamic scenarios during
+evaluation.
 
 \subsection{Hybrid Mechanisms}
-It uses an improvement-based strategy. AI outputs a solution in a standard
-format (the solution class). This output is feasilbe in the environment it is
-produced, so, passed down solutions are always correct. In the hybrid setting,
-OR-Tools is warm-started with an initial route plan represented in the common
-\texttt{Solution} format. This plan is
-then translated into the internal route assignment expected by OR-Tools for the
-current snapshot instance, allowing the local search procedure to start from the
-AI-generated solution rather than from scratch. The motivation for the hybrid
-mechanism is that the two paradigms offer complementary strengths. RouteFinder
-can generate high-quality candidate routes rapidly through a single forward
-inference pass, while OR-Tools provides mature neighbourhood search operators
-and robust feasibility repair procedures. Combining both methods therefore
-offers the possibility of faster convergence to strong solutions than either
-approach alone.
+\label{sec:hybrid}
+{\color{red} I'm considering transforming it into a smoother prose. It came out
+as a list of things... Probably needs a citation or two}
+
+The hybrid mechanism follows an improvement-based strategy. RouteFinder first
+generates an initial route plan for the current static instance or residual
+dynamic snapshot. This plan is reconstructed into the shared
+\texttt{Solution} format and then translated into the internal route assignment
+required by ORTools. ORTools subsequently performs local search from this
+incumbent solution, rather than constructing a solution from scratch.
+
+The motivation is to combine complementary strengths: RouteFinder provides fast
+constructive guidance from a learned policy, while ORTools provides mature
+neighbourhood search and constraint-handling mechanisms. In the dynamic setting,
+this is intended to reduce the search effort required at each re-optimisation
+event.
 
 \paragraph{Budget policy}
-For every optimisation step, a fixed and shared time-budget is allocated. This
-means that if we have 5 seconds of time budget, the hybrid mechanisms will
-record the amount of time taken by AI inference (which can be not-close-to-zero
-if sampling or augmentation are used) and subtract it from the total time budget
-before running the heuristic refinement search.
-
-\paragraph{Dynamic Pipeline}
-At each static instance or dynamic re-optimisation event, the current snapshot
-is first passed to RouteFinder, which proposes an initial routing plan. This
-solution is converted into the benchmark
-\texttt{Solution}
-representation and then translated into the internal assignment format required
-by OR-Tools. OR-Tools subsequently performs local improvement search starting
-from this incumbent solution. {\color{red}Pipeline image}
-
+Each optimisation event is assigned a fixed wall-clock budget. For the hybrid
+method, RouteFinder inference time is counted within the same total budget
+anddeducted before OR-Tools refinement begins. By contrast, benchmark-management
+overheads external to the optimisation process, including snapshot generation
+and the translation of AI solutions into the OR-Tools internal assignment
+format, were not charged against the runtime budget.
 \paragraph{AI Failure Handling}
 If the AI-generated proposal cannot be translated into a valid assignment for
 the current snapshot, the solver falls back to its standard initialisation
 procedure. This ensures that the hybrid method remains robust even when the
 learned policy performs poorly on out-of-distribution scenarios.
 
-\paragraph{Visualisation}
-Visualisation was used as a supporting tool for qualitative inspection of both
-static and dynamic solutions. In particular, it was used to verify the
-correctness of generated scenarios, to inspect the timing of customer disclosure
-events, and to observe how routes evolved across re- optimisation steps in the
-dynamic setting. The visualisation component also includes an interactive
-inspection capability, which was useful for debugging individual instances by
-allowing closer examination of customer visibility, vehicle progression, route
-changes, and the effect of successive reveal events. This was especially
-valuable for validating simulator behaviour and for interpreting differences
-between heuristic, AI, and hybrid solution strategies, although visual analysis
-was not used as a primary benchmark metric. {\color{red}Simulator image}
 
 \section{Benchmark Protocol and Fairness}
 
@@ -792,30 +820,75 @@ using the same random seeds and the same per-event re- optimisation budget. A
 common hardware reporting policy was also maintained so that runtime results
 could be interpreted consistently. In the online setting, each solver invocation
 was subject to the same time limit, and no method was intentionally granted a
-larger re-optimisation budget than another. AI inference time, including
-eventually augmentation and sampling, are included in the time budget, whilst
-one-off costs such as model loading and initialisations are not. In the hybrid
-settings, AI and Heuristics share the same time budget, meaning that if the
-budget was 5 seconds and AI took 1, heuristics would have 4 seconds left.
+larger re-optimisation budget than another. AI inference time, possibly
+including augmentation and sampling, are included in the time budget, whilst
+one-off costs such as model loading and initialisations are not. When working in
+flexible environment with soft constraints, it's important to assign penalties
+to behaviours that violate the constraints defined for the problem. We will now
+discuss how we handled such penalties in our benchmark.
 
-The oracle baseline serves uniquely as an upper-bound comparison useful to
-contestualize performmances rather than a direct competitor of other metrics.
+\subsection{Penalties}
+
+When soft time-window settings are enabled, solutions are evaluated through a
+composite objective that balances routing efficiency against service violations.
+This is necessary because allowing lateness without an explicit penalty would
+make comparisons across methods ambiguous and could incentivise unrealistic
+solutions with excessive delay.
+
+Let $K$ denote the number of vehicles used, $D$ the total travelled distance,
+and $L=\sum_i \max(0,a_i-l_i)$ the cumulative lateness, where $a_i$ is the
+actual service start time at customer $i$ and $l_i$ is the corresponding due
+time. The soft time-window objective is evaluated lexicographically as:
+
+\[
+\min \; (K,\; D + \lambda L)
+\]
+
+That is, the number of vehicles remains the primary criterion, consistent with
+classical Solomon-style evaluation, while travelled distance plus penalised
+lateness is minimised as the secondary criterion.
+
+The coefficient $\lambda$ controls the trade-off between route cost and delayed
+service. A larger value makes lateness progressively less attractive, thereby
+approaching hard time-window behaviour, whereas a smaller value allows greater
+schedule flexibility.
+
+For the methods considered in this study, the following values were used:
+
+\begin{itemize}
+    \item \textbf{OR-Tools:} $\lambda = 50$
+    \item \textbf{RouteFinder-based models:} $\lambda = 150$
+    \item \textbf{Hybrid RouteFinder + OR-Tools:} the AI proposal is generated
+under the RouteFinder penalty ($\lambda = 150$), after which OR-Tools refinement
+uses $\lambda = 50$ for final improvement.
+\end{itemize}
+
+The OR-Tools value was selected empirically through preliminary experiments as a
+practical compromise between discouraging lateness and preserving search
+flexibility. The larger RouteFinder penalty was adopted to provide a stronger
+training signal against tardy solutions during learning, where softer penalties
+were observed to tolerate excessive lateness. Although the coefficients differ
+across paradigms, each value was calibrated to induce similar behavioural
+preference toward timely service within the corresponding optimisation process.
+
+No additional penalty was applied for rejected customers in the simulator.
+Instead, rejected requests are recorded separately through rejection-count and
+service-level metrics, since rejection is treated in this study as a dynamic
+service outcome rather than as a direct optimisation term.
+
 
 \section{Evaluation Metrics}
+{\color{red} Citations to dvrp surveys and schyns}
 
-The Dynamic Vehicle Routing Problem with Time Windows (DVRPTW) is inherently
-multi-objective, since practical performance depends not only on routing
-efficiency, but also on service quality and computational responsiveness. For
-this reason, no single indicator is sufficient to evaluate solver behaviour in
-dynamic settings. Following prior literature on dynamic vehicle routing, the
-benchmark adopts a set of complementary metrics covering operational efficiency,
-service quality, computational performance, and comparative benchmarking
-\cite{pvalueOfInformation,
-oojedariosRecentDynamicVehicle2021,psaraftisDynamicVehicleRoutingProblems2016}.
+In this study, solver quality cannot be assessed by a single scalar because
+route cost, service feasibility, and computational responsiveness are all
+materially relevant.
+\cite{valueOfInformation, ojedariosRecentDynamicVehicle2021,psaraftisDynamicVehicleRoutingProblems2016}.
 
 All metrics are computed from the final executed solution, rather than from
 intermediate planned routes, so that results reflect actual online performance
 under progressive customer disclosure.
+
 
 \subsection{Operational Metrics}
 
@@ -839,33 +912,54 @@ dynamic conditions.
 
     \item \textbf{Rejection count}: the number of customer requests that remain unserved or are explicitly discarded. In dynamic settings, this reflects the capacity of a method to absorb newly revealed demand.
 
-    \item \textbf{Service level}: the proportion of revealed customers successfully served within their time windows. This provides an interpretable customer-oriented measure of reliability.
+    \item \textbf{Service level}: the proportion of revealed customers out of all customers successfully served within their time windows. This provides an interpretable customer-oriented measure of reliability.
+    \item \textbf{Responsivness}: {\color{red} Wanted to add it, but unsure about how to measure it. I'll check \cite{AntColonySchyns2015} again.}
 \end{itemize}
+
 
 \subsection{Computational Metrics}
 
-Computational metrics assess how efficiently each method uses the allocated
-real-time decision budget. Although all solvers are subject to the same maximum
-runtime limit, some may use the available time more effectively.
+Computational metrics assess whether each method can operate effectively within
+the real-time decision limits of the benchmark. Since all solvers are evaluated
+under the same runtime cap, these measures do not reflect unrestricted solver
+speed, but rather how efficiently each method uses the available computation
+budget and whether high-quality decisions can be produced within the allowed
+time.
 
 \begin{itemize}
     \item \textbf{Solve time}: the wall-clock time required for a solver call on a static instance or dynamic snapshot.
-    \item \textbf{Cumulative runtime}: the total computation time summed across all re-optimisation events.
 
+    \item \textbf{Cumulative runtime}: the total wall-clock time consumed across all re-optimisation events during a dynamic scenario.
 \end{itemize}
-
-These metrics are particularly important in DVRPTW, where strong routes are of
-limited value if they cannot be produced before the next operational decision
-point.
 
 \subsection{Comparative Metrics}
 
 Comparative metrics position online performance relative to stronger-information
-baselines.
+baselines, such as the oracle.
+\paragraph{Oracle}
+
+The oracle baseline is included as a full-information reference used to
+contextualise the performance of online methods. It is not treated as a direct
+competitor, since unlike the dynamic approaches it has complete advance
+knowledge of all customer requests, their release times, and all relevant
+instance information from the start of the planning horizon.
+
+Operationally, the oracle is obtained by solving the corresponding static
+full-information instance using OR-Tools with Guided Local Search (GLS) as the
+improvement metaheuristic. A runtime budget of five minutes is allocated per
+instance, substantially larger than the online per-event budgets used in the
+dynamic experiments, in order to obtain a strong high-quality reference
+solution. The oracle objective is the minimisation of route cost, subject to the
+relevant problem constraints.
+
+Because the oracle is itself heuristic rather than provably optimal, it should
+be interpreted as a strong practical upper benchmark rather than a guaranteed
+global optimum. Accordingly, gaps to oracle measure the penalty of operating
+under incomplete information relative to a strong full-information solution, not
+the distance to mathematical optimality. From the oracle solution we are able to
+compute the value of information.
 
 \begin{itemize}
-    \item \textbf{Gap to oracle}: the percentage difference between the online solution and an offline solution computed with full advance knowledge of all future requests. This estimates the cost of operating under incomplete information.
-
     \item \textbf{Value of information}: the improvement achievable when future request information is known in advance. This metric is frequently used in dynamic routing studies to quantify the operational benefit of anticipatory information \cite{valueOfInformation}.
 \end{itemize}
 
@@ -878,9 +972,14 @@ computational metrics assess practical deployability, and comparative metrics
 help quantify the penalty of online decision-making. Together, these measures
 provide a balanced basis for evaluating whether learned policies or hybrid
 warm-start approaches offer advantages over classical optimisation baselines.
+\section{Reproducibility Statement}
+{\color{red} Should I put those into evaluation (or even appendix?). I plan to
+add tables with versions, seeds, etc etc.}
 
-\subsection{Out of scope and Limitations}
+
+
 \section{Limitations and Out of Scope}
+\label{limitations}
 
 In order to maintain a controlled and interpretable experimental setting,
 several important extensions of real-world routing were intentionally excluded
@@ -916,13 +1015,29 @@ restrictions, and urban traffic structure were not considered. This choice was
 made to preserve controlled reproducibility and comparability with prior
 Solomon-based studies.
 
-    \item \textbf{Very large-scale instances.}
+    \item \textbf{Large-scale instances.}
 Large-scale routing instances involving hundreds or thousands of customers were
 outside the scope of this project. Such settings would substantially increase
 training and evaluation cost, particularly for repeated dynamic simulations.
 Instead, the study focuses on Solomon-scale instances, which are widely used in
-VRPTW benchmarking and appropriate for the methodological objectives of this
-work.
+VRPTW benchmarking and are appropriate for the methodological objectives of this
+work. In addition, the full canonical 100-customer Solomon instances were not
+used for all AI training experiments, as training RouteFinder directly on the
+complete instances proved computationally expensive within the available project
+resources. To maintain feasible training times while still preserving meaningful
+problem scale, experiments were conducted on reduced variants consisting of the
+first 50 customers and the first 75 customers from each original instance. These
+subsets allow controlled analysis of scaling behaviour while retaining the
+underlying spatial and temporal structure of the benchmark instances.
+    \item \textbf{Customer rejection is immediate.}
+A newly revealed request was treated as rejected if the current re-optimization
+step failed to incorporate it. This was adopted as a deliberate operational
+assumption to model settings in which requests must be accepted or rejected at
+the moment of disclosure, rather than kept pending for later insertion. The
+choice preserves a clear and consistent decision rule across methods, but it
+also defines a stricter service policy than formulations that allow deferred
+acceptance. Consequently, rejection counts should be interpreted within the
+context of this immediate-decision setting.
 
 \end{itemize}
 

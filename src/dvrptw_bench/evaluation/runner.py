@@ -370,22 +370,22 @@ def _run_dynamic_unit(paths: EvaluationPaths, project_root: Path, unit: WorkUnit
     if unit.modality == "heuristic":
         call_index = {"value": 0}
 
-        def solver_fn(snapshot_instance, time_limit_s, warm_start=None):
+        def solver_fn(instance, time_limit_s, warm_start=None):
             _ = (time_limit_s, warm_start)
             budget = 30.0 if call_index["value"] == 0 else 5.0
             call_index["value"] += 1
-            return solver.solve(snapshot_instance, time_limit_s=budget, warm_start=warm_start)
+            return solver.solve(instance, time_limit_s=budget, warm_start=warm_start)
 
         budget = 5.0
     elif unit.modality == "hybrid":
-        def solver_fn(snapshot_instance, time_limit_s, warm_start=None):
+        def solver_fn(instance, time_limit_s, warm_start=None):
             _ = warm_start
-            return solver.solve(snapshot_instance, time_limit_s=0.5, warm_start=None)
+            return solver.solve(instance, time_limit_s=0.5, warm_start=None)
 
         budget = 0.5
     else:
-        def solver_fn(snapshot_instance, time_limit_s, warm_start=None):
-            return solver.solve(snapshot_instance, time_limit_s=time_limit_s, warm_start=warm_start)
+        def solver_fn(instance, time_limit_s, warm_start=None):
+            return solver.solve(instance, time_limit_s=time_limit_s, warm_start=warm_start)
 
         budget = 5.0
     final_solution, _events, _scenario = simulator.run(

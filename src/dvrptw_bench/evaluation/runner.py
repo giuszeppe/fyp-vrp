@@ -364,8 +364,28 @@ def _run_oracle_unit(paths: EvaluationPaths, project_root: Path, unit: WorkUnit,
 
 
 def _run_dynamic_unit(paths: EvaluationPaths, project_root: Path, unit: WorkUnit, models: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    return _run_dynamic_unit_with_solver(
+        paths=paths,
+        project_root=project_root,
+        unit=unit,
+        models=models,
+        prepared_model=None,
+    )
+
+
+def _run_dynamic_unit_with_solver(
+    *,
+    paths: EvaluationPaths,
+    project_root: Path,
+    unit: WorkUnit,
+    models: dict[str, dict[str, Any]],
+    prepared_model: tuple[str, Any] | None,
+) -> dict[str, Any]:
     instance = _load_scenario_instance(paths, unit.scenario_id or "")
-    model_type, solver = create_model(unit.model_name, project_root, models)
+    if prepared_model is None:
+        model_type, solver = create_model(unit.model_name, project_root, models)
+    else:
+        model_type, solver = prepared_model
     simulator = DynamicSimulator(instance)
     if unit.modality == "heuristic":
         call_index = {"value": 0}
@@ -474,6 +494,7 @@ def _finalize_success(paths: EvaluationPaths, ledger: Ledger, unit: WorkUnit, re
         f"[{unit.modality}] completed "
         f"instance={unit.instance_name} "
         f"size={unit.evaluation_size} "
+        f"model={unit.model_name} "
         f"output={result_path}"
         ,
         flush=True,
@@ -489,6 +510,7 @@ def _finalize_failure(paths: EvaluationPaths, ledger: Ledger, unit: WorkUnit, er
         f"[{unit.modality}] failed "
         f"instance={unit.instance_name} "
         f"size={unit.evaluation_size} "
+        f"model={unit.model_name} "
         f"error={error_message}",
         flush=True,
     )
@@ -532,6 +554,7 @@ def _log_unit_started(unit: WorkUnit) -> None:
         f"[{unit.modality}] started "
         f"instance={unit.instance_name} "
         f"size={unit.evaluation_size} "
+        f"model={unit.model_name} "
         f"budget_s={_budget_for_unit(unit):.1f} "
         f"work_id={unit.work_id}",
         flush=True,
@@ -684,17 +707,38 @@ def run_modality(
             worker_count = max(1, workers)
 
         if worker_count == 1:
-            claimed = _claim_pending_units(paths, ledger, pending_units, limit=attempted)
-            for unit in claimed:
-                _log_unit_started(unit)
-            outcomes = _run_units_sequential(paths, project_root, modality, claimed, models)
             completed = 0
-            for unit, result, error_message in outcomes:
-                if result is not None:
+            queue = deque(pending_units)
+            model_cache: dict[str, tuple[str, Any]] = {}
+            while True:
+                unit = _claim_next_pending_unit(paths, ledger, queue)
+                if unit is None:
+                    break
+                _log_unit_started(unit)
+                try:
+                    prepared_model = None
+                    if modality in {"ai", "hybrid"}:
+                        prepared_model = model_cache.get(unit.model_name)
+                        if prepared_model is None:
+                            prepared_model = create_model(unit.model_name, project_root, models)
+                            model_cache[unit.model_name] = prepared_model
+                    if modality in {"ai", "hybrid"}:
+                        result = _run_dynamic_unit_with_solver(
+                            paths=paths,
+                            project_root=project_root,
+                            unit=unit,
+                            models=models,
+                            prepared_model=prepared_model,
+                        )
+                    else:
+                        result = _run_dynamic_unit(paths, project_root, unit, models)
                     _finalize_success(paths, ledger, unit, result)
                     completed += 1
-                else:
-                    _finalize_failure(paths, ledger, unit, error_message or "unknown worker error")
+                except KeyboardInterrupt:
+                    _reset_units_to_pending(paths, ledger, [unit])
+                    raise
+                except Exception as exc:
+                    _finalize_failure(paths, ledger, unit, str(exc) or "unknown worker error")
             return completed, attempted
         else:
             queue = deque(pending_units)

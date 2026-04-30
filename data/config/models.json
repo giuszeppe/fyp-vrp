@@ -1,12 +1,47 @@
 [
   {
     "checkpoint_candidates": [
-      "trained_models/solomon_generated_50_working.ckpt",
       "good_runs/solomon_generated_50_working.pt"
     ],
     "enabled": true,
     "model_id": "routefinder_solomon_generated_50",
     "num_customers": 50,
     "variant": "solomon_generated"
+  },
+  {
+    "checkpoint_candidates": [
+      "trained_models/solomon_generated_75_working_forse.ckpt"
+    ],
+    "enabled": true,
+    "model_id": "routefinder_solomon_generated_75",
+    "num_customers": 75,
+    "variant": "solomon_generated"
+  },
+  {
+    "checkpoint_candidates": [
+      "good_runs/general_50_working.pt"
+    ],
+    "enabled": true,
+    "model_id": "general_50",
+    "num_customers": 50,
+    "variant": "general"
+  },
+  {
+    "checkpoint_candidates": [
+      "good_runs/routefinder_with_lateness_50_cust_100_epochs.pt"
+    ],
+    "enabled": true,
+    "model_id": "routefinder_with_lateness_50",
+    "num_customers": 50,
+    "variant": "with_lateness"
+  },
+  {
+    "checkpoint_candidates": [
+      "good_runs/routefinder_with_lateness_75_cust_100_epochs.pt"
+    ],
+    "enabled": true,
+    "model_id": "routefinder_with_lateness_75",
+    "num_customers": 75,
+    "variant": "with_lateness"
   }
 ]

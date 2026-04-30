@@ -8,6 +8,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+import torch
+
 from dvrptw_bench.heuristics.constructive_pmca import PMCAVRPTWSolver
 from dvrptw_bench.heuristics.ortools_dynamic import ORToolsDVRPTWSolver
 from dvrptw_bench.heuristics.ortools_solver import ORToolsVRPTWSolver
@@ -133,7 +135,7 @@ class RouteFinderBenchmarkSolver:
         self.variant = variant
         self.num_customers = num_customers
         self.policy = RouteFinderAdapterPolicy()
-        self.policy.load(checkpoint_path, device="cpu", num_loc=num_customers)
+        self.policy.load(checkpoint_path, device=torch.device("cpu"), num_loc=num_customers)
 
     def solve(self, instance, time_limit_s=None, warm_start=None):
         _ = (time_limit_s, warm_start)

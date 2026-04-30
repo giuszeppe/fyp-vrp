@@ -1,0 +1,303 @@
+% Evaluation, Conclusions, and Future Work (15 marks)
+% - Does it clearly summarise outcomes;
+% - How was the quality of choice of evaluation approach(es), including choice of metrics, data
+% collection and preparation;
+% - Does it provide a critical assessment of the outcomes with reference to the original
+% objectives and literature reviewed;
+% - Does it identify of any limitation and appropriate recommendations;
+% - Is there indication of continuity and/or extension in the form of future work.
+\chapter{Evaluation}
+\label{chp:evaluation}
+% \paragraph{Evaluation setup}
+% We are going to evaluate the three approaches on the 56 Solomon datasets. For each
+% instance, we will generate dynamic instances using multiple random seeds and benchmark
+% them by running:
+% For each instance, we will generate dynamic variants by using three different seeds, three cutoff times and
+% three dod. instances will be generated beforehand and the models will be evaluated on the same instance. For a total of 3024 instances.
+% Oracle has a 300s (5 minutes) budget and it solves the static variant. ORTools has 30 seconds to begin with and 5 seconds for re-opt both in hybrid and pure contexts.
+% AI is with greedy decoding and augmentation. 8 augmentations.
+% 
+% \begin{itemize}
+%     \item the heuristics (OR-Tools and PyVRP) with short time budgets;
+%     \item AI models (RouteFinder and all the variants developed);
+%     \item hybrid methods combining the above approaches.
+% \end{itemize}
+{\color{red} Use Ablation table in evaluation for training variants}
+
+\section{Reproducibility and Implementation Details}
+
+To support transparent comparison and independent replication, this section
+summarises the computational environment, benchmark protocol, solver
+configurations, randomness controls, and software versions used throughout the
+study.
+
+\subsection{Computational Environment}
+
+All experiments were executed on the hardware platforms reported in
+Table~\ref{tab:hardware}. Runtime comparisons should be interpreted with respect
+to the reported machine specifications.
+
+\begin{table}[H]
+\centering
+\caption{Hardware environment used for training and evaluation.}
+\label{tab:hardware}
+\begin{tabular}{llllll}
+\toprule
+Machine & CPU & Cores & RAM & GPU / VRAM & Operating System \\
+\midrule
+Training Node & [CPU MODEL] & [N] & [RAM] & [GPU MODEL] / [VRAM] & [OS] \\
+Evaluation Node & [CPU MODEL] & [N] & [RAM] & [GPU MODEL] / [VRAM] & [OS] \\
+Oracle Node & [CPU MODEL] & [N] & [RAM] & [GPU MODEL] / [VRAM] & [OS] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Runtime Budgets}
+
+All compared methods were evaluated under common time-budget constraints.
+
+\begin{table}[H]
+\centering
+\caption{Runtime budget policy.}
+\label{tab:budgets}
+\begin{tabular}{lll}
+\toprule
+Setting & Budget & Notes \\
+\midrule
+Static benchmark & [X seconds] & Per full instance solve \\
+Dynamic benchmark & [Y seconds] & Per re-optimisation event \\
+Oracle reference & [Z seconds] & Full-information offline solve \\
+Hybrid methods & Shared budget & AI inference + refinement included \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Unless otherwise stated, one-off costs such as model loading, file parsing, and
+library initialisation were excluded. Warm-start conversion overheads were
+[counted / excluded], and this policy was applied consistently across all hybrid
+runs.
+
+\subsection{Dataset Protocol}
+
+The benchmark was based on Solomon VRPTW instances. Table~\ref{tab:dataset}
+should list the exact instance families and subsets used.
+
+\begin{table}[H]
+\centering
+\caption{Dataset protocol.}
+\label{tab:dataset}
+\begin{tabular}{llll}
+\toprule
+Category & Instances Used & Customer Variants & Purpose \\
+\midrule
+Static evaluation & [LIST] & 50 / 75 / 100 & Benchmarking \\
+Dynamic evaluation & [LIST] & 50 / 75 / 100 & Online benchmarking \\
+AI training (general) & Generated & 50 / 75 & Training \\
+AI training (Solomon-shaped) & [LIST / Generated] & 50 / 75 & Training \\
+Validation & [LIST / Generated] & 50 / 75 & Model selection \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+If Solomon-shaped generators were derived from evaluation instances, this should
+be disclosed and justified. If separate training and test families were used,
+the partition should be explicitly listed.
+
+\subsection{Randomness and Seed Control}
+
+To reduce variance and ensure fair comparison, randomness was controlled through
+fixed seeds.
+
+\begin{table}[H]
+\centering
+\caption{Random seed policy.}
+\label{tab:seeds}
+\begin{tabular}{ll}
+\toprule
+Component & Seed(s) \\
+\midrule
+Dynamic scenario generation & [SEED LIST] \\
+OR-Tools solver randomness & [SEED / NONE] \\
+PyVRP randomness & [SEED LIST] \\
+RouteFinder training & [SEED LIST] \\
+Inference augmentation / sampling & [SEED / DETERMINISTIC] \\
+Scenario replications per instance/DoD & [N] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Where stochastic methods were used, repeated runs should be aggregated through
+mean, median, or paired comparisons.
+
+\subsection{Benchmark Hyperparameters}
+
+Table~\ref{tab:hyperparams} summarises global benchmark parameters.
+
+\begin{table}[H]
+\centering
+\caption{Benchmark hyperparameters.}
+\label{tab:hyperparams}
+\begin{tabular}{ll}
+\toprule
+Parameter & Value \\
+\midrule
+Degree of Dynamism levels & $\{[...]\}$ \\
+cutoff\_ratio ($\alpha$) & [VALUE] \\
+Reveal-time distribution & Uniform $[0,\alpha T]$ \\
+Soft lateness penalty (OR-Tools) & [VALUE] \\
+Soft lateness penalty (RouteFinder) & [VALUE] \\
+Hybrid shared-time policy & [DESCRIPTION] \\
+Default inference augmentation & [VALUE] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Solver Configurations}
+
+\subsubsection*{OR-Tools}
+
+\begin{table}[H]
+\centering
+\caption{OR-Tools configuration.}
+\label{tab:ortools}
+\begin{tabular}{ll}
+\toprule
+Parameter & Value \\
+\midrule
+Version & [VERSION] \\
+First solution strategy & [e.g. PATH\_CHEAPEST\_ARC] \\
+Local search metaheuristic & [e.g. GUIDED\_LOCAL\_SEARCH] \\
+Neighbourhood operators & [LIST] \\
+Time limit & [VALUE] \\
+Seed & [VALUE / NONE] \\
+Soft TW penalty & [VALUE] \\
+Capacity penalty (if any) & [VALUE / NONE] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{PyVRP}
+
+\begin{table}[H]
+\centering
+\caption{PyVRP configuration.}
+\label{tab:pyvrp}
+\begin{tabular}{ll}
+\toprule
+Parameter & Value \\
+\midrule
+Version & [VERSION] \\
+Population size & [VALUE] \\
+Stopping criterion & [TIME / ITERATIONS] \\
+Repair / education settings & [VALUE] \\
+Seed & [VALUE] \\
+Time cap & [VALUE] \\
+Penalty management & [DESCRIPTION] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{Hybrid Method}
+
+\begin{table}[H]
+\centering
+\caption{Hybrid warm-start configuration.}
+\label{tab:hybrid}
+\begin{tabular}{ll}
+\toprule
+Parameter & Value \\
+\midrule
+AI proposer & RouteFinder \\
+Refinement solver & OR-Tools / PyVRP \\
+Warm-start representation & \texttt{Solution} object \\
+Translation overhead counted & [YES / NO] \\
+Fallback on infeasible seed & [YES / NO] \\
+Shared time budget & [YES] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{RouteFinder Training Configuration}
+
+\begin{table}[H]
+\centering
+\caption{RouteFinder training parameters.}
+\label{tab:rftrain}
+\begin{tabular}{ll}
+\toprule
+Parameter & Value \\
+\midrule
+Architecture version & [VERSION / COMMIT] \\
+Epochs by variant & [LIST] \\
+Batch size & [VALUE] \\
+Instances per epoch & [VALUE] \\
+Validation size & [VALUE] \\
+Optimiser & Adam \\
+Learning rate & [VALUE] \\
+Weight decay & [VALUE] \\
+Checkpoint frequency & [VALUE] \\
+Model selection rule & Final / Best validation \\
+Training seeds & [VALUE] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Software Stack}
+
+\begin{table}[H]
+\centering
+\caption{Software versions.}
+\label{tab:software}
+\begin{tabular}{ll}
+\toprule
+Component & Version \\
+\midrule
+Python & [VERSION] \\
+PyTorch & [VERSION] \\
+CUDA & [VERSION] \\
+OR-Tools & [VERSION] \\
+PyVRP & [VERSION] \\
+RouteFinder & [COMMIT / RELEASE] \\
+NumPy / Pandas & [VERSION] \\
+Operating system & [VERSION] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Stopping Criteria}
+
+All optimisation procedures were terminated using explicit stopping rules.
+
+\begin{itemize}
+    \item \textbf{OR-Tools:} fixed wall-clock time limit of [X] seconds.
+    \item \textbf{PyVRP:} terminated after [X] seconds or [Y] iterations.
+    \item \textbf{Hybrid methods:} terminated when shared budget was exhausted.
+    \item \textbf{RouteFinder training:} terminated after scheduled epochs.
+\end{itemize}
+
+\subsection{Statistical Analysis}
+
+Performance comparisons were conducted across repeated scenarios and benchmark
+instances. Unless otherwise stated, reported results should include means and
+standard deviations, or medians and interquartile ranges when distributions are
+non-normal.
+
+For paired multi-method comparisons, non-parametric procedures such as the
+Wilcoxon signed-rank test (two methods) or Friedman test with post-hoc Nemenyi
+comparisons (multiple methods) are recommended. Confidence intervals should be
+reported where feasible.
+
+\subsection{Code Availability}
+
+The full benchmarking framework, solver wrappers, training modifications, and
+configuration files should be released in a public repository. The repository
+should include:
+
+\begin{itemize}
+    \item exact seeds;
+    \item solver parameter files;
+    \item environment definitions;
+    \item training scripts;
+    \item raw results;
+    \item plotting and statistical-analysis scripts.
+\end{itemize}

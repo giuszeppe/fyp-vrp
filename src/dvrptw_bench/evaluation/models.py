@@ -45,13 +45,18 @@ class ScenarioArtifact(BaseModel):
 
 class WorkUnit(BaseModel):
     work_id: str
-    modality: Literal["oracle", "heuristic", "ai", "hybrid"]
+    modality: Literal["oracle", "heuristic", "ai", "hybrid", "static"]
     instance_name: str
     evaluation_size: int
     seed: int | None = None
     degree_of_dynamicity: float | None = None
     cutoff_time: float | None = None
     model_name: str
+    decode_type: str | None = None
+    num_samples: int | None = None
+    num_starts: int | None = None
+    num_augment: int | None = None
+    select_best: bool | None = None
     scenario_id: str | None = None
     result_path: str
 
@@ -68,7 +73,6 @@ class WorkState(BaseModel):
 
 
 class Ledger(BaseModel):
-    modality: Literal["oracle", "heuristic", "ai", "hybrid"]
+    modality: Literal["oracle", "heuristic", "ai", "hybrid", "static"]
     updated_at: str | None = None
     items: dict[str, WorkState] = Field(default_factory=dict)
-

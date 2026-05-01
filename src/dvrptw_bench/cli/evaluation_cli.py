@@ -58,12 +58,27 @@ def generate(
 
 @app.command("run")
 def run(
-    modality: str = typer.Argument(..., help="oracle | heuristic | ai | hybrid"),
+    modality: str = typer.Argument(..., help="oracle | heuristic | ai | hybrid | static"),
     data_root: Path = typer.Option(Path("./data")),
     limit: int | None = typer.Option(None),
     workers: int | None = typer.Option(None, help="Process count for oracle/heuristic; defaults to auto there and 1 elsewhere."),
+    decode_type: str = typer.Option("greedy", help="AI decode type: greedy | sampling | multistart"),
+    num_samples: int = typer.Option(1, help="Number of samples for sampling decode."),
+    num_starts: int | None = typer.Option(None, help="Number of starts for multistart decode."),
+    num_augment: int = typer.Option(8, help="Number of augmentations for greedy/multistart evaluation."),
+    select_best: bool = typer.Option(True, help="Whether to select the best sampled/augmented solution."),
 ):
-    completed, attempted = run_modality(data_root, modality, limit=limit, workers=workers)
+    completed, attempted = run_modality(
+        data_root,
+        modality,
+        limit=limit,
+        workers=workers,
+        decode_type=decode_type,
+        num_samples=num_samples,
+        num_starts=num_starts,
+        num_augment=num_augment,
+        select_best=select_best,
+    )
     console.print(f"Attempted {attempted} work units, completed {completed}")
 
 

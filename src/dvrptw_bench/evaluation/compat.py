@@ -48,6 +48,11 @@ class BenchmarkResult:
     service_level: float
     total_cost: float
     routes: list[dict[str, Any]]
+    decode_type: str | None = None
+    num_samples: int | None = None
+    num_starts: int | None = None
+    num_augment: int | None = None
+    select_best: bool | None = None
     oracle_gap: float | None = None
     run_id: int = 0
     timestamp: str = ""
@@ -128,19 +133,36 @@ class RouteFinderBenchmarkSolver:
         *,
         num_customers: int,
         variant: str,
+        decode_type: str = "greedy",
+        num_samples: int = 1,
+        num_starts: int | None = None,
+        select_best: bool = True,
+        num_augment: int = 8,
     ):
         from dvrptw_bench.rl.routefinder_policy import RouteFinderAdapterPolicy
 
         self.checkpoint_path = checkpoint_path
         self.variant = variant
         self.num_customers = num_customers
+        self.decode_type = decode_type
+        self.num_samples = num_samples
+        self.num_starts = num_starts
+        self.select_best = select_best
+        self.num_augment = num_augment
         self.policy = RouteFinderAdapterPolicy()
         self.policy.load(checkpoint_path, device=torch.device("cpu"), num_loc=num_customers)
 
     def solve(self, instance, time_limit_s=None, warm_start=None):
         _ = (time_limit_s, warm_start)
         try:
-            solution = self.policy.infer_instance(instance)
+            solution = self.policy.infer_instance(
+                instance,
+                decode_type=self.decode_type,
+                num_samples=self.num_samples,
+                num_starts=self.num_starts,
+                select_best=self.select_best,
+                num_augment=self.num_augment,
+            )
             solution.details.update(
                 {
                     "variant": self.variant,
@@ -167,7 +189,17 @@ class OracleSolver:
         return self.solver.solve(instance, time_limit_s=time_limit_s, warm_start=warm_start)
 
 
-def create_model(model_name: str, project_root: Path, model_registry: dict[str, dict[str, Any]]):
+def create_model(
+    model_name: str,
+    project_root: Path,
+    model_registry: dict[str, dict[str, Any]],
+    *,
+    decode_type: str = "greedy",
+    num_samples: int = 1,
+    num_starts: int | None = None,
+    select_best: bool = True,
+    num_augment: int = 8,
+):
     if model_name == "oracle":
         return "oracle", OracleSolver()
     if model_name == "ortools":
@@ -178,7 +210,16 @@ def create_model(model_name: str, project_root: Path, model_registry: dict[str, 
         return "heuristic", PMCAVRPTWSolver()
     if model_name.startswith("hybrid:"):
         ai_name = model_name.split(":", 1)[1]
-        _kind, ai_solver = create_model(ai_name, project_root, model_registry)
+        _kind, ai_solver = create_model(
+            ai_name,
+            project_root,
+            model_registry,
+            decode_type=decode_type,
+            num_samples=num_samples,
+            num_starts=num_starts,
+            select_best=select_best,
+            num_augment=num_augment,
+        )
 
         class HybridSolver:
             def solve(self, instance, time_limit_s, warm_start=None):
@@ -187,6 +228,15 @@ def create_model(model_name: str, project_root: Path, model_registry: dict[str, 
                     instance=instance,
                     solver_fn=ai_solver.solve,
                     budget_s=time_limit_s,
+                )
+                solution.details.update(
+                    {
+                        "decode_type": decode_type,
+                        "num_samples": num_samples,
+                        "num_starts": num_starts,
+                        "select_best": select_best,
+                        "num_augment": num_augment,
+                    }
                 )
                 solution.solve_time_s = timings.get("total_s", 0.0)
                 return solution
@@ -210,6 +260,36 @@ def create_model(model_name: str, project_root: Path, model_registry: dict[str, 
         checkpoint_path=checkpoint,
         num_customers=int(spec["num_customers"]),
         variant=str(spec["variant"]),
+        decode_type=decode_type,
+        num_samples=num_samples,
+        num_starts=num_starts,
+        select_best=select_best,
+        num_augment=num_augment,
+    )
+
+
+def create_static_model(
+    model_name: str,
+    project_root: Path,
+    model_registry: dict[str, dict[str, Any]],
+    *,
+    decode_type: str = "greedy",
+    num_samples: int = 1,
+    num_starts: int | None = None,
+    select_best: bool = True,
+    num_augment: int = 8,
+):
+    if model_name == "ortools":
+        return "heuristic", ORToolsVRPTWSolver()
+    return create_model(
+        model_name,
+        project_root,
+        model_registry,
+        decode_type=decode_type,
+        num_samples=num_samples,
+        num_starts=num_starts,
+        select_best=select_best,
+        num_augment=num_augment,
     )
 
 
@@ -224,10 +304,16 @@ def result_from_solution(
     run_id: int,
     solution,
     oracle_cost: float | None,
+    decode_type: str | None = None,
+    num_samples: int | None = None,
+    num_starts: int | None = None,
+    num_augment: int | None = None,
+    select_best: bool | None = None,
     error_message: str | None = None,
 ) -> BenchmarkResult:
     metrics = MetricsCalculator.calculate_metrics(instance, solution, oracle_cost)
     routes = [route.model_dump(mode="json") for route in getattr(solution, "routes", [])]
+    details = getattr(solution, "details", {}) or {}
     return BenchmarkResult(
         instance_id=instance.instance_id,
         evaluation_size=evaluation_size,
@@ -246,6 +332,11 @@ def result_from_solution(
         service_level=metrics["service_level"],
         total_cost=metrics["total_cost"],
         routes=routes,
+        decode_type=details.get("decode_type", decode_type),
+        num_samples=details.get("num_samples", num_samples),
+        num_starts=details.get("num_starts", num_starts),
+        num_augment=details.get("num_augment", num_augment),
+        select_best=details.get("select_best", select_best),
         oracle_gap=metrics["oracle_gap"],
         run_id=run_id,
         timestamp=datetime.now().isoformat(),

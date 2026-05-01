@@ -14,7 +14,7 @@ from typing import Any, Iterable
 from dvrptw_bench.data.solomon_parser import parse_solomon
 from dvrptw_bench.dynamic.arrivals import build_dynamic_scenario
 from dvrptw_bench.dynamic.simulator import DynamicSimulator
-from dvrptw_bench.evaluation.compat import AI_MODEL_SPECS, create_model, result_from_solution
+from dvrptw_bench.evaluation.compat import AI_MODEL_SPECS, create_model, create_static_model, result_from_solution
 from dvrptw_bench.evaluation.models import Ledger, Manifest, ModelSpec, ScenarioArtifact, WorkState, WorkUnit
 from dvrptw_bench.evaluation.storage import atomic_write_json, ensure_dir, read_json
 
@@ -77,7 +77,107 @@ def _result_file_name(work: WorkUnit) -> str:
         parts.append(f"dod{_slug_float(work.degree_of_dynamicity)}")
     if work.cutoff_time is not None:
         parts.append(f"cut{_slug_float(work.cutoff_time)}")
+    if _is_decode_configured_work(work):
+        parts.extend(
+            [
+                f"decode-{work.decode_type}",
+                f"samples-{work.num_samples if work.num_samples is not None else 'na'}",
+                f"starts-{work.num_starts if work.num_starts is not None else 'na'}",
+                f"augment-{work.num_augment if work.num_augment is not None else 'na'}",
+                f"best-{1 if work.select_best else 0}",
+            ]
+        )
     return "__".join(parts) + ".json"
+
+
+def _is_decode_configured_work(work: WorkUnit) -> bool:
+    if work.modality in {"ai", "hybrid"}:
+        return True
+    return work.modality == "static" and work.model_name != "ortools"
+
+
+def _work_decode_identity(work: WorkUnit) -> str:
+    if not _is_decode_configured_work(work):
+        return ""
+    return (
+        f"::decode={work.decode_type}"
+        f"::samples={work.num_samples if work.num_samples is not None else 'na'}"
+        f"::starts={work.num_starts if work.num_starts is not None else 'na'}"
+        f"::augment={work.num_augment if work.num_augment is not None else 'na'}"
+        f"::best={1 if work.select_best else 0}"
+    )
+
+
+def _decode_kwargs(
+    *,
+    decode_type: str,
+    num_samples: int,
+    num_starts: int | None,
+    num_augment: int,
+    select_best: bool,
+) -> dict[str, Any]:
+    return {
+        "decode_type": decode_type,
+        "num_samples": num_samples,
+        "num_starts": num_starts,
+        "num_augment": num_augment,
+        "select_best": select_best,
+    }
+
+
+def _validate_decode_config(
+    *,
+    modality: str,
+    decode_type: str,
+    num_samples: int,
+    num_starts: int | None,
+    num_augment: int,
+    select_best: bool,
+) -> dict[str, Any]:
+    normalized_decode_type = decode_type.lower()
+    supported_modalities = {"ai", "hybrid", "static"}
+    defaults = {
+        "decode_type": "greedy",
+        "num_samples": 1,
+        "num_starts": None,
+        "num_augment": 8,
+        "select_best": True,
+    }
+    if modality not in supported_modalities:
+        if (
+            normalized_decode_type != defaults["decode_type"]
+            or num_samples != defaults["num_samples"]
+            or num_starts is not None
+            or num_augment != defaults["num_augment"]
+            or select_best != defaults["select_best"]
+        ):
+            raise ValueError(f"Decode options only apply to AI-backed modalities, not '{modality}'")
+        return defaults
+
+    if normalized_decode_type not in {"greedy", "sampling", "multistart"}:
+        raise ValueError(f"Unsupported decode_type '{decode_type}'. Expected greedy, sampling, or multistart.")
+    if num_augment < 1:
+        raise ValueError("num_augment must be >= 1")
+    if normalized_decode_type == "sampling":
+        if num_samples < 1:
+            raise ValueError("num_samples must be >= 1 for sampling decode")
+        normalized_num_starts = None
+    elif normalized_decode_type == "multistart":
+        if num_starts is None or num_starts < 2:
+            raise ValueError("num_starts must be >= 2 for multistart decode")
+        if num_samples != 1:
+            raise ValueError("num_samples is not used for multistart decode; keep it at 1")
+        normalized_num_starts = num_starts
+    else:
+        normalized_num_starts = None
+
+    return {
+        "decode_type": normalized_decode_type,
+        "num_samples": num_samples,
+        "num_starts": normalized_num_starts,
+        "num_augment": num_augment,
+        "select_best": select_best,
+    }
 
 
 def init_workspace(
@@ -272,14 +372,55 @@ def _oracle_work_units(paths: EvaluationPaths, manifest: Manifest) -> list[WorkU
     return units
 
 
-def _scenario_work_units(paths: EvaluationPaths, modality: str, model_names: Iterable[str]) -> list[WorkUnit]:
+def _static_work_units(
+    paths: EvaluationPaths,
+    manifest: Manifest,
+    model_names: Iterable[str],
+    *,
+    decode_kwargs: dict[str, Any],
+) -> list[WorkUnit]:
     units: list[WorkUnit] = []
+    for instance_name in manifest.instances:
+        for size in manifest.evaluation_sizes:
+            for model_name in model_names:
+                unit_kwargs = decode_kwargs if model_name != "ortools" else {}
+                unit = WorkUnit(
+                    work_id=f"static::{Path(instance_name).stem}::n{size}::{model_name}{_work_decode_identity(WorkUnit(work_id='tmp', modality='static', instance_name=instance_name, evaluation_size=size, model_name=model_name, result_path='', **unit_kwargs))}",
+                    modality="static",
+                    instance_name=instance_name,
+                    evaluation_size=size,
+                    model_name=model_name,
+                    **unit_kwargs,
+                    result_path=str(paths.results_root / "static" / _result_file_name(WorkUnit(
+                        work_id="tmp",
+                        modality="static",
+                        instance_name=instance_name,
+                        evaluation_size=size,
+                        model_name=model_name,
+                        **unit_kwargs,
+                        result_path="",
+                    ))),
+                )
+                units.append(unit)
+    return units
+
+
+def _scenario_work_units(
+    paths: EvaluationPaths,
+    modality: str,
+    model_names: Iterable[str],
+    *,
+    decode_kwargs: dict[str, Any] | None = None,
+) -> list[WorkUnit]:
+    units: list[WorkUnit] = []
+    decode_kwargs = decode_kwargs or {}
     for scenario in _load_scenarios(paths):
         if not scenario.feasible:
             continue
         for model_name in model_names:
+            unit_kwargs = decode_kwargs if modality in {"ai", "hybrid"} else {}
             unit = WorkUnit(
-                work_id=f"{modality}::{scenario.scenario_id}::{model_name}",
+                work_id=f"{modality}::{scenario.scenario_id}::{model_name}{_work_decode_identity(WorkUnit(work_id='tmp', modality=modality, instance_name=scenario.instance_name, evaluation_size=scenario.evaluation_size, seed=scenario.seed, degree_of_dynamicity=scenario.degree_of_dynamicity, cutoff_time=scenario.cutoff_time, model_name=model_name, scenario_id=scenario.scenario_id, result_path='', **unit_kwargs))}",
                 modality=modality,
                 instance_name=scenario.instance_name,
                 evaluation_size=scenario.evaluation_size,
@@ -287,6 +428,7 @@ def _scenario_work_units(paths: EvaluationPaths, modality: str, model_names: Ite
                 degree_of_dynamicity=scenario.degree_of_dynamicity,
                 cutoff_time=scenario.cutoff_time,
                 model_name=model_name,
+                **unit_kwargs,
                 scenario_id=scenario.scenario_id,
                 result_path=str(paths.results_root / modality / _result_file_name(WorkUnit(
                     work_id="tmp",
@@ -297,6 +439,7 @@ def _scenario_work_units(paths: EvaluationPaths, modality: str, model_names: Ite
                     degree_of_dynamicity=scenario.degree_of_dynamicity,
                     cutoff_time=scenario.cutoff_time,
                     model_name=model_name,
+                    **unit_kwargs,
                     scenario_id=scenario.scenario_id,
                     result_path="",
                 ))),
@@ -305,25 +448,61 @@ def _scenario_work_units(paths: EvaluationPaths, modality: str, model_names: Ite
     return units
 
 
-def enumerate_work_units(data_root: Path, modality: str) -> list[WorkUnit]:
+def enumerate_work_units(
+    data_root: Path,
+    modality: str,
+    *,
+    decode_type: str = "greedy",
+    num_samples: int = 1,
+    num_starts: int | None = None,
+    num_augment: int = 8,
+    select_best: bool = True,
+) -> list[WorkUnit]:
     paths = build_paths(data_root)
     manifest = load_manifest(data_root)
     models = load_model_registry(data_root)
+    decode_kwargs = _validate_decode_config(
+        modality=modality,
+        decode_type=decode_type,
+        num_samples=num_samples,
+        num_starts=num_starts,
+        num_augment=num_augment,
+        select_best=select_best,
+    )
     if modality == "oracle":
         return _oracle_work_units(paths, manifest)
+    if modality == "static":
+        return _static_work_units(paths, manifest, ["ortools", *sorted(models.keys())], decode_kwargs=decode_kwargs)
     if modality == "heuristic":
         return _scenario_work_units(paths, modality, ["ortools"])
     if modality == "ai":
-        return _scenario_work_units(paths, modality, sorted(models.keys()))
+        return _scenario_work_units(paths, modality, sorted(models.keys()), decode_kwargs=decode_kwargs)
     if modality == "hybrid":
-        return _scenario_work_units(paths, modality, [f"hybrid:{name}" for name in sorted(models.keys())])
+        return _scenario_work_units(paths, modality, [f"hybrid:{name}" for name in sorted(models.keys())], decode_kwargs=decode_kwargs)
     raise ValueError(f"Unknown modality: {modality}")
 
 
-def sync_ledger(data_root: Path, modality: str) -> Ledger:
+def sync_ledger(
+    data_root: Path,
+    modality: str,
+    *,
+    decode_type: str = "greedy",
+    num_samples: int = 1,
+    num_starts: int | None = None,
+    num_augment: int = 8,
+    select_best: bool = True,
+) -> Ledger:
     paths = build_paths(data_root)
     ledger = load_ledger(paths, modality)
-    for unit in enumerate_work_units(data_root, modality):
+    for unit in enumerate_work_units(
+        data_root,
+        modality,
+        decode_type=decode_type,
+        num_samples=num_samples,
+        num_starts=num_starts,
+        num_augment=num_augment,
+        select_best=select_best,
+    ):
         ledger.items.setdefault(unit.work_id, WorkState(work_id=unit.work_id))
     save_ledger(paths, ledger)
     return ledger
@@ -359,6 +538,68 @@ def _run_oracle_unit(paths: EvaluationPaths, project_root: Path, unit: WorkUnit,
         run_id=0,
         solution=solution,
         oracle_cost=None,
+        decode_type=unit.decode_type,
+        num_samples=unit.num_samples,
+        num_starts=unit.num_starts,
+        num_augment=unit.num_augment,
+        select_best=unit.select_best,
+    ).to_dict()
+    return result
+
+
+def _run_static_unit(
+    paths: EvaluationPaths,
+    project_root: Path,
+    unit: WorkUnit,
+    models: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    return _run_static_unit_with_solver(
+        paths=paths,
+        project_root=project_root,
+        unit=unit,
+        models=models,
+        prepared_model=None,
+    )
+
+
+def _run_static_unit_with_solver(
+    *,
+    paths: EvaluationPaths,
+    project_root: Path,
+    unit: WorkUnit,
+    models: dict[str, dict[str, Any]],
+    prepared_model: tuple[str, Any] | None,
+) -> dict[str, Any]:
+    instance = parse_solomon(Path(load_manifest(paths.root).dataset_root) / unit.instance_name, max_customers=unit.evaluation_size)
+    if prepared_model is None:
+        model_type, solver = create_static_model(
+            unit.model_name,
+            project_root,
+            models,
+            decode_type=unit.decode_type or "greedy",
+            num_samples=unit.num_samples or 1,
+            num_starts=unit.num_starts,
+            num_augment=unit.num_augment or 8,
+            select_best=True if unit.select_best is None else unit.select_best,
+        )
+    else:
+        model_type, solver = prepared_model
+    solution = solver.solve(instance, time_limit_s=5.0, warm_start=None)
+    result = result_from_solution(
+        instance=instance,
+        model_name=unit.model_name,
+        model_type=model_type,
+        evaluation_size=unit.evaluation_size,
+        degree_of_dynamicity=0.0,
+        cutoff_time=1.0,
+        run_id=0,
+        solution=solution,
+        oracle_cost=None,
+        decode_type=unit.decode_type,
+        num_samples=unit.num_samples,
+        num_starts=unit.num_starts,
+        num_augment=unit.num_augment,
+        select_best=unit.select_best,
     ).to_dict()
     return result
 
@@ -383,7 +624,16 @@ def _run_dynamic_unit_with_solver(
 ) -> dict[str, Any]:
     instance = _load_scenario_instance(paths, unit.scenario_id or "")
     if prepared_model is None:
-        model_type, solver = create_model(unit.model_name, project_root, models)
+        model_type, solver = create_model(
+            unit.model_name,
+            project_root,
+            models,
+            decode_type=unit.decode_type or "greedy",
+            num_samples=unit.num_samples or 1,
+            num_starts=unit.num_starts,
+            num_augment=unit.num_augment or 8,
+            select_best=True if unit.select_best is None else unit.select_best,
+        )
     else:
         model_type, solver = prepared_model
     simulator = DynamicSimulator(instance)
@@ -425,6 +675,11 @@ def _run_dynamic_unit_with_solver(
         run_id=0,
         solution=final_solution,
         oracle_cost=_lookup_oracle_cost(paths, unit),
+        decode_type=unit.decode_type,
+        num_samples=unit.num_samples,
+        num_starts=unit.num_starts,
+        num_augment=unit.num_augment,
+        select_best=unit.select_best,
     ).to_dict()
     return result
 
@@ -542,6 +797,8 @@ def _default_workers(modality: str, task_count: int) -> int:
 def _budget_for_unit(unit: WorkUnit) -> float:
     if unit.modality == "oracle":
         return 10.0
+    if unit.modality == "static":
+        return 5.0
     if unit.modality == "heuristic":
         return 5.0
     if unit.modality == "hybrid":
@@ -574,7 +831,20 @@ def _execute_unit_payload(
     unit = WorkUnit.model_validate(unit_payload)
     if modality == "oracle":
         return _run_oracle_unit(paths, project_root, unit, models)
+    if modality == "static":
+        return _run_static_unit(paths, project_root, unit, models)
     return _run_dynamic_unit(paths, project_root, unit, models)
+
+
+def _model_cache_key(unit: WorkUnit) -> tuple[Any, ...]:
+    return (
+        unit.model_name,
+        unit.decode_type,
+        unit.num_samples,
+        unit.num_starts,
+        unit.num_augment,
+        unit.select_best,
+    )
 
 
 def _run_units_sequential(
@@ -589,6 +859,8 @@ def _run_units_sequential(
         try:
             if modality == "oracle":
                 result = _run_oracle_unit(paths, project_root, unit, models)
+            elif modality == "static":
+                result = _run_static_unit(paths, project_root, unit, models)
             else:
                 result = _run_dynamic_unit(paths, project_root, unit, models)
             outcomes.append((unit, result, None))
@@ -677,23 +949,36 @@ def run_modality(
     modality: str,
     limit: int | None = None,
     workers: int | None = None,
+    decode_type: str = "greedy",
+    num_samples: int = 1,
+    num_starts: int | None = None,
+    num_augment: int = 8,
+    select_best: bool = True,
 ) -> tuple[int, int]:
     paths = build_paths(data_root)
     project_root = project_root_from(data_root.resolve())
     models = load_model_registry(data_root)
-    if modality != "oracle" and not _scenario_files(paths):
+    decode_kwargs = _validate_decode_config(
+        modality=modality,
+        decode_type=decode_type,
+        num_samples=num_samples,
+        num_starts=num_starts,
+        num_augment=num_augment,
+        select_best=select_best,
+    )
+    if modality not in {"oracle", "static"} and not _scenario_files(paths):
         generate_scenarios(data_root)
-    if modality not in {"oracle", "heuristic", "ai", "hybrid"}:
+    if modality not in {"oracle", "heuristic", "ai", "hybrid", "static"}:
         raise ValueError(f"Unknown modality: {modality}")
     if workers is not None and workers < 1:
         raise ValueError("--workers must be >= 1")
     if modality not in {"oracle", "heuristic"} and workers not in {None, 1}:
         raise ValueError(f"Multiprocessing is only supported for oracle and heuristic, not '{modality}'")
     with modality_lock(paths, modality):
-        ledger = sync_ledger(data_root, modality)
+        ledger = sync_ledger(data_root, modality, **decode_kwargs)
         _recover_in_progress(ledger)
         save_ledger(paths, ledger)
-        all_units = enumerate_work_units(data_root, modality)
+        all_units = enumerate_work_units(data_root, modality, **decode_kwargs)
         pending_units = [unit for unit in all_units if ledger.items[unit.work_id].status == "pending"]
         if limit is not None:
             pending_units = pending_units[:limit]
@@ -709,7 +994,7 @@ def run_modality(
         if worker_count == 1:
             completed = 0
             queue = deque(pending_units)
-            model_cache: dict[str, tuple[str, Any]] = {}
+            model_cache: dict[tuple[Any, ...], tuple[str, Any]] = {}
             while True:
                 unit = _claim_next_pending_unit(paths, ledger, queue)
                 if unit is None:
@@ -717,12 +1002,42 @@ def run_modality(
                 _log_unit_started(unit)
                 try:
                     prepared_model = None
-                    if modality in {"ai", "hybrid"}:
-                        prepared_model = model_cache.get(unit.model_name)
+                    if modality in {"ai", "hybrid", "static"}:
+                        cache_key = _model_cache_key(unit)
+                        prepared_model = model_cache.get(cache_key)
                         if prepared_model is None:
-                            prepared_model = create_model(unit.model_name, project_root, models)
-                            model_cache[unit.model_name] = prepared_model
-                    if modality in {"ai", "hybrid"}:
+                            if modality == "static":
+                                prepared_model = create_static_model(
+                                    unit.model_name,
+                                    project_root,
+                                    models,
+                                    decode_type=unit.decode_type or "greedy",
+                                    num_samples=unit.num_samples or 1,
+                                    num_starts=unit.num_starts,
+                                    num_augment=unit.num_augment or 8,
+                                    select_best=True if unit.select_best is None else unit.select_best,
+                                )
+                            else:
+                                prepared_model = create_model(
+                                    unit.model_name,
+                                    project_root,
+                                    models,
+                                    decode_type=unit.decode_type or "greedy",
+                                    num_samples=unit.num_samples or 1,
+                                    num_starts=unit.num_starts,
+                                    num_augment=unit.num_augment or 8,
+                                    select_best=True if unit.select_best is None else unit.select_best,
+                                )
+                            model_cache[cache_key] = prepared_model
+                    if modality == "static":
+                        result = _run_static_unit_with_solver(
+                            paths=paths,
+                            project_root=project_root,
+                            unit=unit,
+                            models=models,
+                            prepared_model=prepared_model,
+                        )
+                    elif modality in {"ai", "hybrid"}:
                         result = _run_dynamic_unit_with_solver(
                             paths=paths,
                             project_root=project_root,
@@ -757,7 +1072,7 @@ def run_modality(
 def status_summary(data_root: Path) -> dict[str, dict[str, int]]:
     summary: dict[str, dict[str, int]] = {}
     paths = build_paths(data_root)
-    for modality in ("oracle", "heuristic", "ai", "hybrid"):
+    for modality in ("oracle", "heuristic", "ai", "hybrid", "static"):
         ledger = sync_ledger(data_root, modality)
         counts = {"pending": 0, "in_progress": 0, "completed": 0, "failed": 0}
         for item in ledger.items.values():

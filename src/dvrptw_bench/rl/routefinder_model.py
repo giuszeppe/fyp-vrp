@@ -113,6 +113,7 @@ class RouteFinderModel:
         instance: VRPTWInstance,
         decode_type: str = "greedy",
         num_samples: int = 1,
+        num_starts: int | None = None,
         select_best: bool = True,
         num_augment: int = 8,
     ) -> Solution:
@@ -127,7 +128,18 @@ class RouteFinderModel:
         policy = self.model.policy.to(self.device).eval()
 
         with torch.inference_mode():
-            if decode_type == "greedy" and select_best and num_augment > 1:
+            if decode_type == "multistart":
+                out = evaluate_routefinder(
+                    self.model,
+                    td_reset.clone(),
+                    num_augment=max(1, num_augment),
+                    num_starts=max(2, num_starts or 2),
+                )
+                actions = out.get(
+                    "best_aug_actions",
+                    out.get("best_multistart_actions", out.get("actions")),
+                )
+            elif decode_type == "greedy" and select_best and num_augment > 1:
                 out = evaluate_routefinder(
                     self.model,
                     td_reset.clone(),
@@ -165,6 +177,7 @@ class RouteFinderModel:
             {
                 "decode_type": decode_type,
                 "num_samples": num_samples,
+                "num_starts": num_starts,
                 "select_best": select_best,
                 "num_augment": num_augment,
             }

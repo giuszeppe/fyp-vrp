@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import torch
+
 from dvrptw_bench.common.typing import Solution, VRPTWInstance
 from dvrptw_bench.rl.routefinder_model import RouteFinderModel, build_routefinder_model
 
@@ -22,7 +24,7 @@ class RouteFinderAdapterPolicy:
         batch_size: int = 256,
         lr: float = 3e-4,
         weight_decay: float = 1e-6,
-        device: str | None = None,
+        device: torch.device | None = None,
         normalize_coords: bool = True,
         variant_preset: str = "vrptw",
         num_loc: int = 100,
@@ -65,6 +67,7 @@ class RouteFinderAdapterPolicy:
         instance: VRPTWInstance,
         decode_type: str = "greedy",
         num_samples: int = 1,
+        num_starts: int | None = None,
         select_best: bool = True,
         num_augment: int = 8,
     ) -> Solution:
@@ -78,6 +81,7 @@ class RouteFinderAdapterPolicy:
             instance,
             decode_type=decode_type,
             num_samples=num_samples,
+            num_starts=num_starts,
             select_best=select_best,
             num_augment=num_augment,
         )

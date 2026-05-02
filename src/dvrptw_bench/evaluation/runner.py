@@ -18,6 +18,9 @@ from dvrptw_bench.evaluation.compat import AI_MODEL_SPECS, create_model, create_
 from dvrptw_bench.evaluation.models import Ledger, Manifest, ModelSpec, ScenarioArtifact, WorkState, WorkUnit
 from dvrptw_bench.evaluation.storage import atomic_write_json, ensure_dir, read_json
 
+_SEQUENTIAL_LEDGER_FLUSH_INTERVAL = 25
+_SCENARIO_INSTANCE_CACHE: dict[tuple[str, str], Any] = {}
+
 
 def project_root_from(start: Path) -> Path:
     for current in [start, *start.parents]:
@@ -512,7 +515,12 @@ def _load_scenario_instance(paths: EvaluationPaths, scenario_id: str):
     record = ScenarioArtifact.model_validate(read_json(paths.scenarios_root / f"{scenario_id}.json", {}))
     from dvrptw_bench.common.typing import VRPTWInstance
 
-    return VRPTWInstance.model_validate(record.instance)
+    cache_key = (str(paths.root.resolve()), scenario_id)
+    cached = _SCENARIO_INSTANCE_CACHE.get(cache_key)
+    if cached is None:
+        cached = VRPTWInstance.model_validate(record.instance)
+        _SCENARIO_INSTANCE_CACHE[cache_key] = cached
+    return cached.model_copy(deep=True)
 
 
 def _lookup_oracle_cost(paths: EvaluationPaths, unit: WorkUnit) -> float | None:
@@ -525,7 +533,7 @@ def _lookup_oracle_cost(paths: EvaluationPaths, unit: WorkUnit) -> float | None:
 
 def _run_oracle_unit(paths: EvaluationPaths, project_root: Path, unit: WorkUnit, models: dict[str, dict[str, Any]]) -> dict[str, Any]:
     oracle_budget_s = 10.0
-    instance = parse_solomon(Path(load_manifest(paths.root).dataset_root) / unit.instance_name, max_customers=unit.evaluation_size)
+    instance = parse_solomon(paths.instances_root / unit.instance_name, max_customers=unit.evaluation_size)
     model_type, solver = create_model("oracle", project_root, models)
     solution = solver.solve(instance, time_limit_s=oracle_budget_s, warm_start=None)
     result = result_from_solution(
@@ -570,7 +578,7 @@ def _run_static_unit_with_solver(
     models: dict[str, dict[str, Any]],
     prepared_model: tuple[str, Any] | None,
 ) -> dict[str, Any]:
-    instance = parse_solomon(Path(load_manifest(paths.root).dataset_root) / unit.instance_name, max_customers=unit.evaluation_size)
+    instance = parse_solomon(paths.instances_root / unit.instance_name, max_customers=unit.evaluation_size)
     if prepared_model is None:
         model_type, solver = create_static_model(
             unit.model_name,
@@ -719,6 +727,8 @@ def _claim_next_pending_unit(
     paths: EvaluationPaths,
     ledger: Ledger,
     units: deque[WorkUnit],
+    *,
+    persist_ledger: bool = True,
 ) -> WorkUnit | None:
     while units:
         unit = units.popleft()
@@ -731,12 +741,20 @@ def _claim_next_pending_unit(
         state.completed_at = None
         state.output_path = None
         state.error_message = None
-        save_ledger(paths, ledger)
+        if persist_ledger:
+            save_ledger(paths, ledger)
         return unit
     return None
 
 
-def _finalize_success(paths: EvaluationPaths, ledger: Ledger, unit: WorkUnit, result: dict[str, Any]) -> None:
+def _finalize_success(
+    paths: EvaluationPaths,
+    ledger: Ledger,
+    unit: WorkUnit,
+    result: dict[str, Any],
+    *,
+    persist_ledger: bool = True,
+) -> None:
     result_path = Path(unit.result_path)
     atomic_write_json(result_path, result)
     state = ledger.items[unit.work_id]
@@ -744,7 +762,8 @@ def _finalize_success(paths: EvaluationPaths, ledger: Ledger, unit: WorkUnit, re
     state.completed_at = datetime.utcnow().isoformat()
     state.output_path = str(result_path)
     state.error_message = None
-    save_ledger(paths, ledger)
+    if persist_ledger:
+        save_ledger(paths, ledger)
     print(
         f"[{unit.modality}] completed "
         f"instance={unit.instance_name} "
@@ -756,11 +775,19 @@ def _finalize_success(paths: EvaluationPaths, ledger: Ledger, unit: WorkUnit, re
     )
 
 
-def _finalize_failure(paths: EvaluationPaths, ledger: Ledger, unit: WorkUnit, error_message: str) -> None:
+def _finalize_failure(
+    paths: EvaluationPaths,
+    ledger: Ledger,
+    unit: WorkUnit,
+    error_message: str,
+    *,
+    persist_ledger: bool = True,
+) -> None:
     state = ledger.items[unit.work_id]
     state.status = "failed"
     state.error_message = error_message
-    save_ledger(paths, ledger)
+    if persist_ledger:
+        save_ledger(paths, ledger)
     print(
         f"[{unit.modality}] failed "
         f"instance={unit.instance_name} "
@@ -995,8 +1022,9 @@ def run_modality(
             completed = 0
             queue = deque(pending_units)
             model_cache: dict[tuple[Any, ...], tuple[str, Any]] = {}
+            dirty_ledger_updates = 0
             while True:
-                unit = _claim_next_pending_unit(paths, ledger, queue)
+                unit = _claim_next_pending_unit(paths, ledger, queue, persist_ledger=False)
                 if unit is None:
                     break
                 _log_unit_started(unit)
@@ -1047,13 +1075,26 @@ def run_modality(
                         )
                     else:
                         result = _run_dynamic_unit(paths, project_root, unit, models)
-                    _finalize_success(paths, ledger, unit, result)
+                    _finalize_success(paths, ledger, unit, result, persist_ledger=False)
                     completed += 1
+                    dirty_ledger_updates += 1
                 except KeyboardInterrupt:
                     _reset_units_to_pending(paths, ledger, [unit])
                     raise
                 except Exception as exc:
-                    _finalize_failure(paths, ledger, unit, str(exc) or "unknown worker error")
+                    _finalize_failure(
+                        paths,
+                        ledger,
+                        unit,
+                        str(exc) or "unknown worker error",
+                        persist_ledger=False,
+                    )
+                    dirty_ledger_updates += 1
+                if dirty_ledger_updates >= _SEQUENTIAL_LEDGER_FLUSH_INTERVAL:
+                    save_ledger(paths, ledger)
+                    dirty_ledger_updates = 0
+            if dirty_ledger_updates > 0:
+                save_ledger(paths, ledger)
             return completed, attempted
         else:
             queue = deque(pending_units)

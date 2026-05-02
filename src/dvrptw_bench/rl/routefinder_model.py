@@ -107,6 +107,22 @@ class RouteFinderModel:
         self.model.to(self.device)
         self.model.eval()
         self.policy = self.model.policy
+    
+    def load_state_dict(self, state_dict: dict) -> None:
+        if self.env is None or self.policy is None:
+            raise ValueError("Environment and policy must be initialized before loading state dict.")
+        self.model = RouteFinderBase(
+            self.env,
+            self.policy,
+            batch_size=self.batch_size,
+            train_data_size=self.train_data_size,
+            val_data_size=self.val_data_size,
+            optimizer_kwargs={"lr": self.lr, "weight_decay": self.weight_decay},
+        )
+        self.model.load_state_dict(state_dict)
+        self.model.to(self.device)
+        self.model.eval()
+        self.policy = self.model.policy
 
     def solve(
         self,
@@ -212,5 +228,11 @@ def build_routefinder_model(
         variant_preset=variant_preset,
     )
     if checkpoint_path is not None:
-        model.load(checkpoint_path)
+        ckpt = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
+
+        for key in ["rng_state", "cuda_rng_state", "cuda_rng_state_all"]:
+            ckpt.pop(key, None)
+        model.load_state_dict(ckpt["state_dict"])
+
+        
     return model

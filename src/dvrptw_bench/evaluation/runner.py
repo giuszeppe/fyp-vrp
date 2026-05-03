@@ -560,6 +560,8 @@ def _run_static_unit(
     project_root: Path,
     unit: WorkUnit,
     models: dict[str, dict[str, Any]],
+    *,
+    device: str | None = None,
 ) -> dict[str, Any]:
     return _run_static_unit_with_solver(
         paths=paths,
@@ -567,6 +569,7 @@ def _run_static_unit(
         unit=unit,
         models=models,
         prepared_model=None,
+        device=device,
     )
 
 
@@ -577,19 +580,11 @@ def _run_static_unit_with_solver(
     unit: WorkUnit,
     models: dict[str, dict[str, Any]],
     prepared_model: tuple[str, Any] | None,
+    device: str | None = None,
 ) -> dict[str, Any]:
     instance = parse_solomon(paths.instances_root / unit.instance_name, max_customers=unit.evaluation_size)
     if prepared_model is None:
-        model_type, solver = create_static_model(
-            unit.model_name,
-            project_root,
-            models,
-            decode_type=unit.decode_type or "greedy",
-            num_samples=unit.num_samples or 1,
-            num_starts=unit.num_starts,
-            num_augment=unit.num_augment or 8,
-            select_best=True if unit.select_best is None else unit.select_best,
-        )
+        model_type, solver = create_static_model(unit.model_name, project_root, models, **_solver_create_kwargs(unit, device))
     else:
         model_type, solver = prepared_model
     solution = solver.solve(instance, time_limit_s=5.0, warm_start=None)
@@ -612,13 +607,21 @@ def _run_static_unit_with_solver(
     return result
 
 
-def _run_dynamic_unit(paths: EvaluationPaths, project_root: Path, unit: WorkUnit, models: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def _run_dynamic_unit(
+    paths: EvaluationPaths,
+    project_root: Path,
+    unit: WorkUnit,
+    models: dict[str, dict[str, Any]],
+    *,
+    device: str | None = None,
+) -> dict[str, Any]:
     return _run_dynamic_unit_with_solver(
         paths=paths,
         project_root=project_root,
         unit=unit,
         models=models,
         prepared_model=None,
+        device=device,
     )
 
 
@@ -629,19 +632,11 @@ def _run_dynamic_unit_with_solver(
     unit: WorkUnit,
     models: dict[str, dict[str, Any]],
     prepared_model: tuple[str, Any] | None,
+    device: str | None = None,
 ) -> dict[str, Any]:
     instance = _load_scenario_instance(paths, unit.scenario_id or "")
     if prepared_model is None:
-        model_type, solver = create_model(
-            unit.model_name,
-            project_root,
-            models,
-            decode_type=unit.decode_type or "greedy",
-            num_samples=unit.num_samples or 1,
-            num_starts=unit.num_starts,
-            num_augment=unit.num_augment or 8,
-            select_best=True if unit.select_best is None else unit.select_best,
-        )
+        model_type, solver = create_model(unit.model_name, project_root, models, **_solver_create_kwargs(unit, device))
     else:
         model_type, solver = prepared_model
     simulator = DynamicSimulator(instance)
@@ -850,6 +845,7 @@ def _execute_unit_payload(
     project_root_str: str,
     modality: str,
     unit_payload: dict[str, Any],
+    device: str | None = None,
 ) -> dict[str, Any]:
     data_root = Path(data_root_str)
     project_root = Path(project_root_str)
@@ -859,8 +855,8 @@ def _execute_unit_payload(
     if modality == "oracle":
         return _run_oracle_unit(paths, project_root, unit, models)
     if modality == "static":
-        return _run_static_unit(paths, project_root, unit, models)
-    return _run_dynamic_unit(paths, project_root, unit, models)
+        return _run_static_unit(paths, project_root, unit, models, device=device)
+    return _run_dynamic_unit(paths, project_root, unit, models, device=device)
 
 
 def _model_cache_key(unit: WorkUnit) -> tuple[Any, ...]:
@@ -872,6 +868,19 @@ def _model_cache_key(unit: WorkUnit) -> tuple[Any, ...]:
         unit.num_augment,
         unit.select_best,
     )
+
+
+def _solver_create_kwargs(unit: WorkUnit, device: str | None) -> dict[str, Any]:
+    kwargs: dict[str, Any] = {
+        "decode_type": unit.decode_type or "greedy",
+        "num_samples": unit.num_samples or 1,
+        "num_starts": unit.num_starts,
+        "num_augment": unit.num_augment or 8,
+        "select_best": True if unit.select_best is None else unit.select_best,
+    }
+    if device is not None:
+        kwargs["device"] = device
+    return kwargs
 
 
 def _run_units_sequential(
@@ -904,6 +913,8 @@ def _submit_unit(
     project_root: Path,
     modality: str,
     unit: WorkUnit,
+    *,
+    device: str | None = None,
 ) -> Future:
     _log_unit_started(unit)
     return executor.submit(
@@ -912,6 +923,7 @@ def _submit_unit(
         str(project_root),
         modality,
         unit.model_dump(mode="json"),
+        device,
     )
 
 
@@ -932,6 +944,8 @@ def _run_parallel_streaming(
     modality: str,
     queue: deque[WorkUnit],
     worker_count: int,
+    *,
+    device: str | None = None,
 ) -> int:
     completed = 0
     in_flight: dict[Future, WorkUnit] = {}
@@ -941,7 +955,7 @@ def _run_parallel_streaming(
             unit = _claim_next_pending_unit(paths, ledger, queue)
             if unit is None:
                 break
-            future = _submit_unit(executor, data_root, project_root, modality, unit)
+            future = _submit_unit(executor, data_root, project_root, modality, unit, device=device)
             in_flight[future] = unit
 
         while in_flight:
@@ -957,7 +971,14 @@ def _run_parallel_streaming(
 
                 next_unit = _claim_next_pending_unit(paths, ledger, queue)
                 if next_unit is not None:
-                    next_future = _submit_unit(executor, data_root, project_root, modality, next_unit)
+                    next_future = _submit_unit(
+                        executor,
+                        data_root,
+                        project_root,
+                        modality,
+                        next_unit,
+                        device=device,
+                    )
                     in_flight[next_future] = next_unit
         executor.shutdown(wait=True, cancel_futures=False)
         return completed
@@ -981,6 +1002,7 @@ def run_modality(
     num_starts: int | None = None,
     num_augment: int = 8,
     select_best: bool = True,
+    device: str | None = None,
 ) -> tuple[int, int]:
     paths = build_paths(data_root)
     project_root = project_root_from(data_root.resolve())
@@ -1039,22 +1061,14 @@ def run_modality(
                                     unit.model_name,
                                     project_root,
                                     models,
-                                    decode_type=unit.decode_type or "greedy",
-                                    num_samples=unit.num_samples or 1,
-                                    num_starts=unit.num_starts,
-                                    num_augment=unit.num_augment or 8,
-                                    select_best=True if unit.select_best is None else unit.select_best,
+                                    **_solver_create_kwargs(unit, device),
                                 )
                             else:
                                 prepared_model = create_model(
                                     unit.model_name,
                                     project_root,
                                     models,
-                                    decode_type=unit.decode_type or "greedy",
-                                    num_samples=unit.num_samples or 1,
-                                    num_starts=unit.num_starts,
-                                    num_augment=unit.num_augment or 8,
-                                    select_best=True if unit.select_best is None else unit.select_best,
+                                    **_solver_create_kwargs(unit, device),
                                 )
                             model_cache[cache_key] = prepared_model
                     if modality == "static":
@@ -1064,6 +1078,7 @@ def run_modality(
                             unit=unit,
                             models=models,
                             prepared_model=prepared_model,
+                            device=device,
                         )
                     elif modality in {"ai", "hybrid"}:
                         result = _run_dynamic_unit_with_solver(
@@ -1072,9 +1087,10 @@ def run_modality(
                             unit=unit,
                             models=models,
                             prepared_model=prepared_model,
+                            device=device,
                         )
                     else:
-                        result = _run_dynamic_unit(paths, project_root, unit, models)
+                        result = _run_dynamic_unit(paths, project_root, unit, models, device=device)
                     _finalize_success(paths, ledger, unit, result, persist_ledger=False)
                     completed += 1
                     dirty_ledger_updates += 1
@@ -1106,6 +1122,7 @@ def run_modality(
                 modality=modality,
                 queue=queue,
                 worker_count=worker_count,
+                device=device,
             )
             return completed, attempted
 

@@ -67,6 +67,10 @@ def run(
     num_starts: int | None = typer.Option(None, help="Number of starts for multistart decode."),
     num_augment: int = typer.Option(8, help="Number of augmentations for greedy/multistart evaluation."),
     select_best: bool = typer.Option(True, help="Whether to select the best sampled/augmented solution."),
+    device: str | None = typer.Option(
+        None,
+        help="AI evaluation device override: auto | cpu | cuda | mps. Defaults to auto-detect.",
+    ),
 ):
     completed, attempted = run_modality(
         data_root,
@@ -78,6 +82,7 @@ def run(
         num_starts=num_starts,
         num_augment=num_augment,
         select_best=select_best,
+        device=device,
     )
     console.print(f"Attempted {attempted} work units, completed {completed}")
 

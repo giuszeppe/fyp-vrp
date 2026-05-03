@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import traceback
 from dataclasses import asdict, dataclass
 from datetime import datetime
@@ -124,6 +125,23 @@ def _invoke_solver(model, instance, time_limit_s: float, warm_start=None):
     raise TypeError(f"Model {type(model).__name__} does not expose a supported solve() API")
 
 
+def _resolve_torch_device(device: str | torch.device | None) -> torch.device:
+    if isinstance(device, torch.device):
+        return device
+
+    requested = device or os.getenv("DVRPTW_EVAL_DEVICE", "auto")
+    normalized = str(requested).strip().lower()
+    if normalized == "auto":
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+            return torch.device("mps")
+        return torch.device("cpu")
+    if normalized in {"cpu", "cuda", "mps"}:
+        return torch.device(normalized)
+    raise ValueError("Unsupported evaluation device. Expected one of: auto, cpu, cuda, mps.")
+
+
 class RouteFinderBenchmarkSolver:
     """Checkpoint-backed RouteFinder solver wrapper for benchmark use."""
 
@@ -138,6 +156,7 @@ class RouteFinderBenchmarkSolver:
         num_starts: int | None = None,
         select_best: bool = True,
         num_augment: int = 8,
+        device: str | torch.device | None = None,
     ):
         from dvrptw_bench.rl.routefinder_policy import RouteFinderAdapterPolicy
 
@@ -149,8 +168,9 @@ class RouteFinderBenchmarkSolver:
         self.num_starts = num_starts
         self.select_best = select_best
         self.num_augment = num_augment
+        self.device = _resolve_torch_device(device)
         self.policy = RouteFinderAdapterPolicy()
-        self.policy.load(checkpoint_path, device=torch.device("cpu"), num_loc=num_customers)
+        self.policy.load(checkpoint_path, device=self.device, num_loc=num_customers)
 
     def solve(self, instance, time_limit_s=None, warm_start=None):
         _ = (time_limit_s, warm_start)
@@ -199,6 +219,7 @@ def create_model(
     num_starts: int | None = None,
     select_best: bool = True,
     num_augment: int = 8,
+    device: str | torch.device | None = None,
 ):
     if model_name == "oracle":
         return "oracle", OracleSolver()
@@ -265,6 +286,7 @@ def create_model(
         num_starts=num_starts,
         select_best=select_best,
         num_augment=num_augment,
+        device=device,
     )
 
 
@@ -278,6 +300,7 @@ def create_static_model(
     num_starts: int | None = None,
     select_best: bool = True,
     num_augment: int = 8,
+    device: str | torch.device | None = None,
 ):
     if model_name == "ortools":
         return "heuristic", ORToolsVRPTWSolver()
@@ -290,6 +313,7 @@ def create_static_model(
         num_starts=num_starts,
         select_best=select_best,
         num_augment=num_augment,
+        device=device,
     )
 
 

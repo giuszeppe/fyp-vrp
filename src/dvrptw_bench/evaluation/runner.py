@@ -20,6 +20,7 @@ from dvrptw_bench.evaluation.storage import atomic_write_json, ensure_dir, read_
 
 _SEQUENTIAL_LEDGER_FLUSH_INTERVAL = 25
 _SCENARIO_INSTANCE_CACHE: dict[tuple[str, str], Any] = {}
+_PROCESS_MODEL_CACHE: dict[tuple[Any, ...], tuple[str, Any]] = {}
 
 
 def project_root_from(start: Path) -> Path:
@@ -855,7 +856,39 @@ def _execute_unit_payload(
     if modality == "oracle":
         return _run_oracle_unit(paths, project_root, unit, models)
     if modality == "static":
-        return _run_static_unit(paths, project_root, unit, models, device=device)
+        prepared_model = _get_process_cached_model(
+            data_root=data_root,
+            project_root=project_root,
+            modality=modality,
+            unit=unit,
+            models=models,
+            device=device,
+        )
+        return _run_static_unit_with_solver(
+            paths=paths,
+            project_root=project_root,
+            unit=unit,
+            models=models,
+            prepared_model=prepared_model,
+            device=device,
+        )
+    if modality in {"ai", "hybrid"}:
+        prepared_model = _get_process_cached_model(
+            data_root=data_root,
+            project_root=project_root,
+            modality=modality,
+            unit=unit,
+            models=models,
+            device=device,
+        )
+        return _run_dynamic_unit_with_solver(
+            paths=paths,
+            project_root=project_root,
+            unit=unit,
+            models=models,
+            prepared_model=prepared_model,
+            device=device,
+        )
     return _run_dynamic_unit(paths, project_root, unit, models, device=device)
 
 
@@ -881,6 +914,62 @@ def _solver_create_kwargs(unit: WorkUnit, device: str | None) -> dict[str, Any]:
     if device is not None:
         kwargs["device"] = device
     return kwargs
+
+
+def _process_model_cache_key(
+    *,
+    data_root: Path,
+    project_root: Path,
+    modality: str,
+    unit: WorkUnit,
+    device: str | None,
+) -> tuple[Any, ...]:
+    execution_kind = "static" if modality == "static" else "dynamic"
+    return (
+        str(data_root.resolve()),
+        str(project_root.resolve()),
+        execution_kind,
+        _model_cache_key(unit),
+        device,
+    )
+
+
+def _get_process_cached_model(
+    *,
+    data_root: Path,
+    project_root: Path,
+    modality: str,
+    unit: WorkUnit,
+    models: dict[str, dict[str, Any]],
+    device: str | None,
+) -> tuple[str, Any]:
+    cache_key = _process_model_cache_key(
+        data_root=data_root,
+        project_root=project_root,
+        modality=modality,
+        unit=unit,
+        device=device,
+    )
+    prepared_model = _PROCESS_MODEL_CACHE.get(cache_key)
+    if prepared_model is not None:
+        return prepared_model
+
+    if modality == "static":
+        prepared_model = create_static_model(
+            unit.model_name,
+            project_root,
+            models,
+            **_solver_create_kwargs(unit, device),
+        )
+    else:
+        prepared_model = create_model(
+            unit.model_name,
+            project_root,
+            models,
+            **_solver_create_kwargs(unit, device),
+        )
+    _PROCESS_MODEL_CACHE[cache_key] = prepared_model
+    return prepared_model
 
 
 def _run_units_sequential(
@@ -1021,8 +1110,8 @@ def run_modality(
         raise ValueError(f"Unknown modality: {modality}")
     if workers is not None and workers < 1:
         raise ValueError("--workers must be >= 1")
-    if modality not in {"oracle", "heuristic"} and workers not in {None, 1}:
-        raise ValueError(f"Multiprocessing is only supported for oracle and heuristic, not '{modality}'")
+    if modality not in {"oracle", "heuristic", "ai", "hybrid"} and workers not in {None, 1}:
+        raise ValueError(f"Multiprocessing is only supported for oracle, heuristic, ai, and hybrid, not '{modality}'")
     with modality_lock(paths, modality):
         ledger = sync_ledger(data_root, modality, **decode_kwargs)
         _recover_in_progress(ledger)

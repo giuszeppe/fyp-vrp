@@ -61,7 +61,10 @@ def run(
     modality: str = typer.Argument(..., help="oracle | heuristic | ai | hybrid | static"),
     data_root: Path = typer.Option(Path("./data")),
     limit: int | None = typer.Option(None),
-    workers: int | None = typer.Option(None, help="Process count for oracle/heuristic; defaults to auto there and 1 elsewhere."),
+    workers: int | None = typer.Option(
+        None,
+        help="Process count for oracle/heuristic/ai/hybrid; defaults to auto for oracle/heuristic and 1 elsewhere.",
+    ),
     decode_type: str = typer.Option("greedy", help="AI decode type: greedy | sampling | multistart"),
     num_samples: int = typer.Option(1, help="Number of samples for sampling decode."),
     num_starts: int | None = typer.Option(None, help="Number of starts for multistart decode."),

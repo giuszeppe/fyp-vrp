@@ -140,8 +140,11 @@ class RouteFinderModel:
         ).to(self.device)
         td_reset = self.env.reset(td)
 
-        self.model.to(self.device).eval()
-        policy = self.model.policy.to(self.device).eval()
+        if self.model.training:
+            self.model.eval()
+        policy = self.model.policy
+        if policy.training:
+            policy.eval()
 
         with torch.inference_mode():
             if decode_type == "multistart":

@@ -28,20 +28,21 @@
   },
   {
     "checkpoint_candidates": [
-      "good_runs/routefinder_with_lateness_50_cust_100_epochs.pt"
+      "good_runs/routefinder_dynamic_solomon_75cust_100epochs.pt.pt"
     ],
     "enabled": true,
-    "model_id": "routefinder_with_lateness_50",
-    "num_customers": 50,
-    "variant": "with_lateness"
+    "model_id": "routefinder_dynamic_solomon_75cust_100epochs",
+    "num_customers": 75,
+    "variant": "dynamic_solomon"
   },
   {
     "checkpoint_candidates": [
-      "good_runs/routefinder_with_lateness_75_cust_100_epochs.pt"
+      "good_runs/routefinder_dynamic_solomon_50cust_100epochs.pt"
     ],
     "enabled": true,
-    "model_id": "routefinder_with_lateness_75",
-    "num_customers": 75,
-    "variant": "with_lateness"
+    "model_id": "routefinder_dynamic_solomon_50cust_100epochs",
+    "num_customers": 50,
+    "variant": "dynamic_solomon"
   }
+
 ]
